@@ -1,0 +1,211 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+        mavenCentral()
+        maven {
+            url "http://repo.spring.io/snapshot"
+        }
+        maven {
+            url "http://repo.spring.io/milestone"
+        }
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:+"
+        classpath 'se.transmode.gradle:gradle-docker:1.2'
+        classpath 'org.ajoberstar:gradle-git:0.12.0'
+
+        if (project.hasProperty("coverage")) {
+            classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:1.0.2'
+        }
+    }
+}
+
+def commonProject = project(':common')
+
+configure(subprojects) {
+
+    apply plugin: 'groovy'
+    apply plugin: 'spring-boot'
+    apply plugin: 'maven-publish'
+    apply plugin: 'docker'
+
+    ext {
+        buildNrLoc = project.hasProperty('buildNr') ? "${buildNr}" : "CD-000"
+    }
+
+    group = 'io.spring.cloud.samples.brewery'
+    version = buildNrLoc
+
+    sourceSets.main.java.srcDirs = []
+    sourceSets.main.groovy.srcDirs += ["src/main/java"]
+
+    sourceCompatibility = '1.8'
+
+    configurations {
+        all {
+            resolutionStrategy {
+                eachDependency { DependencyResolveDetails details ->
+                    // To prevent an accidental usage of groovy-all.jar and groovy.jar in different versions
+                    // all modularized Groovy jars are replaced with groovy-all.jar by default.
+                    if (details.requested.group == 'org.codehaus.groovy' && details.requested.name != "groovy-all") {
+                        details.useTarget("org.codehaus.groovy:groovy-all:${details.requested.version}")
+                    }
+                    if (details.requested.name == 'servlet-api') {
+                        details.useTarget("org.apache.tomcat.embed:tomcat-embed-core:8.0.23")
+                    }
+                }
+            }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+        jcenter()
+        maven {
+            url "http://repo.spring.io/snapshot"
+        }
+        maven {
+            url "http://repo.spring.io/milestone"
+        }
+    }
+
+    dependencies {
+        compile 'org.projectlombok:lombok:1.16.6'
+        compile "org.springframework.boot:spring-boot-starter-web"
+        compile "org.springframework:spring-web"
+        compile 'org.codehaus.groovy:groovy-all:2.4.5'
+        compile 'com.google.guava:guava:18.0'
+        compile 'org.apache.tomcat.embed:tomcat-embed-core:8.0.23'
+
+        testCompile "org.apache.curator:curator-test"
+    }
+}
+
+configure(commonProject) {
+
+    bootRepackage {
+        enabled = false
+    }
+
+    bootRun {
+        enabled = false
+    }
+}
+
+configure(subprojects - commonProject) {
+
+    dependencies {
+        compile(commonProject)
+
+        compile "org.springframework.boot:spring-boot-starter-web"
+        compile "org.springframework.boot:spring-boot-starter-actuator"
+        compile "org.springframework:spring-context-support"
+        compile 'com.fasterxml.jackson.core:jackson-databind'
+        compile "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery:$springCloudVersion"
+        compile "org.springframework.cloud:spring-cloud-starter-zipkin:$springCloudVersion"
+        compile "org.springframework.cloud:spring-cloud-starter-feign:+"
+        compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonMapper"
+        compile "org.codehaus.jackson:jackson-core-asl:$jacksonMapper"
+        compile 'org.apache.commons:commons-lang3:3.4'
+        compile 'org.apache.tomcat.embed:tomcat-embed-el'
+        compile 'com.jayway.jsonpath:json-path-assert:2.0.0'
+        compile 'org.yaml:snakeyaml'
+        compile 'org.hibernate:hibernate-validator'
+        compile "org.aspectj:aspectjrt"
+        compile 'org.codehaus.gpars:gpars:1.2.1'
+        compile 'net.sf.ehcache:ehcache:2.10.1'
+        compile "de.codecentric:spring-boot-admin-starter-client:1.2.3"
+        compile 'org.jolokia:jolokia-core'
+
+        runtime 'cglib:cglib-nodep:3.1'
+        runtime 'org.objenesis:objenesis:2.2'
+        runtime 'org.aspectj:aspectjweaver'
+
+        testCompile 'com.jayway.awaitility:awaitility:1.6.5'
+        testCompile('com.github.tomakehurst:wiremock:2.0.4-beta') {
+            exclude group: 'org.mortbay.jetty', module: 'servlet-api'
+        }
+        testCompile "org.springframework.boot:spring-boot-starter-test"
+        testCompile "org.gebish:geb-core:$gebVersion"
+        testCompile "org.gebish:geb-spock:$gebVersion"
+        testCompile "org.spockframework:spock-spring"
+        testCompile "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
+        testCompile "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
+        testCompile "org.seleniumhq.selenium:selenium-htmlunit-driver:$seleniumVersion"
+        testCompile "com.jayway.restassured:rest-assured:$restAssuredVersion"
+        testCompile "com.jayway.restassured:spring-mock-mvc:$restAssuredVersion"
+    }
+
+    task docker(type: Docker) {
+        dependsOn 'build'
+        dryRun true
+        setEnvironment('CONFIG_FOLDER', '/properties')
+        addFile("properties", "/properties")
+        addFile("${libsDir}/${project.name}-${buildNrLoc}.jar", "/${project.name}/${project.name}.jar")
+        exposePort(8095)
+        entryPoint(['java', '-jar', "/${project.name}/${project.name}.jar"])
+    }
+
+    //Make sure that fat jar is built before uploading
+    project.tasks.findAll { it.name.startsWith('publish') || it.name == 'bintrayUpload' }*.dependsOn { bootRepackage }
+
+    publishing {
+        repositories {
+            maven {
+                url getProp('mavenRepoUrl')
+                credentials {
+                    username getProp('mavenUser')
+                    password getProp('mavenPassword')
+                }
+            }
+        }
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                pom.withXml {
+                    //Remove dependencies - everything is embedded in JAR created by Spring Boot
+                    asNode().dependencies.replaceNode{ null }
+                }
+            }
+        }
+    }
+
+    wrapper {
+        gradleVersion '2.9'
+    }
+
+
+    task addHashFile << {
+        ext.repo = org.ajoberstar.grgit.Grgit.open(project.file('.'))
+        def headCommit = repo.head()
+        ext.gitBranch = repo.branch.current.name
+        ext.gitCommitId = headCommit.abbreviatedId
+        ext.gitCommitTime = new Date(headCommit.time * 1000L).format("yyyy-MM-dd'T'HH:mm:ssZ")
+
+        File resourcesMainDir = new File(project.buildDir, 'resources/main')
+        resourcesMainDir.mkdirs()
+        File gitPropertiesFile = new File(resourcesMainDir, 'git.properties')
+        gitPropertiesFile.text = """git.branch=${gitBranch}
+    git.commit.id=${gitCommitId}
+    git.commit.time=${gitCommitTime}
+    """
+    }
+
+    jar {
+        dependsOn addHashFile
+        from "git.properties"
+    }
+
+    bootRepackage {
+        withJarTask = "jar"
+    }
+
+    bootRun {
+        jvmArgs = project.gradle.startParameter.systemPropertiesArgs.entrySet().collect{"-D${it.key}=${it.value}"}
+    }
+}
+
+String getProp(String propName) {
+    return hasProperty(propName) ? (getProperty(propName) ?: System.properties[propName]) : System.properties[propName]
+}

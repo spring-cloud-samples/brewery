@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/water"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{ \"type\": \"WATER\", \"quantity\": 1000 }"
+  }
+}

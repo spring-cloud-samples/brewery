@@ -1,0 +1,8 @@
+spring.application.name: uservices/bottling
+
+spring.cloud.zookeeper:
+  # prefix is not working ATM - it's not combining the uservices/${spring.application.name}
+  prefix: uservices/
+  dependencies:
+    prezentatr:
+      path: presenting

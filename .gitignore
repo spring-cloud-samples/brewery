@@ -1,0 +1,14 @@
+.idea
+*.iml
+build
+/bin
+.gradle
+.poject
+.settings
+.classpath
+commitHash.txt
+logs
+.log
+.zip
+/out
+*~

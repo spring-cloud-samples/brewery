@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/malt"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{ \"type\": \"MALT\", \"quantity\": 1000 }"
+  }
+}

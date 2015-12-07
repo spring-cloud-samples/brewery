@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/yeast"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{ \"type\": \"YEAST\", \"quantity\": 1000 }"
+  }
+}

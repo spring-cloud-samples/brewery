@@ -1,0 +1,6 @@
+dependencies {
+      compile "commons-io:commons-io:2.4"
+      compile('com.github.tomakehurst:wiremock:2.0.4-beta') {
+          exclude group: 'org.mortbay.jetty', module: 'servlet-api'
+      }
+  }

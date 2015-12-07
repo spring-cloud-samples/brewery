@@ -1,0 +1,10 @@
+spring.application.name: aggregating
+
+logging:
+  pattern:
+    level: '%clr([trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}]){yellow} %5p'
+
+server:
+  port: 9092
+
+spring.cloud.zookeeper.discovery.root: /pl

@@ -1,0 +1,14 @@
+language: groovy
+
+jdk:
+- oraclejdk8
+
+install:
+- true
+
+before_script:
+ - "echo $JAVA_OPTS"
+ - "export JAVA_OPTS=-Xmx512m"
+
+script:
+- ./gradlew clean build --parallel --stacktrace
