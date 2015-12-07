@@ -36,6 +36,7 @@ Since pictures say more than words...
 
 ## Project structure
 
+```
 ├── aggregating (service that aggregates ingredients)
 ├── bottling    (service that bottles the beer)
 ├── common      (common code for the services)
@@ -44,6 +45,7 @@ Since pictures say more than words...
 ├── maturing    (service that matures the beer)
 ├── presenting  (UI of the brewery)
 └── zookeeper   (embedded zookeeper)
+```
 
 ## How to build it?
 
