@@ -1,0 +1,62 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:+"
+    }
+}
+
+apply plugin: 'groovy'
+apply plugin: 'spring-boot'
+
+sourceSets.main.java.srcDirs = []
+sourceSets.main.groovy.srcDirs += ["src/main/java"]
+
+sourceCompatibility = '1.8'
+
+configurations {
+    all {
+        resolutionStrategy {
+            eachDependency { DependencyResolveDetails details ->
+                // To prevent an accidental usage of groovy-all.jar and groovy.jar in different versions
+                // all modularized Groovy jars are replaced with groovy-all.jar by default.
+                if (details.requested.group == 'org.codehaus.groovy' && details.requested.name != "groovy-all") {
+                    details.useTarget("org.codehaus.groovy:groovy-all:${details.requested.version}")
+                }
+            }
+        }
+    }
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.4.5'
+    compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework:spring-web"
+    compile "org.springframework.boot:spring-boot-starter-actuator"
+    compile "org.springframework:spring-context-support"
+    compile 'com.fasterxml.jackson.core:jackson-databind'
+    compile "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery:$springCloudVersion"
+    compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonMapper"
+    compile "org.codehaus.jackson:jackson-core-asl:$jacksonMapper"
+    compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'com.jayway.jsonpath:json-path-assert:2.0.0'
+    compile "org.aspectj:aspectjrt"
+
+    runtime 'cglib:cglib-nodep:3.1'
+    runtime 'org.objenesis:objenesis:2.2'
+    runtime 'org.aspectj:aspectjweaver'
+
+    testCompile 'com.jayway.awaitility:awaitility:1.6.5'
+    testCompile "org.springframework.boot:spring-boot-starter-test"
+    testCompile "org.spockframework:spock-spring"
+    testCompile( 'com.athaydes:spock-reports:1.2.7' ) {
+        transitive = false // this avoids affecting your version of Groovy/Spock
+    }
+}

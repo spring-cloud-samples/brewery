@@ -2,6 +2,7 @@ package io.spring.cloud.samples.brewery.presenting.feed
 import groovy.transform.TypeChecked
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestHeader
@@ -31,7 +32,7 @@ class FeedController {
             consumes = PRESENTING_JSON_VERSION_1,
             method = PUT)
     public String maturing(@RequestHeader("PROCESS-ID") String processId) {
-        log.info("new maturing")
+        log.info("new maturing with process [$processId]")
         return feedRepository.addModifyProcess(processId, ProcessState.MATURING)
     }
 
@@ -41,7 +42,7 @@ class FeedController {
             consumes = PRESENTING_JSON_VERSION_1,
             method = PUT)
     public String bottling(@RequestHeader("PROCESS-ID") String processId) {
-        log.info("new bottling")
+        log.info("new bottling process [$processId]")
         return feedRepository.addModifyProcess(processId, ProcessState.BOTTLING)
     }
 
@@ -56,13 +57,19 @@ class FeedController {
     }
 
     @RequestMapping(
-            value = "/process/{id}",
-            produces = PRESENTING_JSON_VERSION_1,
-            consumes = PRESENTING_JSON_VERSION_1,
+            value = "/process/{processId}",
             method = GET)
-    public ResponseEntity bottles(@PathVariable String processId) {
+    public ResponseEntity process(@PathVariable String processId) {
         log.info("query for the process state with processId [$processId]")
         return feedRepository.getProcessStateForId(processId)
+    }
+
+    @RequestMapping(
+            value = "/process",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            method = GET)
+    public Set<Process> allProcesses() {
+        return feedRepository.processes
     }
 
     @RequestMapping(

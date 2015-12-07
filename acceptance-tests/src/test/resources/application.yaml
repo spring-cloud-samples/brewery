@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: acceptance_tests
+
+spring.cloud.zookeeper.discovery.root: /pl

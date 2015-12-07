@@ -45,34 +45,36 @@ class PresentController {
             value = "/order",
             method = POST)
     String order(HttpEntity<String> body) {
+        String processId = body.headers.containsKey('PROCESS-ID') ? body.headers.getFirst('PROCESS-ID') : null
         log.info("Making new order with [$body.body]")
         Trace trace = this.traceManager.startSpan("calling_aggregation")
         String result;
         switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
-                result = useFeignToCallAggregation(body, trace);
+                result = useFeignToCallAggregation(body, trace, processId);
                 break;
             default:
-                result = useRestTemplateToCallAggregation(body, trace)
+                result = useRestTemplateToCallAggregation(body, trace, processId)
         }
         traceManager.close(trace)
         return result
     }
 
-    private String useRestTemplateToCallAggregation(HttpEntity<String> body, Trace trace) {
+    private String useRestTemplateToCallAggregation(HttpEntity<String> body, Trace trace, String processId) {
         return restTemplate.exchange(requestEntity()
                 .processId(trace.getSpan().getTraceId())
                 .contentTypeVersion(Versions.AGGREGATING_CONTENT_TYPE_V1)
                 .serviceName("aggregating")
                 .url("ingredients")
                 .httpMethod(HttpMethod.POST)
+                .processId(processId)
                 .body(body.body)
                 .build(), String.class).body;
     }
 
-    private String useFeignToCallAggregation(HttpEntity<String> body, Trace trace) {
+    private String useFeignToCallAggregation(HttpEntity<String> body, Trace trace, String processId) {
         return aggregationServiceClient.getIngredients(body.body,
-                trace.getSpan().getTraceId(),
+                processId != null ? processId : trace.getSpan().getTraceId(),
                 TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType().name())
     }
 
