@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.spring.cloud.samples.brewery.acceptance
+
 import groovy.json.JsonSlurper
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
 import io.spring.cloud.samples.brewery.acceptance.model.IngredientType
@@ -21,6 +22,7 @@ import io.spring.cloud.samples.brewery.acceptance.model.Order
 import io.spring.cloud.samples.brewery.acceptance.model.ProcessState
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.SpringApplicationContextLoader
+import org.springframework.boot.test.TestRestTemplate
 import org.springframework.http.*
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.util.JdkIdGenerator
@@ -36,8 +38,9 @@ class BreweryAcceptanceSpec extends Specification {
 
 	// TODO: Run tests from a container so that internal Docker network is accessible
 	// @Autowired @LoadBalanced RestTemplate loadBalanced
-	RestTemplate restTemplate = new RestTemplate()
+	RestTemplate restTemplate = new TestRestTemplate()
 	@Value('${presenting.url:http://localhost:9091}') String presentingUrl
+	@Value('${presenting.timeout:30}') Integer timeout
 
 	@Unroll
 	def 'should successfully brew the beer via [#communicationType] and processId [#referenceProcessId]'() {
@@ -46,15 +49,22 @@ class BreweryAcceptanceSpec extends Specification {
 		when: 'the presenting service has been called with all ingredients'
 			presenting_service_has_been_called(requestEntity)
 		then: 'eventually beer for that process id will be brewed'
-			await().atMost(5, SECONDS).until({
-				ResponseEntity<String> process = beer_has_been_brewed_for_process_id(referenceProcessId)
-				assert process.statusCode == HttpStatus.OK
-				assert stateFromJson(process) == ProcessState.DONE.name()
-			} as Runnable)
+			await().atMost(timeout, SECONDS).until(beer_has_been_brewed_for_process_id(referenceProcessId))
 		where:
 		    // will add FEIGN once REST_TEMPLATE tests stabilize
 			communicationType << [CommunicationType.REST_TEMPLATE]
 			referenceProcessId = new JdkIdGenerator().generateId().toString()
+	}
+
+	private Runnable beer_has_been_brewed_for_process_id(String processId) {
+		return new Runnable() {
+			@Override
+			void run() {
+				ResponseEntity<String> process = checkStateOfTheProcess(processId)
+				assert process.statusCode == HttpStatus.OK
+				assert stateFromJson(process) == ProcessState.DONE.name()
+			}
+		}
 	}
 
 	private String stateFromJson(ResponseEntity<String> process) {
@@ -67,7 +77,6 @@ class BreweryAcceptanceSpec extends Specification {
 		headers.add("TEST-COMMUNICATION-TYPE", communicationType.name())
 		// URI uri = URI.create("http://presenting/present/order")
 		URI uri = URI.create("${presentingUrl}/present/order")
-		println("Url to create or an order is [$uri]")
 		return new RequestEntity<>(allIngredients(), headers, HttpMethod.POST, uri)
 	}
 
@@ -79,11 +88,10 @@ class BreweryAcceptanceSpec extends Specification {
 		return new Order(items: IngredientType.values())
 	}
 
-	private ResponseEntity<String> beer_has_been_brewed_for_process_id(String processId) {
+	private ResponseEntity<String> checkStateOfTheProcess(String processId) {
 		//URI uri = URI.create("http://presenting/feed/process/$processId")
 		URI uri = URI.create("${presentingUrl}/feed/process/$processId")
 		HttpHeaders headers = new HttpHeaders()
-		println("Url to fetch current state is [$uri]")
 		return restTemplate.exchange(new RequestEntity<>(headers, HttpMethod.GET, uri), String)
 	}
 
