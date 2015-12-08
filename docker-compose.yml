@@ -36,3 +36,5 @@ presenting:
 
 zookeeper:
   image: jplock/zookeeper
+  ports:
+    - 2181:2181

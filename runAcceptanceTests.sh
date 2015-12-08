@@ -1,5 +1,5 @@
 #!/bin/bash
 
 cd acceptance-tests
-./gradlew test "$@"
+./gradlew test "$@" --stacktrace --info
 cd ..

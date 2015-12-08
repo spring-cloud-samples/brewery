@@ -20,39 +20,38 @@ import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
 import io.spring.cloud.samples.brewery.acceptance.model.IngredientType
 import io.spring.cloud.samples.brewery.acceptance.model.Order
 import io.spring.cloud.samples.brewery.acceptance.model.ProcessState
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.SpringApplicationContextLoader
-import org.springframework.boot.test.WebIntegrationTest
-import org.springframework.cloud.client.loadbalancer.LoadBalanced
 import org.springframework.http.*
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.util.JdkIdGenerator
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 import spock.lang.Unroll
-import spock.util.concurrent.PollingConditions
+
+import static com.jayway.awaitility.Awaitility.await
+import static java.util.concurrent.TimeUnit.SECONDS
 
 @ContextConfiguration(classes = TestConfiguration, loader = SpringApplicationContextLoader)
-@WebIntegrationTest(randomPort = true)
-class BreweryAcceptanceSpec extends Specification implements PollingUtils {
+class BreweryAcceptanceSpec extends Specification {
 
-	private static final Long TWO_SECONDS = 2L
-
-	@Autowired @LoadBalanced RestTemplate restTemplate
-	PollingConditions conditions = new PollingConditions()
+	// TODO: Run tests from a container so that internal Docker network is accessible
+	// @Autowired @LoadBalanced RestTemplate loadBalanced
+	RestTemplate restTemplate = new RestTemplate()
+	@Value('${presenting.url:http://localhost:9091}') String presentingUrl
 
 	@Unroll
 	def 'should successfully brew the beer via [#communicationType] and processId [#referenceProcessId]'() {
 		given:
 		    RequestEntity requestEntity = an_order_for_all_ingredients_with_process_id(referenceProcessId, communicationType)
-		when: 'the presenting service has been called with such an order'
+		when: 'the presenting service has been called with all ingredients'
 			presenting_service_has_been_called(requestEntity)
 		then: 'eventually beer for that process id will be brewed'
-			conditions.within TWO_SECONDS, willPass {
+			await().atMost(2, SECONDS).until({
 				ResponseEntity<String> process = beer_has_been_brewed_for_process_id(referenceProcessId)
 				assert process.statusCode == HttpStatus.OK
 				assert stateFromJson(process) == ProcessState.DONE.name()
-			}
+			} as Runnable)
 		where:
 		    // will add FEIGN once REST_TEMPLATE tests stabilize
 			communicationType << [CommunicationType.REST_TEMPLATE]
@@ -67,7 +66,8 @@ class BreweryAcceptanceSpec extends Specification implements PollingUtils {
 		HttpHeaders headers = new HttpHeaders()
 		headers.add("PROCESS-ID", processId)
 		headers.add("TEST-COMMUNICATION-TYPE", communicationType.name())
-		URI uri = URI.create("http://presenting/present/order")
+		// URI uri = URI.create("http://presenting/present/order")
+		URI uri = URI.create("${presentingUrl}/present/order")
 		return new RequestEntity<>(allIngredients(), headers, HttpMethod.POST, uri)
 	}
 
@@ -80,7 +80,8 @@ class BreweryAcceptanceSpec extends Specification implements PollingUtils {
 	}
 
 	private ResponseEntity<String> beer_has_been_brewed_for_process_id(String processId) {
-		URI uri = URI.create("http://presenting/feed/process/$processId")
+		//URI uri = URI.create("http://presenting/feed/process/$processId")
+		URI uri = URI.create("${presentingUrl}/feed/process/$processId")
 		HttpHeaders headers = new HttpHeaders()
 		return restTemplate.exchange(new RequestEntity<>(headers, HttpMethod.GET, uri), String)
 	}

@@ -37,7 +37,8 @@ configure(subprojects) {
             setEnvironment('spring.zipkin.enabled', 'false')
             addFile("${libsDir}/${project.name}-${buildNrLoc}.jar", "/${project.name}/${project.name}.jar")
             exposePort(port)
-            entryPoint(['java', '-jar', "/${project.name}/${project.name}.jar"])
+            // Random beacuse of https://wiki.apache.org/tomcat/HowTo/FasterStartUp
+            entryPoint(['java', '-Djava.security.egd=file:/dev/./urandom', '-jar', "/${project.name}/${project.name}.jar"])
         }
         createDockerTaskWithPort = { int port ->
             project.task([type: Docker], "docker", ext.dockerConfiguration.curry(port))
