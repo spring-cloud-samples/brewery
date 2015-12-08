@@ -31,6 +31,20 @@ configure(subprojects) {
     apply plugin: 'docker'
 
     ext {
+        dockerConfiguration = { int port ->
+            dependsOn 'build'
+            dryRun true
+            setEnvironment('spring.zipkin.enabled', 'false')
+            addFile("${libsDir}/${project.name}-${buildNrLoc}.jar", "/${project.name}/${project.name}.jar")
+            exposePort(port)
+            entryPoint(['java', '-jar', "/${project.name}/${project.name}.jar"])
+        }
+        createDockerTaskWithPort = { int port ->
+            project.task([type: Docker], "docker", ext.dockerConfiguration.curry(port))
+        }
+    }
+
+    ext {
         buildNrLoc = project.hasProperty('buildNr') ? "${buildNr}" : "CD-000"
     }
 
@@ -137,15 +151,14 @@ configure(subprojects - commonProject) {
         testCompile "com.jayway.restassured:spring-mock-mvc:$restAssuredVersion"
     }
 
-    task docker(type: Docker) {
+    /*task docker(type: Docker) {
         dependsOn 'build'
         dryRun true
-        setEnvironment('CONFIG_FOLDER', '/properties')
-        addFile("properties", "/properties")
+        setEnvironment('spring.zipkin.enabled', 'false')
         addFile("${libsDir}/${project.name}-${buildNrLoc}.jar", "/${project.name}/${project.name}.jar")
-        exposePort(8095)
+        exposePort(9090)
         entryPoint(['java', '-jar', "/${project.name}/${project.name}.jar"])
-    }
+    }*/
 
     //Make sure that fat jar is built before uploading
     project.tasks.findAll { it.name.startsWith('publish') || it.name == 'bintrayUpload' }*.dependsOn { bootRepackage }
@@ -177,7 +190,7 @@ configure(subprojects - commonProject) {
 
 
     task addHashFile << {
-        ext.repo = org.ajoberstar.grgit.Grgit.open(project.file('.'))
+        ext.repo = org.ajoberstar.grgit.Grgit.open(project.rootProject.projectDir)
         def headCommit = repo.head()
         ext.gitBranch = repo.branch.current.name
         ext.gitCommitId = headCommit.abbreviatedId
