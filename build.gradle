@@ -151,74 +151,11 @@ configure(subprojects - commonProject) {
         testCompile "com.jayway.restassured:spring-mock-mvc:$restAssuredVersion"
     }
 
-    /*task docker(type: Docker) {
-        dependsOn 'build'
-        dryRun true
-        setEnvironment('spring.zipkin.enabled', 'false')
-        addFile("${libsDir}/${project.name}-${buildNrLoc}.jar", "/${project.name}/${project.name}.jar")
-        exposePort(9090)
-        entryPoint(['java', '-jar', "/${project.name}/${project.name}.jar"])
-    }*/
-
-    //Make sure that fat jar is built before uploading
-    project.tasks.findAll { it.name.startsWith('publish') || it.name == 'bintrayUpload' }*.dependsOn { bootRepackage }
-
-    publishing {
-        repositories {
-            maven {
-                url getProp('mavenRepoUrl')
-                credentials {
-                    username getProp('mavenUser')
-                    password getProp('mavenPassword')
-                }
-            }
-        }
-        publications {
-            mavenJava(MavenPublication) {
-                from components.java
-                pom.withXml {
-                    //Remove dependencies - everything is embedded in JAR created by Spring Boot
-                    asNode().dependencies.replaceNode{ null }
-                }
-            }
-        }
-    }
-
     wrapper {
         gradleVersion '2.9'
-    }
-
-
-    task addHashFile << {
-        ext.repo = org.ajoberstar.grgit.Grgit.open(project.rootProject.projectDir)
-        def headCommit = repo.head()
-        ext.gitBranch = repo.branch.current.name
-        ext.gitCommitId = headCommit.abbreviatedId
-        ext.gitCommitTime = new Date(headCommit.time * 1000L).format("yyyy-MM-dd'T'HH:mm:ssZ")
-
-        File resourcesMainDir = new File(project.buildDir, 'resources/main')
-        resourcesMainDir.mkdirs()
-        File gitPropertiesFile = new File(resourcesMainDir, 'git.properties')
-        gitPropertiesFile.text = """git.branch=${gitBranch}
-    git.commit.id=${gitCommitId}
-    git.commit.time=${gitCommitTime}
-    """
-    }
-
-    jar {
-        dependsOn addHashFile
-        from "git.properties"
-    }
-
-    bootRepackage {
-        withJarTask = "jar"
     }
 
     bootRun {
         jvmArgs = project.gradle.startParameter.systemPropertiesArgs.entrySet().collect{"-D${it.key}=${it.value}"}
     }
-}
-
-String getProp(String propName) {
-    return hasProperty(propName) ? (getProperty(propName) ?: System.properties[propName]) : System.properties[propName]
 }

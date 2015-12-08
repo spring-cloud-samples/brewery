@@ -60,3 +60,7 @@ dependencies {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
 }
+
+test {
+    jvmArgs project.gradle.startParameter.systemPropertiesArgs.entrySet().collect{"-D${it.key}=${it.value}"}
+}
