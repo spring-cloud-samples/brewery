@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package io.spring.cloud.samples.brewery.acceptance
-
 import groovy.json.JsonSlurper
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
 import io.spring.cloud.samples.brewery.acceptance.model.IngredientType
@@ -47,7 +46,7 @@ class BreweryAcceptanceSpec extends Specification {
 		when: 'the presenting service has been called with all ingredients'
 			presenting_service_has_been_called(requestEntity)
 		then: 'eventually beer for that process id will be brewed'
-			await().atMost(2, SECONDS).until({
+			await().atMost(5, SECONDS).until({
 				ResponseEntity<String> process = beer_has_been_brewed_for_process_id(referenceProcessId)
 				assert process.statusCode == HttpStatus.OK
 				assert stateFromJson(process) == ProcessState.DONE.name()
@@ -68,6 +67,7 @@ class BreweryAcceptanceSpec extends Specification {
 		headers.add("TEST-COMMUNICATION-TYPE", communicationType.name())
 		// URI uri = URI.create("http://presenting/present/order")
 		URI uri = URI.create("${presentingUrl}/present/order")
+		println("Url to create or an order is [$uri]")
 		return new RequestEntity<>(allIngredients(), headers, HttpMethod.POST, uri)
 	}
 
@@ -83,6 +83,7 @@ class BreweryAcceptanceSpec extends Specification {
 		//URI uri = URI.create("http://presenting/feed/process/$processId")
 		URI uri = URI.create("${presentingUrl}/feed/process/$processId")
 		HttpHeaders headers = new HttpHeaders()
+		println("Url to fetch current state is [$uri]")
 		return restTemplate.exchange(new RequestEntity<>(headers, HttpMethod.GET, uri), String)
 	}
 
