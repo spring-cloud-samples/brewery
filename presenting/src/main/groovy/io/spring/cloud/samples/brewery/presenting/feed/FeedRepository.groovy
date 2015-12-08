@@ -14,11 +14,13 @@ class FeedRepository {
     private AtomicInteger bottles = new AtomicInteger(0)
 
     void addModifyProcess(String id, ProcessState newState) {
-        Process p;
-        if ((p = processes.find { it.id == id })) {
-            p.state = newState
-        } else {
-            processes.add(new Process(id, newState))
+        synchronized (processes) {
+            Process p;
+            if ((p = processes.find { it.id == id })) {
+                p.state = newState
+            } else {
+                processes.add(new Process(id, newState))
+            }
         }
     }
 
