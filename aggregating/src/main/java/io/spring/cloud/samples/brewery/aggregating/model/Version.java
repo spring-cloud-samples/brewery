@@ -1,4 +1,4 @@
-package io.spring.cloud.samples.brewery.zookeeper.model;
+package io.spring.cloud.samples.brewery.aggregating.model;
 
 public class Version {
     public static final String AGGREGATING_V1 = "application/vnd.io.spring.cloud.aggregating.v1+json";

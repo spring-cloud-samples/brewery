@@ -10,7 +10,7 @@ Since pictures say more than words...
 
 ### Presenting service (point of entry to the system)
 
-- Go to the presenting service (http://localhost:9090) and order ingredients
+- Go to the presenting service (http://localhost:9091) and order ingredients
 - A request from the presenting service is sent to the aggregating service when order is placed
 - A "PROCESS-ID" header is set and will be passed through each part of beer brewing
 
@@ -63,6 +63,30 @@ E.g. `aggregating` module
 
 ## How to run it?
 
+### Using Docker
+
+Create the Dockerfiles. By default Zipkin integration is disabled.
+
+```
+./gradlew clean docker --parallel
+```
+
+And run docker compose
+
+```
+docker-compose up
+```
+
+This will build and run all the apps from jars. Also Zookeeper will be set up automatically.
+
+To remove the containers just type
+
+```
+docker-compose rm -f
+```
+
+### Using Gradle with embedded Zookeeper
+
 To run it all without local Zipkin server and with an embedded Zookeeper server just execute:
 
 ```
@@ -71,7 +95,7 @@ To run it all without local Zipkin server and with an embedded Zookeeper server 
 
 Your logs will be visible in the console and in the respective `build/logs/application.log` folder.
 
-## How to run a single module?
+## How to run a single module with embedded Zookeeper?
 
 To run a single module just execute (e.g. `presenting` module):
 

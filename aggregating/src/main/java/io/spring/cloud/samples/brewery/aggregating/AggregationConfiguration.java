@@ -1,4 +1,4 @@
-package io.spring.cloud.samples.brewery.zookeeper;
+package io.spring.cloud.samples.brewery.aggregating;
 
 import io.spring.cloud.samples.brewery.common.TestConfiguration;
 import org.apache.commons.lang.StringUtils;

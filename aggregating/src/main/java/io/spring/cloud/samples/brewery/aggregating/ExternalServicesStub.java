@@ -1,4 +1,4 @@
-package io.spring.cloud.samples.brewery.zookeeper;
+package io.spring.cloud.samples.brewery.aggregating;
 
 import java.io.Closeable;
 import java.io.IOException;

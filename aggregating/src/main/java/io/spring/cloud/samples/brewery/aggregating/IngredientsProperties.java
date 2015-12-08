@@ -1,15 +1,15 @@
-package io.spring.cloud.samples.brewery.zookeeper;
+package io.spring.cloud.samples.brewery.aggregating;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import io.spring.cloud.samples.brewery.zookeeper.model.IngredientType;
+import io.spring.cloud.samples.brewery.aggregating.model.IngredientType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.Data;
-import io.spring.cloud.samples.brewery.zookeeper.model.Order;
+import io.spring.cloud.samples.brewery.aggregating.model.Order;
 
 @ConfigurationProperties("ingredients")
 @Data

@@ -1,4 +1,4 @@
-package io.spring.cloud.samples.brewery.zookeeper.model;
+package io.spring.cloud.samples.brewery.aggregating.model;
 
 import com.google.common.collect.Lists;
 import lombok.ToString;

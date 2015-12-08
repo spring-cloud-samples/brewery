@@ -1,9 +1,9 @@
-package io.spring.cloud.samples.brewery.zookeeper;
+package io.spring.cloud.samples.brewery.aggregating;
 
-import io.spring.cloud.samples.brewery.zookeeper.model.IngredientType;
-import io.spring.cloud.samples.brewery.zookeeper.model.Ingredients;
+import io.spring.cloud.samples.brewery.aggregating.model.IngredientType;
+import io.spring.cloud.samples.brewery.aggregating.model.Ingredients;
 import org.springframework.stereotype.Service;
-import io.spring.cloud.samples.brewery.zookeeper.model.Ingredient;
+import io.spring.cloud.samples.brewery.aggregating.model.Ingredient;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
