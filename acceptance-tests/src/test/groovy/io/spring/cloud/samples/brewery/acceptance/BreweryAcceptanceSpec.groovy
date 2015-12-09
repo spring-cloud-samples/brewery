@@ -26,6 +26,8 @@ import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.boot.test.WebIntegrationTest
 import org.springframework.cloud.client.loadbalancer.LoadBalanced
 import org.springframework.http.*
+import org.springframework.retry.RetryCallback
+import org.springframework.retry.RetryContext
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.util.JdkIdGenerator
 import org.springframework.web.client.RestTemplate
@@ -80,7 +82,14 @@ class BreweryAcceptanceSpec extends Specification {
 	}
 
 	private ResponseEntity<String> presenting_service_has_been_called(RequestEntity requestEntity) {
-		return restTemplate.exchange(requestEntity, String)
+		new ExceptionLoggingRetryTemplate(timeout).execute(
+				new RetryCallback<ResponseEntity<String>, Exception>() {
+					@Override
+					ResponseEntity<String> doWithRetry(RetryContext retryContext) throws Exception {
+						return restTemplate.exchange(requestEntity, String)
+					}
+				}
+		)
 	}
 
 	private Order allIngredients() {
