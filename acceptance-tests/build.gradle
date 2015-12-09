@@ -42,7 +42,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-actuator"
     compile "org.springframework:spring-context-support"
     compile 'com.fasterxml.jackson.core:jackson-databind'
-    // compile "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery:$springCloudVersion"
+    compile "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery:$springCloudVersion"
     compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonMapper"
     compile "org.codehaus.jackson:jackson-core-asl:$jacksonMapper"
     compile 'org.apache.commons:commons-lang3:3.4'

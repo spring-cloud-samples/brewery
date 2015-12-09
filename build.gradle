@@ -23,6 +23,21 @@ buildscript {
 
 def commonProject = project(':common')
 
+allprojects {
+    apply plugin: 'docker'
+}
+
+docker {
+    baseImage = 'aglover/java8-pier'
+}
+
+task docker(type: Docker) {
+    dryRun true
+    addFile("acceptance-tests", "/acceptance-tests")
+    addFile("${System.getenv('HOME')}/.m2", "/root/.m2")
+    workingDir('/acceptance-tests')
+}
+
 configure(subprojects) {
 
     apply plugin: 'groovy'

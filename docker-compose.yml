@@ -1,3 +1,15 @@
+acceptance-tests:
+  build: build/docker
+  links:
+    - zookeeper:zk
+  environment:
+    spring.cloud.zookeeper.connectString: zk:2181
+    spring.zipkin.enabled: 'false'
+  command: ./gradlew --version --no-daemon
+  dns:
+    - 8.8.8.8
+    - 8.8.4.4
+
 aggregating:
   build: aggregating/build/docker
   links:
@@ -36,5 +48,5 @@ presenting:
 
 zookeeper:
   image: jplock/zookeeper
-  ports:
-    - 2181:2181
+  expose:
+    - 2181

@@ -20,9 +20,11 @@ import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
 import io.spring.cloud.samples.brewery.acceptance.model.IngredientType
 import io.spring.cloud.samples.brewery.acceptance.model.Order
 import io.spring.cloud.samples.brewery.acceptance.model.ProcessState
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.SpringApplicationContextLoader
-import org.springframework.boot.test.TestRestTemplate
+import org.springframework.boot.test.WebIntegrationTest
+import org.springframework.cloud.client.loadbalancer.LoadBalanced
 import org.springframework.http.*
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.util.JdkIdGenerator
@@ -34,12 +36,10 @@ import static com.jayway.awaitility.Awaitility.await
 import static java.util.concurrent.TimeUnit.SECONDS
 
 @ContextConfiguration(classes = TestConfiguration, loader = SpringApplicationContextLoader)
+@WebIntegrationTest(randomPort = true)
 class BreweryAcceptanceSpec extends Specification {
 
-	// TODO: Run tests from a container so that internal Docker network is accessible
-	// @Autowired @LoadBalanced RestTemplate loadBalanced
-	RestTemplate restTemplate = new TestRestTemplate()
-	@Value('${presenting.url:http://localhost:9091}') String presentingUrl
+	@Autowired @LoadBalanced RestTemplate restTemplate
 	@Value('${presenting.timeout:30}') Integer timeout
 
 	@Unroll
@@ -75,8 +75,7 @@ class BreweryAcceptanceSpec extends Specification {
 		HttpHeaders headers = new HttpHeaders()
 		headers.add("PROCESS-ID", processId)
 		headers.add("TEST-COMMUNICATION-TYPE", communicationType.name())
-		// URI uri = URI.create("http://presenting/present/order")
-		URI uri = URI.create("${presentingUrl}/present/order")
+		URI uri = URI.create("http://presenting/present/order")
 		return new RequestEntity<>(allIngredients(), headers, HttpMethod.POST, uri)
 	}
 
@@ -89,8 +88,7 @@ class BreweryAcceptanceSpec extends Specification {
 	}
 
 	private ResponseEntity<String> checkStateOfTheProcess(String processId) {
-		//URI uri = URI.create("http://presenting/feed/process/$processId")
-		URI uri = URI.create("${presentingUrl}/feed/process/$processId")
+		URI uri = URI.create("http://presenting/feed/process/$processId")
 		HttpHeaders headers = new HttpHeaders()
 		return restTemplate.exchange(new RequestEntity<>(headers, HttpMethod.GET, uri), String)
 	}

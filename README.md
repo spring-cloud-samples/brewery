@@ -120,10 +120,10 @@ Build the docker files and boot up the apps.
 ./gradlew clean build docker --parallel
 docker-compose up -d
 ```
-Once their up just run the script (`presenting.url` has to point to the url of your booted up container):
+Once their up just run the script:
 
 ```
- bash -e runAcceptanceTests.sh -Dspring.zipkin.enabled=false -Dspring.cloud.zookeeper.maxRetries=5 -Dpresenting.url=$url:9091
+ bash -e runAcceptanceTests.sh
 ```
 
 ## Authors

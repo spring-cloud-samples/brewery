@@ -1,5 +1,4 @@
 #!/bin/bash
+set -e
 
-cd acceptance-tests
-./gradlew test "$@" --stacktrace --info
-cd ..
+docker-compose run acceptance-tests ./gradlew test "$@" --stacktrace --info --no-daemon
