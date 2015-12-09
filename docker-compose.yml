@@ -17,7 +17,7 @@ aggregating:
   command: --spring.cloud.zookeeper.connectString=zk:2181 \
            --spring.zipkin.enabled=false
   ports:
-    - 9092:9092
+    - 9992:9992
 
 maturing:
   build: maturing/build/docker
@@ -26,7 +26,7 @@ maturing:
   command: --spring.cloud.zookeeper.connectString=zk:2181 \
            --spring.zipkin.enabled=false
   ports:
-    - 9093:9093
+    - 9993:9993
 
 bottling:
   build: bottling/build/docker
@@ -35,7 +35,7 @@ bottling:
   command: --spring.cloud.zookeeper.connectString=zk:2181 \
            --spring.zipkin.enabled=false
   ports:
-    - 9094:9094
+    - 9994:9994
 
 presenting:
   build: presenting/build/docker
@@ -44,7 +44,7 @@ presenting:
   command: --spring.cloud.zookeeper.connectString=zk:2181 \
            --spring.zipkin.enabled=false
   ports:
-    - 9091:9091
+    - 9991:9991
 
 zookeeper:
   image: jplock/zookeeper

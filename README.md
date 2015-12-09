@@ -10,7 +10,7 @@ Since pictures say more than words...
 
 ### Presenting service (point of entry to the system)
 
-- Go to the presenting service (http://localhost:9091) and order ingredients
+- Go to the presenting service (http://localhost:9991) and order ingredients
 - A request from the presenting service is sent to the aggregating service when order is placed
 - A "PROCESS-ID" header is set and will be passed through each part of beer brewing
 
