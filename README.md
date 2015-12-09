@@ -37,14 +37,15 @@ Since pictures say more than words...
 ## Project structure
 
 ```
-├── aggregating (service that aggregates ingredients)
-├── bottling    (service that bottles the beer)
-├── common      (common code for the services)
-├── gradle      (gradle related stuff)
-├── img         (the fabulous diagram of the brewery)
-├── maturing    (service that matures the beer)
-├── presenting  (UI of the brewery)
-└── zookeeper   (embedded zookeeper)
+├── acceptance-tests (code containing acceptace-tests of brewery)
+├── aggregating      (service that aggregates ingredients)
+├── bottling         (service that bottles the beer)
+├── common           (common code for the services)
+├── gradle           (gradle related stuff)
+├── img              (the fabulous diagram of the brewery)
+├── maturing         (service that matures the beer)
+├── presenting       (UI of the brewery)
+└── zookeeper        (embedded zookeeper)
 ```
 
 ## How to build it?
@@ -101,6 +102,28 @@ To run a single module just execute (e.g. `presenting` module):
 
 ```
 ./gradlew presenting:bootRun -Dspring.profiles.active=dev
+```
+
+## How to test it?
+
+You can check this script: https://github.com/spring-cloud/spring-cloud-zookeeper/blob/master/scripts/runAcceptanceTests.sh
+
+In general you need to:
+- boot up all the apps
+- run the tests of the `accepatance-tests` project
+
+The easiest way is to:
+
+Build the docker files and boot up the apps.
+
+```
+./gradlew clean build docker --parallel
+docker-compose up -d
+```
+Once their up just run the script (`presenting.url` has to point to the url of your booted up container):
+
+```
+ bash -e runAcceptanceTests.sh -Dspring.zipkin.enabled=false -Dspring.cloud.zookeeper.maxRetries=5 -Dpresenting.url=$url:9091
 ```
 
 ## Authors
