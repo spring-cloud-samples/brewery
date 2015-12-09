@@ -5,4 +5,4 @@ dependencies {
     }
 }
 
-createDockerTaskWithPort(9092)
+createDockerTaskWithPort(9992)
