@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.spring.cloud.samples.brewery.acceptance
+package io.spring.cloud.samples.brewery.acceptance.common
 
 import groovy.json.JsonSlurper
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
@@ -29,36 +29,17 @@ import org.springframework.http.*
 import org.springframework.retry.RetryCallback
 import org.springframework.retry.RetryContext
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.util.JdkIdGenerator
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
-import spock.lang.Unroll
-
-import static com.jayway.awaitility.Awaitility.await
-import static java.util.concurrent.TimeUnit.SECONDS
 
 @ContextConfiguration(classes = TestConfiguration, loader = SpringApplicationContextLoader)
 @WebIntegrationTest(randomPort = true)
-class BreweryAcceptanceSpec extends Specification {
+abstract class AbstractBreweryAcceptanceSpec extends Specification {
 
 	@Autowired @LoadBalanced RestTemplate restTemplate
 	@Value('${presenting.timeout:30}') Integer timeout
 
-	@Unroll
-	def 'should successfully brew the beer via [#communicationType] and processId [#referenceProcessId]'() {
-		given:
-		    RequestEntity requestEntity = an_order_for_all_ingredients_with_process_id(referenceProcessId, communicationType)
-		when: 'the presenting service has been called with all ingredients'
-			presenting_service_has_been_called(requestEntity)
-		then: 'eventually beer for that process id will be brewed'
-			await().atMost(timeout, SECONDS).until(beer_has_been_brewed_for_process_id(referenceProcessId))
-		where:
-		    // will add FEIGN once REST_TEMPLATE tests stabilize
-			communicationType << [CommunicationType.REST_TEMPLATE]
-			referenceProcessId = new JdkIdGenerator().generateId().toString()
-	}
-
-	private Runnable beer_has_been_brewed_for_process_id(String processId) {
+	Runnable beer_has_been_brewed_for_process_id(String processId) {
 		return new Runnable() {
 			@Override
 			void run() {
@@ -69,11 +50,11 @@ class BreweryAcceptanceSpec extends Specification {
 		}
 	}
 
-	private String stateFromJson(ResponseEntity<String> process) {
+	String stateFromJson(ResponseEntity<String> process) {
 		return new JsonSlurper().parseText(process.body).state.toUpperCase()
 	}
 
-	private RequestEntity an_order_for_all_ingredients_with_process_id(String processId, CommunicationType communicationType) {
+	RequestEntity an_order_for_all_ingredients_with_process_id(String processId, CommunicationType communicationType) {
 		HttpHeaders headers = new HttpHeaders()
 		headers.add("PROCESS-ID", processId)
 		headers.add("TEST-COMMUNICATION-TYPE", communicationType.name())
@@ -81,7 +62,7 @@ class BreweryAcceptanceSpec extends Specification {
 		return new RequestEntity<>(allIngredients(), headers, HttpMethod.POST, uri)
 	}
 
-	private ResponseEntity<String> presenting_service_has_been_called(RequestEntity requestEntity) {
+	ResponseEntity<String> presenting_service_has_been_called(RequestEntity requestEntity) {
 		new ExceptionLoggingRetryTemplate(timeout).execute(
 				new RetryCallback<ResponseEntity<String>, Exception>() {
 					@Override
@@ -92,11 +73,11 @@ class BreweryAcceptanceSpec extends Specification {
 		)
 	}
 
-	private Order allIngredients() {
+	Order allIngredients() {
 		return new Order(items: IngredientType.values())
 	}
 
-	private ResponseEntity<String> checkStateOfTheProcess(String processId) {
+	ResponseEntity<String> checkStateOfTheProcess(String processId) {
 		URI uri = URI.create("http://presenting/feed/process/$processId")
 		HttpHeaders headers = new HttpHeaders()
 		return restTemplate.exchange(new RequestEntity<>(headers, HttpMethod.GET, uri), String)

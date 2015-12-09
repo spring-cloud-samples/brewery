@@ -1,4 +1,4 @@
-package io.spring.cloud.samples.brewery.acceptance
+package io.spring.cloud.samples.brewery.acceptance.common
 
 import groovy.util.logging.Slf4j
 import org.springframework.retry.RetryCallback
