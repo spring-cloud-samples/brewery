@@ -36,6 +36,8 @@ import spock.lang.Specification
 @WebIntegrationTest(randomPort = true)
 abstract class AbstractBreweryAcceptanceSpec extends Specification {
 
+	public static final String TRACE_ID_HEADER_NAME = 'X-TRACE-ID'
+
 	@Autowired @LoadBalanced RestTemplate restTemplate
 	@Value('${presenting.timeout:30}') Integer timeout
 
@@ -48,6 +50,22 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 				assert stateFromJson(process) == ProcessState.DONE.name()
 			}
 		}
+	}
+
+	Runnable beer_has_been_brewed_for_process_and_trace_id(String processId, String traceId) {
+		return new Runnable() {
+			@Override
+			void run() {
+				ResponseEntity<String> process = checkStateOfTheProcess(processId)
+				assert process.statusCode == HttpStatus.OK
+				assert stateFromJson(process) == ProcessState.DONE.name()
+				assert trace_id_header(process) == traceId
+			}
+		}
+	}
+
+	String trace_id_header(HttpEntity httpEntity) {
+		return httpEntity.headers.getFirst(TRACE_ID_HEADER_NAME)
 	}
 
 	String stateFromJson(ResponseEntity<String> process) {

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 package io.spring.cloud.samples.brewery.acceptance
-
 import io.spring.cloud.samples.brewery.acceptance.common.AbstractBreweryAcceptanceSpec
 import io.spring.cloud.samples.brewery.acceptance.common.WhatToTest
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
 import org.springframework.http.RequestEntity
+import org.springframework.http.ResponseEntity
 import org.springframework.util.JdkIdGenerator
 import spock.lang.Requires
 import spock.lang.Unroll
@@ -30,13 +30,15 @@ import static java.util.concurrent.TimeUnit.SECONDS
 class SleuthBreweryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 
 	@Unroll
-	def 'should successfully brew the beer via [#communicationType] and processId [#referenceProcessId]'() {
+	def 'should successfully pass Trace Id via [#communicationType] and processId [#referenceProcessId]'() {
 		given:
 		    RequestEntity requestEntity = an_order_for_all_ingredients_with_process_id(referenceProcessId, communicationType)
 		when: 'the presenting service has been called with all ingredients'
-			presenting_service_has_been_called(requestEntity)
-		then: 'eventually beer for that process id will be brewed'
-			await().atMost(timeout, SECONDS).until(beer_has_been_brewed_for_process_id(referenceProcessId))
+			ResponseEntity firstResponse = presenting_service_has_been_called(requestEntity)
+		then: 'eventually beer will be brewed with same Trace-Id as the first request'
+			await()
+					.atMost(timeout, SECONDS)
+					.until(beer_has_been_brewed_for_process_and_trace_id(referenceProcessId, trace_id_header(firstResponse)))
 		where:
 		    // will add FEIGN once REST_TEMPLATE tests stabilize
 			communicationType << [CommunicationType.REST_TEMPLATE]
