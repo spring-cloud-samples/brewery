@@ -43,6 +43,7 @@ fi
 
 # Update the desired library version
 echo "$WHAT_TO_TEST=$VERSION" >> gradle.properties
+cat gradle.properties
 
 # Build and run docker images
 ./gradlew clean build docker --parallel
@@ -75,7 +76,8 @@ done
 # Run acceptance tests
 if [ "$success" = true ] ; then
   echo -e "\n\nSuccessfully booted up all the apps. Proceeding with the acceptance tests"
-  bash -e runAcceptanceTests.sh -DWHAT_TO_TEST=$WHAT_TO_TEST "$TEST_OPTS"
+  cat runAcceptanceTests.sh
+  bash -e runAcceptanceTests.sh -DWHAT_TO_TEST=$WHAT_TO_TEST $TEST_OPTS
 else
   echo -e "\n\nFailed to boot the apps."
   exit 1
