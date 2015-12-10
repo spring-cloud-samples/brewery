@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package io.spring.cloud.samples.brewery.acceptance
-
 import io.spring.cloud.samples.brewery.acceptance.common.AbstractBreweryAcceptanceSpec
 import io.spring.cloud.samples.brewery.acceptance.common.WhatToTest
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
@@ -26,7 +25,7 @@ import spock.lang.Unroll
 import static com.jayway.awaitility.Awaitility.await
 import static java.util.concurrent.TimeUnit.SECONDS
 
-@Requires({ System.getProperty(WhatToTest.WHAT_TO_TEST) == WhatToTest.SLEUTH.name() })
+@Requires({ AbstractBreweryAcceptanceSpec.WHAT_TO_TEST(WhatToTest.SERVICE_REGISTRY) })
 class ServiceRegistryBreweryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 
 	@Unroll

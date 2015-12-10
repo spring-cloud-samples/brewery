@@ -37,6 +37,11 @@ import spock.lang.Specification
 abstract class AbstractBreweryAcceptanceSpec extends Specification {
 
 	public static final String TRACE_ID_HEADER_NAME = 'X-TRACE-ID'
+	public static final Closure<Boolean> WHAT_TO_TEST = { WhatToTest whatToTest ->
+		String whatToTestProp = System.getProperty(WhatToTest.WHAT_TO_TEST)
+		println "What to test system prop equals [$whatToTestProp]"
+		return whatToTestProp == whatToTest.name()
+	}
 
 	@Autowired @LoadBalanced RestTemplate restTemplate
 	@Value('${presenting.timeout:30}') Integer timeout
