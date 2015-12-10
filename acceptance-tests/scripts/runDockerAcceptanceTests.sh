@@ -1,29 +1,28 @@
-#!/bin/sh
+#!/bin/bash
+
 set -e
 
 # Parse the script arguments
-while [[ $# > 1 ]]
+for i in "$@"
 do
-key="$1"
 
 TEST_OPTS=""
-case $key in
-    -t|--test)
-    WHAT_TO_TEST="$2"
+case $i in
+    -t=*|--test=*)
+    WHAT_TO_TEST="${i#*=}"
     shift
     ;;
-    -to|--testopts)
-    TEST_OPTS="$2"
+    -to=*|--testopts=*)
+    TEST_OPTS="${i#*=}"
     shift
     ;;
-    -v|--version)
-    VERSION="$2"
+    -v=*|--version=*)
+    VERSION="${i#*=}"
     shift
     ;;
     *)
     ;;
 esac
-shift
 done
 
 echo -e "\n\nRunning tests with the following parameters"
