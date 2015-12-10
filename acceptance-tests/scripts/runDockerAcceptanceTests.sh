@@ -6,6 +6,7 @@ while [[ $# > 1 ]]
 do
 key="$1"
 
+TEST_OPTS=""
 case $key in
     -t|--test)
     WHAT_TO_TEST="$2"
@@ -24,6 +25,12 @@ case $key in
 esac
 shift
 done
+
+echo -e "\n\nRunning tests with the following parameters"
+echo -e "\nWHAT_TO_TEST=$WHAT_TO_TEST"
+echo -e "\nTEST_OPTS=$TEST_OPTS"
+echo -e "\nVERSION=$VERSION"
+echo -e "\n\n"
 
 # Clone or update the brewery repository
 REPOSRC=https://github.com/spring-cloud-samples/brewery.git
@@ -77,7 +84,7 @@ done
 if [ "$success" = true ] ; then
   echo -e "\n\nSuccessfully booted up all the apps. Proceeding with the acceptance tests"
   cat runAcceptanceTests.sh
-  bash -e runAcceptanceTests.sh -DWHAT_TO_TEST=$WHAT_TO_TEST $TEST_OPTS
+  bash -e runAcceptanceTests.sh "-DWHAT_TO_TEST=$WHAT_TO_TEST"
 else
   echo -e "\n\nFailed to boot the apps."
   exit 1
