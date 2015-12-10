@@ -133,8 +133,8 @@ configure(subprojects - commonProject) {
         compile "org.springframework.boot:spring-boot-starter-actuator"
         compile "org.springframework:spring-context-support"
         compile 'com.fasterxml.jackson.core:jackson-databind'
-        compile "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery:$springCloudVersion"
-        compile "org.springframework.cloud:spring-cloud-starter-zipkin:$springCloudVersion"
+        compile "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery:$SERVICE_REGISTRY"
+        compile "org.springframework.cloud:spring-cloud-starter-zipkin:$SLEUTH"
         compile "org.springframework.cloud:spring-cloud-starter-feign:+"
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonMapper"
         compile "org.codehaus.jackson:jackson-core-asl:$jacksonMapper"

@@ -26,7 +26,7 @@ import spock.lang.Unroll
 import static com.jayway.awaitility.Awaitility.await
 import static java.util.concurrent.TimeUnit.SECONDS
 
-@Requires({ System.getProperty(WhatToTest.WHAT_TO_TEST) == WhatToTest.SERVICE_REGISTRY.name() })
+@Requires({ System.getProperty(WhatToTest.WHAT_TO_TEST) == WhatToTest.SLEUTH.name() })
 class ServiceRegistryBreweryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 
 	@Unroll
