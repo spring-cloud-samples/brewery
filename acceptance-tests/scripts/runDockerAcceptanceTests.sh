@@ -1,54 +1,69 @@
 #!/bin/bash
 
-set -e
+set -o errexit
+
+REPO_URL="${REPO_URL:-https://github.com/spring-cloud-samples/brewery.git}"
+REPO_BRANCH="${REPO_BRANCH:-master}"
+REPO_LOCAL="${REPO_LOCAL:-brewery}"
+WAIT_TIME="${WAIT_TIME:-5}"
+RETRIES="${RETRIES:-48}"
+
+HEALTH_HOST="127.0.0.1"
+HEALTH_PORTS=('9991' '9992' '9993' '9994')
+HEALTH_ENDPOINTS="$( printf "http://${HEALTH_HOST}:%s/health " "${HEALTH_PORTS[@]}" )"
 
 # Parse the script arguments
-for i in "$@"
-do
-
-TEST_OPTS=""
-case $i in
-    -t=*|--test=*)
-    WHAT_TO_TEST="${i#*=}"
-    shift
-    ;;
-    -to=*|--testopts=*)
-    TEST_OPTS="${i#*=}"
-    shift
-    ;;
-    -v=*|--version=*)
-    VERSION="${i#*=}"
-    shift
-    ;;
-    *)
-    ;;
-esac
+while getopts ":t:o:v:" opt; do
+    case $opt in
+        t)
+            WHAT_TO_TEST="${OPTARG}"
+            ;;
+        o)
+            TEST_OPTS="${OPTARG}"
+            ;;
+        v)
+            VERSION="${OPTARG}"
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            exit 1
+            ;;
+        :)
+            echo "Option -$OPTARG requires an argument." >&2
+            exit 1
+            ;;
+    esac
 done
 
-echo -e "\n\nRunning tests with the following parameters"
-echo -e "\nWHAT_TO_TEST=$WHAT_TO_TEST"
-echo -e "\nTEST_OPTS=$TEST_OPTS"
-echo -e "\nVERSION=$VERSION"
-echo -e "\n\n"
+if [[ -z "${WHAT_TO_TEST}" || -z "${VERSION}" ]]; then
+    echo "You must provide -t and -v options" >&2
+    exit 1
+fi
+
+cat <<EOF
+
+Running tests with the following parameters
+
+WHAT_TO_TEST=${WHAT_TO_TEST}
+TEST_OPTS=${TEST_OPTS}
+VERSION=${VERSION}
+
+EOF
 
 # Clone or update the brewery repository
-REPOSRC=https://github.com/spring-cloud-samples/brewery.git
-LOCALREPO=brewery
-
-LOCALREPO_VC_DIR=$LOCALREPO/.git
-
-if [ ! -d $LOCALREPO_VC_DIR ]
-then
-    git clone $REPOSRC $LOCALREPO
-    cd $LOCALREPO
+if [[ ! -d "${REPO_LOCAL}/.git" ]]; then
+    git clone "${REPO_URL}" "${REPO_LOCAL}"
+    cd "${REPO_LOCAL}"
 else
-    cd $LOCALREPO
+    cd "${REPO_LOCAL}"
     git reset --hard
-    git pull $REPOSRC master
+    git pull "${REPO_URL}" "${REPO_BRANCH}"
 fi
 
 # Update the desired library version
-echo "$WHAT_TO_TEST=$VERSION" >> gradle.properties
+echo "${WHAT_TO_TEST}=${VERSION}" >> gradle.properties
+
+echo "Using the following gradle.properties"
 cat gradle.properties
 
 # Build and run docker images
@@ -59,34 +74,21 @@ docker-compose build
 docker-compose up -d
 
 # Wait for the apps to boot up
-url="http://127.0.0.1"
-waitTime=5
-retries=48
-totalWaitingTime=240
-n=0
-success=false
-
-echo "Waiting for the apps to boot for [$totalWaitingTime] seconds"
-until [ $n -ge $retries ]
-do
-  echo "Pinging applications if they're alive..."
-  curl $url:9991/health &&
-  curl $url:9992/health &&
-  curl $url:9993/health &&
-  curl $url:9994/health && success=true && break
-  n=$[$n+1]
-  echo "Failed... will try again in [$waitTime] seconds"
-  sleep $waitTime
+echo "Waiting for the apps to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
+for i in $( seq 1 "${RETRIES}" ); do
+    sleep "${WAIT_TIME}"
+    curl -m 5 ${HEALTH_ENDPOINTS} && READY_FOR_TESTS="yes" && break
+    echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
 done
 
+echo
+
 # Run acceptance tests
-if [ "$success" = true ] ; then
-  echo -e "\n\nSuccessfully booted up all the apps. Proceeding with the acceptance tests"
-  cat runAcceptanceTests.sh
-  bash -e runAcceptanceTests.sh "-DWHAT_TO_TEST=$WHAT_TO_TEST"
+if [[ "${READY_FOR_TESTS}" == "yes" ]] ; then
+    echo "Successfully booted up all the apps. Proceeding with the acceptance tests"
+    bash -e runAcceptanceTests.sh "-DWHAT_TO_TEST=${WHAT_TO_TEST} ${TEST_OPTS}"
 else
-  echo -e "\n\nFailed to boot the apps."
-  exit 1
+    echo "Failed to boot the apps."
+    exit 1
 fi
 
-cd ..
