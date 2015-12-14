@@ -93,6 +93,7 @@ if [[ "${READY_FOR_TESTS}" == "yes" ]] ; then
     bash -e runAcceptanceTests.sh "-DWHAT_TO_TEST=${WHAT_TO_TEST} ${TEST_OPTS}"
 else
     echo "Failed to boot the apps."
+    docker-compose -f docker-compose-$WHAT_TO_TEST.yml logs
     exit 1
 fi
 

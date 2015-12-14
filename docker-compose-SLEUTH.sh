@@ -3,7 +3,7 @@
 dockerComposeFile="docker-compose-${WHAT_TO_TEST}.yml"
 docker-compose -f $dockerComposeFile kill
 #docker-compose -f $dockerComposeFile rm -f
-#docker-compose -f $dockerComposeFile build
+docker-compose -f $dockerComposeFile build
 
 # First boot up Zipkin Web and all of it's dependencies
 docker-compose -f $dockerComposeFile up -d mysql web collector query
