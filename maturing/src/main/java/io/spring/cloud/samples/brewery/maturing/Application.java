@@ -7,7 +7,6 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.cloud.sleuth.Sampler;
 import org.springframework.cloud.sleuth.sampler.AlwaysSampler;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.annotation.EnableAsync;
 
@@ -16,7 +15,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableDiscoveryClient
 @EnableFeignClients
-@Configuration
 public class Application {
 
     @Bean Sampler sampler() {

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 package io.spring.cloud.samples.brewery.acceptance
+
 import io.spring.cloud.samples.brewery.acceptance.common.AbstractBreweryAcceptanceSpec
+import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConditions
 import io.spring.cloud.samples.brewery.acceptance.common.WhatToTest
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
 import org.springframework.http.RequestEntity
@@ -25,11 +27,11 @@ import spock.lang.Unroll
 import static com.jayway.awaitility.Awaitility.await
 import static java.util.concurrent.TimeUnit.SECONDS
 
-@Requires({ AbstractBreweryAcceptanceSpec.WHAT_TO_TEST(WhatToTest.SERVICE_REGISTRY) })
-class ServiceRegistryBreweryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
+@Requires({ TestConditions.SERVICE_DISCOVERY() })
+class ServiceDiscoveryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 
 	@Unroll
-	def 'should successfully brew the beer via [#communicationType] and processId [#referenceProcessId]'() {
+	def 'should successfully brew the beer via [#communicationType], processId [#referenceProcessId], service discovery [#serviceDiscovery]'() {
 		given:
 		    RequestEntity requestEntity = an_order_for_all_ingredients_with_process_id(referenceProcessId, communicationType)
 		when: 'the presenting service has been called with all ingredients'
@@ -40,6 +42,7 @@ class ServiceRegistryBreweryAcceptanceSpec extends AbstractBreweryAcceptanceSpec
 		    // will add FEIGN once REST_TEMPLATE tests stabilize
 			communicationType << [CommunicationType.REST_TEMPLATE]
 			referenceProcessId = new JdkIdGenerator().generateId().toString()
+			serviceDiscovery = System.getProperty(WhatToTest.WHAT_TO_TEST)
 	}
 
 }

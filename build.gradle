@@ -22,26 +22,33 @@ buildscript {
 }
 
 def commonProject = project(':common')
+def acceptanceTestsProject = project(':acceptance-tests')
 
 allprojects {
     apply plugin: 'docker'
+    apply plugin: 'groovy'
 }
 
 docker {
     baseImage = 'aglover/java8-pier'
 }
 
-task docker(type: Docker) {
+/*task docker(type: Docker) {
     dryRun true
     addFile("acceptance-tests", "/acceptance-tests")
-    addFile("${System.getenv('HOME')}/.m2", "/root/.m2")
-    addFile("${System.getenv('HOME')}/.gradle", "/root/.gradle")
+    String m2Path = "${System.getenv('HOME')}/.m2"
+    String gradlePath = "${System.getenv('HOME')}/.gradle"
+    if (new File(m2Path).exists()) {
+        addFile(m2Path, "/root/.m2")
+    }
+    if (new File(gradlePath).exists()) {
+        addFile(gradlePath, "/root/.gradle")
+    }
     workingDir('/acceptance-tests')
-}
+}*/
 
 configure(subprojects) {
 
-    apply plugin: 'groovy'
     apply plugin: 'spring-boot'
     apply plugin: 'maven-publish'
     apply plugin: 'docker'
@@ -50,7 +57,6 @@ configure(subprojects) {
         dockerConfiguration = { int port ->
             dependsOn 'build'
             dryRun true
-            setEnvironment('spring.zipkin.enabled', 'false')
             addFile("${libsDir}/${project.name}-${buildNrLoc}.jar", "/${project.name}/${project.name}.jar")
             exposePort(port)
             // Random beacuse of https://wiki.apache.org/tomcat/HowTo/FasterStartUp
@@ -108,12 +114,11 @@ configure(subprojects) {
         compile 'org.codehaus.groovy:groovy-all:2.4.5'
         compile 'com.google.guava:guava:18.0'
         compile 'org.apache.tomcat.embed:tomcat-embed-core:8.0.23'
-
-        testCompile "org.apache.curator:curator-test"
+        compile "org.springframework.cloud:spring-cloud-starter-zipkin:$SLEUTH"
     }
 }
 
-configure(commonProject) {
+configure([commonProject, acceptanceTestsProject]) {
 
     bootRepackage {
         enabled = false
@@ -122,6 +127,10 @@ configure(commonProject) {
     bootRun {
         enabled = false
     }
+}
+
+List<String> systemPropsFromGradle() {
+    return project.gradle.startParameter.systemPropertiesArgs.entrySet().collect{"-D${it.key}=${it.value}"}
 }
 
 configure(subprojects - commonProject) {
@@ -133,8 +142,11 @@ configure(subprojects - commonProject) {
         compile "org.springframework.boot:spring-boot-starter-actuator"
         compile "org.springframework:spring-context-support"
         compile 'com.fasterxml.jackson.core:jackson-databind'
-        compile "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery:$SERVICE_REGISTRY"
-        compile "org.springframework.cloud:spring-cloud-starter-zipkin:$SLEUTH"
+        if (defaultSettingsApplied() || whatToTest('ZOOKEEPER') || whatToTest('SLEUTH')) {
+            compile "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery:$ZOOKEEPER"
+        }
+        if (whatToTest('CONSUL')) { compile "org.springframework.cloud:spring-cloud-starter-consul-discovery:$CONSUL" }
+        if (whatToTest('EUREKA')) { compile "org.springframework.cloud:spring-cloud-starter-eureka-discovery:$EUREKA" }
         compile "org.springframework.cloud:spring-cloud-starter-feign:+"
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonMapper"
         compile "org.codehaus.jackson:jackson-core-asl:$jacksonMapper"
@@ -146,7 +158,6 @@ configure(subprojects - commonProject) {
         compile "org.aspectj:aspectjrt"
         compile 'org.codehaus.gpars:gpars:1.2.1'
         compile 'net.sf.ehcache:ehcache:2.10.1'
-        compile "de.codecentric:spring-boot-admin-starter-client:1.2.3"
         compile 'org.jolokia:jolokia-core'
 
         runtime 'cglib:cglib-nodep:3.1'
@@ -158,14 +169,15 @@ configure(subprojects - commonProject) {
             exclude group: 'org.mortbay.jetty', module: 'servlet-api'
         }
         testCompile "org.springframework.boot:spring-boot-starter-test"
-        testCompile "org.gebish:geb-core:$gebVersion"
-        testCompile "org.gebish:geb-spock:$gebVersion"
-        testCompile "org.spockframework:spock-spring"
-        testCompile "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
-        testCompile "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
-        testCompile "org.seleniumhq.selenium:selenium-htmlunit-driver:$seleniumVersion"
         testCompile "com.jayway.restassured:rest-assured:$restAssuredVersion"
         testCompile "com.jayway.restassured:spring-mock-mvc:$restAssuredVersion"
+        testCompile( 'com.athaydes:spock-reports:1.2.7' ) {
+            transitive = false // this avoids affecting your version of Groovy/Spock
+        }
+        testCompile "org.spockframework:spock-spring"
+        testCompile( 'com.athaydes:spock-reports:1.2.7' ) {
+            transitive = false // this avoids affecting your version of Groovy/Spock
+        }
     }
 
     wrapper {
@@ -173,6 +185,54 @@ configure(subprojects - commonProject) {
     }
 
     bootRun {
-        jvmArgs = project.gradle.startParameter.systemPropertiesArgs.entrySet().collect{"-D${it.key}=${it.value}"}
+        jvmArgs = systemPropsFromGradle()
     }
+
+    test {
+        jvmArgs systemPropsFromGradle()
+        testLogging {
+            exceptionFormat = 'full'
+        }
+    }
+}
+
+/*
+task cleanAcceptanceTestsBuild << {
+    File buildDir = new File(project.rootDir, 'acceptance-tests/build')
+    if (buildDir.exists()) {
+        buildDir.deleteDir()
+    }
+}
+
+clean.dependsOn 'cleanAcceptanceTestsBuild'
+*/
+
+project(':acceptance-tests') {
+
+    test {
+        exclude '**/*.*'
+    }
+
+    task acceptanceTests(type: Test) {
+        jvmArgs systemPropsFromGradle()
+        testLogging {
+            exceptionFormat = 'full'
+        }
+        include '**/*.*'
+
+        group = "Verification"
+        description = "Runs the acceptance tests"
+    }
+}
+
+boolean whatToTest(String propName) {
+    String whatToTestProp = "WHAT_TO_TEST"
+    return propName.equalsIgnoreCase(project.gradle.startParameter.systemPropertiesArgs.get(whatToTestProp)) ?:
+            propName.equalsIgnoreCase(System.getenv(whatToTestProp))
+}
+
+boolean defaultSettingsApplied() {
+    String whatToTestProp = "WHAT_TO_TEST"
+    return !project.gradle.startParameter.systemPropertiesArgs.containsKey(whatToTestProp) &&
+            !System.getenv().containsKey(whatToTestProp)
 }

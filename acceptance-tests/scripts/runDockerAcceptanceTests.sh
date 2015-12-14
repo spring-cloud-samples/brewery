@@ -50,6 +50,13 @@ VERSION=${VERSION}
 
 EOF
 
+export WHAT_TO_TEST=$WHAT_TO_TEST
+export TEST_OPTS=$TEST_OPTS
+export VERSION=$VERSION
+export HEALTH_HOST=$HEALTH_HOST
+export WAIT_TIME=$WAIT_TIME
+export RETRIES=$RETRIES
+
 # Clone or update the brewery repository
 if [[ ! -d "${REPO_LOCAL}/.git" ]]; then
     git clone "${REPO_URL}" "${REPO_LOCAL}"
@@ -68,10 +75,7 @@ cat gradle.properties
 
 # Build and run docker images
 ./gradlew clean build docker --parallel
-docker-compose kill
-docker-compose rm -f
-docker-compose build
-docker-compose up -d
+./docker-compose-$WHAT_TO_TEST.sh
 
 # Wait for the apps to boot up
 echo "Waiting for the apps to boot for [$(( WAIT_TIME * RETRIES ))] seconds"

@@ -1,5 +1,4 @@
 package io.spring.cloud.samples.brewery.presenting
-
 import io.spring.cloud.samples.brewery.common.TestConfiguration
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.actuate.health.Health
@@ -11,7 +10,6 @@ import org.springframework.cloud.sleuth.sampler.AlwaysSampler
 import org.springframework.cloud.zookeeper.discovery.ZookeeperDiscoveryHealthIndicator
 import org.springframework.cloud.zookeeper.discovery.ZookeeperServiceDiscovery
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.EnableAspectJAutoProxy
 import org.springframework.context.annotation.Import
 import org.springframework.scheduling.annotation.EnableAsync
@@ -21,7 +19,6 @@ import org.springframework.scheduling.annotation.EnableAsync
 @EnableAsync
 @EnableDiscoveryClient
 @EnableFeignClients
-@Configuration
 @Import(TestConfiguration.class)
 class Application {
 
