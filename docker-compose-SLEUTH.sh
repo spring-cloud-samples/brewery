@@ -19,4 +19,5 @@ for i in $( seq 1 "${RETRIES}" ); do
 done
 
 # Then the rest
+echo "Starting brewery apps..."
 docker-compose -f $dockerComposeFile up -d
