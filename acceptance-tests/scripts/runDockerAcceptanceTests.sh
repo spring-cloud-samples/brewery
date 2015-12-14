@@ -74,7 +74,7 @@ echo "Using the following gradle.properties"
 cat gradle.properties
 
 # Build and run docker images
-./gradlew clean build docker --parallel
+./gradlew clean build docker --parallel --configure-on-demand
 ./docker-compose-$WHAT_TO_TEST.sh
 
 # Wait for the apps to boot up
