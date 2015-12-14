@@ -1,15 +1,15 @@
-acceptance-tests:
-  build: build/docker
-  links:
-    - zookeeper:zk
-  environment:
-    spring.cloud.zookeeper.connectString: zk:2181
-    spring.zipkin.enabled: 'false'
-    TERM: dumb
-  command: ./gradlew --version --no-daemon
-  dns:
-    - 8.8.8.8
-    - 8.8.4.4
+#acceptance-tests:
+#  build: build/docker
+#  links:
+#    - zookeeper:zk
+#  environment:
+#    spring.cloud.zookeeper.connectString: zk:2181
+#    spring.zipkin.enabled: 'false'
+#    TERM: dumb
+#  command: ./gradlew --version --no-daemon
+#  dns:
+#    - 8.8.8.8
+#    - 8.8.4.4
 
 aggregating:
   build: aggregating/build/docker
