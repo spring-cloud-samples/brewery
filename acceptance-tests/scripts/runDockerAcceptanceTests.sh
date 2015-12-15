@@ -68,7 +68,7 @@ else
 fi
 
 # Update the desired library version
-echo "${WHAT_TO_TEST}=${VERSION}" >> gradle.properties
+grep "${WHAT_TO_TEST}=${VERSION}" gradle.properties || echo "${WHAT_TO_TEST}=${VERSION}" >> gradle.properties
 
 echo "Using the following gradle.properties"
 cat gradle.properties
