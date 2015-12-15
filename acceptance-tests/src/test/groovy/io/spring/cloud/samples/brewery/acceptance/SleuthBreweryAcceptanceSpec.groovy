@@ -33,7 +33,7 @@ class SleuthBreweryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 	def 'should successfully pass Trace Id via [#communicationType] and processId [#referenceProcessId]'() {
 		given:
 		    RequestEntity requestEntity = an_order_for_all_ingredients_with_process_id(referenceProcessId, communicationType)
-		when: 'the presenting service has been called nwith all ingredients'
+		when: 'the presenting service has been called with all ingredients'
 			presenting_service_has_been_called(requestEntity)
 		then: 'eventually beer will be brewed with same Trace-Id as the first request'
 			await()
