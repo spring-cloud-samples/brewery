@@ -2,9 +2,9 @@ $(function () {
     var nextTimeout;
 
     newSlider('Order');
-    newGauge('#dojrzewatr', 'Maturing', 'present/maturing');
-    newGauge('#butelkatr', 'Bottling', 'present/bottling');
-    newAggrgtrMetrics('#aggregator', 'Aggregation');
+    newGauge('#maturing', 'Maturing', 'present/maturing');
+    newGauge('#bottling', 'Bottling', 'present/bottling');
+    newAggrgtrMetrics('#aggregating', 'Aggregating');
 
     $('#order').on('click', function () {
         var $btn = $(this).button('loading')
