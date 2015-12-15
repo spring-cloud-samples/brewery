@@ -13,7 +13,7 @@ HEALTH_PORTS=('9991' '9992' '9993' '9994')
 HEALTH_ENDPOINTS="$( printf "http://${HEALTH_HOST}:%s/health " "${HEALTH_PORTS[@]}" )"
 
 # Parse the script arguments
-while getopts ":t:o:v:" opt; do
+while getopts ":t:o:v:i" opt; do
     case $opt in
         t)
             WHAT_TO_TEST="${OPTARG}"
@@ -23,6 +23,9 @@ while getopts ":t:o:v:" opt; do
             ;;
         v)
             VERSION="${OPTARG}"
+            ;;
+        i)
+            INPLACE=0
             ;;
         \?)
             echo "Invalid option: -$OPTARG" >&2
@@ -63,8 +66,10 @@ if [[ ! -d "${REPO_LOCAL}/.git" ]]; then
     cd "${REPO_LOCAL}"
 else
     cd "${REPO_LOCAL}"
-    git reset --hard
-    git pull "${REPO_URL}" "${REPO_BRANCH}"
+    if [[ ! $INPLACE ]]; then
+        git reset --hard
+        git pull "${REPO_URL}" "${REPO_BRANCH}"
+    fi
 fi
 
 # Update the desired library version
