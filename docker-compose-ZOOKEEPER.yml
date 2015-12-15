@@ -17,6 +17,7 @@ aggregating:
     - zookeeper:zk
   environment:
     spring.zipkin.enabled: 'false'
+    spring.profiles.active: deps
   command: --spring.cloud.zookeeper.connectString=zk:2181
   ports:
     - 9992:9992
@@ -26,7 +27,8 @@ maturing:
   links:
     - zookeeper:zk
   environment:
-      spring.zipkin.enabled: 'false'
+    spring.zipkin.enabled: 'false'
+    spring.profiles.active: deps
   command: --spring.cloud.zookeeper.connectString=zk:2181
   ports:
     - 9993:9993
@@ -36,7 +38,8 @@ bottling:
   links:
     - zookeeper:zk
   environment:
-      spring.zipkin.enabled: 'false'
+    spring.zipkin.enabled: 'false'
+    spring.profiles.active: deps
   command: --spring.cloud.zookeeper.connectString=zk:2181
   ports:
     - 9994:9994
@@ -46,7 +49,8 @@ presenting:
   links:
     - zookeeper:zk
   environment:
-      spring.zipkin.enabled: 'false'
+    spring.zipkin.enabled: 'false'
+    spring.profiles.active: deps
   command: --spring.cloud.zookeeper.connectString=zk:2181
   ports:
     - 9991:9991

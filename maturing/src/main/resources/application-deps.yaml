@@ -1,11 +1,10 @@
 spring.application.name: uservices/maturing
 
-spring.cloud.zookeeper.discovery.root: /pl
 spring.cloud.zookeeper:
   # prefix is not working ATM - it's not combining the uservices/${spring.application.name}
-  prefix: uservices/
+  #prefix: uservices/
   dependencies:
     presenting:
-      path: presenting
+      path: uservices/presenting
     bottling:
-      path: bottling
+      path: uservices/bottling

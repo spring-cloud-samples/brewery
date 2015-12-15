@@ -8,14 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.sleuth.Trace;
 import org.springframework.cloud.sleuth.TraceManager;
 import org.springframework.cloud.sleuth.trace.TraceContextHolder;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.RequestEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
-
-import java.net.URI;
 
 import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
 import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
@@ -25,18 +21,18 @@ class BottlingServiceUpdater {
 
     private final BrewProperties brewProperties;
     private final TraceManager traceManager;
-    private final PresentingServiceClient prezentatrClient;
+    private final PresentingServiceClient presentingServiceClient;
     private final BottlingServiceClient bottlingServiceClient;
     private final RestTemplate restTemplate;
 
     public BottlingServiceUpdater(BrewProperties brewProperties,
                                   TraceManager traceManager,
-                                  PresentingServiceClient prezentatrClient,
+                                  PresentingServiceClient presentingServiceClient,
                                   BottlingServiceClient bottlingServiceClient,
                                   RestTemplate restTemplate) {
         this.brewProperties = brewProperties;
         this.traceManager = traceManager;
-        this.prezentatrClient = prezentatrClient;
+        this.presentingServiceClient = presentingServiceClient;
         this.bottlingServiceClient = bottlingServiceClient;
         this.restTemplate = restTemplate;
     }
@@ -69,7 +65,7 @@ class BottlingServiceUpdater {
     }
 
     private void callPresentingViaFeign(String correlationId) {
-        prezentatrClient.maturingFeed(correlationId, FEIGN.name());
+        presentingServiceClient.maturingFeed(correlationId, FEIGN.name());
     }
 
     private void notifyBottlingService(Ingredients ingredients, String correlationId) {

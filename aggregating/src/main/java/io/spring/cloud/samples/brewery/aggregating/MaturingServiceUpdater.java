@@ -30,8 +30,8 @@ class MaturingServiceUpdater {
 
     Ingredients updateIfLimitReached(Ingredients ingredients, String processId) {
         if (ingredientsMatchTheThreshold(ingredients)) {
-            log.info("Ingredients match the threshold - time to notify dojrzewatr!");
-            notifyDojrzewatr(ingredients, processId);
+            log.info("Ingredients match the threshold - time to notify the maturing service!");
+            notifyMaturingService(ingredients, processId);
             ingredientWarehouse.useIngredients(ingredientsProperties.getThreshold());
         }
         Ingredients currentState = ingredientWarehouse.getCurrentState();
@@ -47,7 +47,7 @@ class MaturingServiceUpdater {
         return allIngredientsPresent && allIngredientsOverThreshold;
     }
 
-    private void notifyDojrzewatr(Ingredients ingredients, String processId) {
+    private void notifyMaturingService(Ingredients ingredients, String processId) {
         switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
                 callViaFeign(ingredients, processId);

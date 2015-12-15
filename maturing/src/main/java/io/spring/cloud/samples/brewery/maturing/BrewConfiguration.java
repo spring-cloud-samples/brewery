@@ -13,10 +13,10 @@ import org.springframework.web.client.RestTemplate;
 class BrewConfiguration {
 
     @Bean
-    BottlingServiceUpdater butelkatrUpdater(TraceManager trace, PresentingServiceClient prezentatrClient,
-                                            BottlingServiceClient bottlingServiceClient,
-                                            @LoadBalanced RestTemplate restTemplate) {
-        return new BottlingServiceUpdater(brewProperties(), trace, prezentatrClient,
+    BottlingServiceUpdater bottlingServiceUpdater(TraceManager trace, PresentingServiceClient presentingServiceClient,
+                                                  BottlingServiceClient bottlingServiceClient,
+                                                  @LoadBalanced RestTemplate restTemplate) {
+        return new BottlingServiceUpdater(brewProperties(), trace, presentingServiceClient,
                 bottlingServiceClient, restTemplate);
     }
 
