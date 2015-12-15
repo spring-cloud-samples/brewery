@@ -29,10 +29,6 @@ allprojects {
     apply plugin: 'groovy'
 }
 
-docker {
-    baseImage = 'aglover/java8-pier'
-}
-
 /*task docker(type: Docker) {
     dryRun true
     addFile("acceptance-tests", "/acceptance-tests")
@@ -52,6 +48,10 @@ configure(subprojects) {
     apply plugin: 'spring-boot'
     apply plugin: 'maven-publish'
     apply plugin: 'docker'
+
+    docker {
+        baseImage 'frolvlad/alpine-oraclejdk8'
+    }
 
     ext {
         dockerConfiguration = { int port ->
