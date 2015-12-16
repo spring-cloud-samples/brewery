@@ -4,16 +4,21 @@ set -o errexit
 
 REPO_URL="${REPO_URL:-https://github.com/spring-cloud-samples/brewery.git}"
 REPO_BRANCH="${REPO_BRANCH:-master}"
-REPO_LOCAL="${REPO_LOCAL:-brewery}"
+if [[ -d acceptance-tests ]]; then
+  REPO_LOCAL="${REPO_LOCAL:-.}"
+else 
+  REPO_LOCAL="${REPO_LOCAL:-brewery}"
+fi
 WAIT_TIME="${WAIT_TIME:-5}"
 RETRIES="${RETRIES:-48}"
+DEFAULT_VERSION="${DEFAULT_VERSION:-1.0.0.BUILD-SNAPSHOT}"
 
 HEALTH_HOST="127.0.0.1"
 HEALTH_PORTS=('9991' '9992' '9993' '9994')
 HEALTH_ENDPOINTS="$( printf "http://${HEALTH_HOST}:%s/health " "${HEALTH_PORTS[@]}" )"
 
 # Parse the script arguments
-while getopts ":t:o:v:i" opt; do
+while getopts ":t:o:v:r" opt; do
     case $opt in
         t)
             WHAT_TO_TEST="${OPTARG}"
@@ -24,8 +29,8 @@ while getopts ":t:o:v:i" opt; do
         v)
             VERSION="${OPTARG}"
             ;;
-        i)
-            INPLACE=0
+        r)
+            RESET=0
             ;;
         \?)
             echo "Invalid option: -$OPTARG" >&2
@@ -38,10 +43,8 @@ while getopts ":t:o:v:i" opt; do
     esac
 done
 
-if [[ -z "${WHAT_TO_TEST}" || -z "${VERSION}" ]]; then
-    echo "You must provide -t and -v options" >&2
-    exit 1
-fi
+[[ -z "${WHAT_TO_TEST}" ]] && WHAT_TO_TEST=ZOOKEEPER
+[[ -z "${VERSION}" ]] && VERSION="${DEFAULT_VERSION}"
 
 cat <<EOF
 
@@ -61,12 +64,12 @@ export WAIT_TIME=$WAIT_TIME
 export RETRIES=$RETRIES
 
 # Clone or update the brewery repository
-if [[ ! -d "${REPO_LOCAL}/.git" ]]; then
+if [[ ! -e "${REPO_LOCAL}/.git" ]]; then
     git clone "${REPO_URL}" "${REPO_LOCAL}"
     cd "${REPO_LOCAL}"
 else
     cd "${REPO_LOCAL}"
-    if [[ ! $INPLACE ]]; then
+    if [[ $RESET ]]; then
         git reset --hard
         git pull "${REPO_URL}" "${REPO_BRANCH}"
     fi
