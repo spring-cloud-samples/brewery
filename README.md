@@ -114,7 +114,7 @@ The easiest way is to:
 * You can execute that script with such options
     * `-t` what do you want to test (`SLEUTH`, `ZOOKEEPER` etc.)
     * `-v` in which version (`1.0.0.BUILD-SNAPSHOT`)
-    * `-i` is brewery repo already in place and doesn't need to be cloned again? (very useful for offline work)
+    * `-r` is brewery repo already in place and needs to be reset?
      
 Once you run the script, the brewery app will be cloned, built with proper lib versions and proper tests
 will be executed

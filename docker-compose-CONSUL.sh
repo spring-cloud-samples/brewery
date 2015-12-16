@@ -4,14 +4,14 @@ dockerComposeFile="docker-compose-${WHAT_TO_TEST}.yml"
 docker-compose -f $dockerComposeFile kill
 docker-compose -f $dockerComposeFile build
 
-# First boot up Eureka and all of it's dependencies
+# First boot up Consul and all of it's dependencies
 docker-compose -f $dockerComposeFile up -d discovery
 
-# Wait for the Eureka apps to boot up
+# Wait for the Consul apps to boot up
 READY_FOR_TESTS="no"
-PORT_TO_CHECK=8761
+PORT_TO_CHECK=8500
 
-echo "Waiting for the Eureka to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
+echo "Waiting for the Consul app to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
 for i in $( seq 1 "${RETRIES}" ); do
     sleep "${WAIT_TIME}"
     nc -v -z -w 1 $HEALTH_HOST $PORT_TO_CHECK && READY_FOR_TESTS="yes" && break
