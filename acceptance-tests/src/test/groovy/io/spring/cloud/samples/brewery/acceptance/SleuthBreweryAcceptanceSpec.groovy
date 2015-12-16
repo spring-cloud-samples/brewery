@@ -15,7 +15,6 @@
  */
 package io.spring.cloud.samples.brewery.acceptance
 import io.spring.cloud.samples.brewery.acceptance.common.AbstractBreweryAcceptanceSpec
-import io.spring.cloud.samples.brewery.acceptance.common.WhatToTest
 import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConditions
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
 import org.springframework.http.RequestEntity
@@ -26,7 +25,7 @@ import spock.lang.Unroll
 import static com.jayway.awaitility.Awaitility.await
 import static java.util.concurrent.TimeUnit.SECONDS
 
-@Requires({ TestConditions.WHAT_TO_TEST(WhatToTest.SLEUTH) })
+@Requires({ TestConditions.SLEUTH() })
 class SleuthBreweryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 
 	@Unroll

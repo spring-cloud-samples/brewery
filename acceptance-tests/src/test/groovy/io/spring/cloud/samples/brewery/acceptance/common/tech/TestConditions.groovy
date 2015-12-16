@@ -15,9 +15,20 @@ class TestConditions {
 	}
 
 	public static final Closure<Boolean> SERVICE_DISCOVERY = {
+		return whatToTestSystemPropMatchesAny(
+				[WhatToTest.CONSUL, WhatToTest.EUREKA, WhatToTest.ZOOKEEPER]
+		)
+	}
+
+	public static final Closure<Boolean> SLEUTH = {
+		return whatToTestSystemPropMatchesAny(
+				[WhatToTest.SLEUTH, WhatToTest.SLEUTH_STREAM]
+		)
+	}
+
+	private static boolean whatToTestSystemPropMatchesAny(List<WhatToTest> whatToTest) {
 		String whatToTestProp = getAndLogWhatToTestSystemProp()
-		return [WhatToTest.CONSUL, WhatToTest.EUREKA, WhatToTest.ZOOKEEPER].any {
+		return whatToTest.any {
 			it.toString().equalsIgnoreCase(whatToTestProp)
-		}
 	}
 }
