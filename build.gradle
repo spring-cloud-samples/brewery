@@ -23,35 +23,17 @@ buildscript {
 
 def commonProject = project(':common')
 def acceptanceTestsProject = project(':acceptance-tests')
+def eurekaProject = project(':eureka')
+def techProjects = [commonProject, eurekaProject]
 
 allprojects {
-    apply plugin: 'docker'
     apply plugin: 'groovy'
 }
-
-/*task docker(type: Docker) {
-    dryRun true
-    addFile("acceptance-tests", "/acceptance-tests")
-    String m2Path = "${System.getenv('HOME')}/.m2"
-    String gradlePath = "${System.getenv('HOME')}/.gradle"
-    if (new File(m2Path).exists()) {
-        addFile(m2Path, "/root/.m2")
-    }
-    if (new File(gradlePath).exists()) {
-        addFile(gradlePath, "/root/.gradle")
-    }
-    workingDir('/acceptance-tests')
-}*/
 
 configure(subprojects) {
 
     apply plugin: 'spring-boot'
     apply plugin: 'maven-publish'
-    apply plugin: 'docker'
-
-    docker {
-        baseImage 'frolvlad/alpine-oraclejdk8'
-    }
 
     ext {
         dockerConfiguration = { int port ->
@@ -114,7 +96,9 @@ configure(subprojects) {
         compile 'org.codehaus.groovy:groovy-all:2.4.5'
         compile 'com.google.guava:guava:18.0'
         compile 'org.apache.tomcat.embed:tomcat-embed-core:8.0.23'
-        compile "org.springframework.cloud:spring-cloud-starter-zipkin:$SLEUTH"
+        compile "org.springframework.cloud:spring-cloud-starter-sleuth:$SLEUTH"
+        if (whatToTest('SLEUTH')) { compile "org.springframework.cloud:spring-cloud-starter-zipkin:$SLEUTH" }
+        if (whatToTest('SLEUTH_STREAM')) { compile "org.springframework.cloud:spring-cloud-sleuth-zipkin-stream:$SLEUTH_STREAM" }
     }
 }
 
@@ -133,7 +117,16 @@ List<String> systemPropsFromGradle() {
     return project.gradle.startParameter.systemPropertiesArgs.entrySet().collect{"-D${it.key}=${it.value}"}
 }
 
-configure(subprojects - commonProject) {
+configure(subprojects - commonProject - acceptanceTestsProject) {
+
+    apply plugin: 'docker'
+
+    docker {
+        baseImage 'frolvlad/alpine-oraclejdk8'
+    }
+}
+
+configure(subprojects - techProjects) {
 
     dependencies {
         compile(commonProject)
@@ -146,7 +139,7 @@ configure(subprojects - commonProject) {
             compile "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery:$ZOOKEEPER"
         }
         if (whatToTest('CONSUL')) { compile "org.springframework.cloud:spring-cloud-starter-consul-discovery:$CONSUL" }
-        if (whatToTest('EUREKA')) { compile "org.springframework.cloud:spring-cloud-starter-eureka-discovery:$EUREKA" }
+        if (whatToTest('EUREKA')) { compile "org.springframework.cloud:spring-cloud-starter-eureka:$EUREKA" }
         compile "org.springframework.cloud:spring-cloud-starter-feign:+"
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonMapper"
         compile "org.codehaus.jackson:jackson-core-asl:$jacksonMapper"
@@ -195,17 +188,6 @@ configure(subprojects - commonProject) {
         }
     }
 }
-
-/*
-task cleanAcceptanceTestsBuild << {
-    File buildDir = new File(project.rootDir, 'acceptance-tests/build')
-    if (buildDir.exists()) {
-        buildDir.deleteDir()
-    }
-}
-
-clean.dependsOn 'cleanAcceptanceTestsBuild'
-*/
 
 project(':acceptance-tests') {
 

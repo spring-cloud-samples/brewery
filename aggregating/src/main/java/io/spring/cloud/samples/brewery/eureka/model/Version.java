@@ -1,4 +1,4 @@
-package io.spring.cloud.samples.brewery.aggregating.model;
+package io.spring.cloud.samples.brewery.eureka.model;
 
 public class Version {
     public static final String AGGREGATING_V1 = "application/vnd.io.spring.cloud.aggregating.v1+json";

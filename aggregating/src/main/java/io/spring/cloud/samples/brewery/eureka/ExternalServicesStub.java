@@ -1,4 +1,4 @@
-package io.spring.cloud.samples.brewery.aggregating;
+package io.spring.cloud.samples.brewery.eureka;
 
 import java.io.Closeable;
 import java.io.IOException;

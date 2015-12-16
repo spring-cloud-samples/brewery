@@ -1,8 +1,8 @@
-package io.spring.cloud.samples.brewery.aggregating;
+package io.spring.cloud.samples.brewery.eureka;
 
-import io.spring.cloud.samples.brewery.aggregating.model.Ingredients;
-import io.spring.cloud.samples.brewery.aggregating.model.Order;
-import io.spring.cloud.samples.brewery.aggregating.model.Version;
+import io.spring.cloud.samples.brewery.eureka.model.Ingredients;
+import io.spring.cloud.samples.brewery.eureka.model.Order;
+import io.spring.cloud.samples.brewery.eureka.model.Version;
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

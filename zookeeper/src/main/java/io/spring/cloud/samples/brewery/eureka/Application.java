@@ -1,4 +1,4 @@
-package io.spring.cloud.samples.brewery.aggregating;
+package io.spring.cloud.samples.brewery.eureka;
 
 import com.google.common.collect.Iterables;
 import org.apache.curator.test.TestingServer;

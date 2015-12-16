@@ -1,4 +1,4 @@
-package io.spring.cloud.samples.brewery.aggregating;
+package io.spring.cloud.samples.brewery.eureka;
 
 import static com.netflix.hystrix.HystrixCommand.Setter.withGroupKey;
 import static com.netflix.hystrix.HystrixCommandGroupKey.Factory.asKey;
@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import io.spring.cloud.samples.brewery.aggregating.model.Ingredients;
+import io.spring.cloud.samples.brewery.eureka.model.Ingredients;
 import org.springframework.cloud.sleuth.TraceManager;
 import org.springframework.cloud.sleuth.instrument.hystrix.TraceCommand;
 import org.springframework.http.HttpEntity;
@@ -18,8 +18,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.netflix.hystrix.HystrixCommandKey;
 import lombok.extern.slf4j.Slf4j;
-import io.spring.cloud.samples.brewery.aggregating.model.Ingredient;
-import io.spring.cloud.samples.brewery.aggregating.model.Order;
+import io.spring.cloud.samples.brewery.eureka.model.Ingredient;
+import io.spring.cloud.samples.brewery.eureka.model.Order;
 
 @Slf4j
 class IngredientsAggregator {

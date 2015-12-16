@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package io.spring.cloud.samples.brewery.acceptance.common
-
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import io.spring.cloud.samples.brewery.acceptance.common.sleuth.SleuthHashing
@@ -30,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.boot.test.WebIntegrationTest
-import org.springframework.cloud.client.loadbalancer.LoadBalanced
 import org.springframework.http.*
 import org.springframework.retry.RetryCallback
 import org.springframework.retry.RetryContext
@@ -38,8 +36,6 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.util.JdkIdGenerator
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
-
-
 /**
  *  TODO: Split responsibilities
  */
@@ -52,7 +48,6 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	public static final String SPAN_ID_HEADER_NAME = 'X-SPAN-ID'
 
 	@Autowired ServiceUrlFetcher serviceUrlFetcher
-	@Autowired(required = false) @LoadBalanced RestTemplate loadBalanced
 	@Value('${presenting.timeout:30}') Integer timeout
 	@Value('${LOCAL_URL:http://localhost}') String zipkinQueryUrl
 
@@ -167,11 +162,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	}
 
 	RestTemplate restTemplate() {
-		if (System.getProperty(ServiceUrlFetcher.LOCAL_MODE_PROP) ||
-				System.getProperty(ServiceUrlFetcher.LOCAL_MODE_URL_PROP)) {
-			return new ExceptionLoggingRestTemplate()
-		}
-		return loadBalanced ?: new ExceptionLoggingRestTemplate()
+		return new ExceptionLoggingRestTemplate()
 	}
 
 }
