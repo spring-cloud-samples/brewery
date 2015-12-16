@@ -1,2 +1,3 @@
 rootProject.name = "brewery"
-include 'aggregating', 'bottling', 'maturing', 'presenting', 'common', 'zookeeper', 'acceptance-tests', 'eureka'
+include 'aggregating', 'bottling', 'maturing', 'presenting',
+		'common', 'zookeeper', 'acceptance-tests', 'eureka', 'zipkin'

@@ -1,0 +1,5 @@
+moduleEnabled(whatToTest('SLEUTH'))
+
+dependencies {
+	compile "org.springframework.cloud:spring-cloud-starter-zipkin:$SLEUTH"
+}

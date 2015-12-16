@@ -23,8 +23,10 @@ buildscript {
 
 def commonProject = project(':common')
 def acceptanceTestsProject = project(':acceptance-tests')
+def zipkinProject = project(':zipkin')
 def eurekaProject = project(':eureka')
-def techProjects = [commonProject, eurekaProject]
+def techProjects = [commonProject, eurekaProject, zipkinProject]
+def nonDockerProjects = [commonProject, acceptanceTestsProject, zipkinProject]
 
 allprojects {
     apply plugin: 'groovy'
@@ -46,6 +48,19 @@ configure(subprojects) {
         }
         createDockerTaskWithPort = { int port ->
             project.task([type: Docker], "docker", ext.dockerConfiguration.curry(port))
+        }
+        systemPropsFromGradle = {
+            project.gradle.startParameter.systemPropertiesArgs.entrySet().collect{"-D${it.key}=${it.value}"}
+        }
+        whatToTest = { String propName ->
+            String whatToTestProp = "WHAT_TO_TEST"
+            return propName.equalsIgnoreCase(project.gradle.startParameter.systemPropertiesArgs.get(whatToTestProp)) ?:
+                    propName.equalsIgnoreCase(System.getenv(whatToTestProp))
+        }
+        moduleEnabled = { boolean enabled ->
+            if (!enabled) {
+                project.tasks*.enabled = false
+            }
         }
     }
 
@@ -102,7 +117,7 @@ configure(subprojects) {
     }
 }
 
-configure([commonProject, acceptanceTestsProject]) {
+configure(nonDockerProjects) {
 
     bootRepackage {
         enabled = false
@@ -113,11 +128,7 @@ configure([commonProject, acceptanceTestsProject]) {
     }
 }
 
-List<String> systemPropsFromGradle() {
-    return project.gradle.startParameter.systemPropertiesArgs.entrySet().collect{"-D${it.key}=${it.value}"}
-}
-
-configure(subprojects - commonProject - acceptanceTestsProject) {
+configure(subprojects - nonDockerProjects) {
 
     apply plugin: 'docker'
 
@@ -168,9 +179,6 @@ configure(subprojects - techProjects) {
             transitive = false // this avoids affecting your version of Groovy/Spock
         }
         testCompile "org.spockframework:spock-spring"
-        testCompile( 'com.athaydes:spock-reports:1.2.7' ) {
-            transitive = false // this avoids affecting your version of Groovy/Spock
-        }
     }
 
     wrapper {
@@ -187,30 +195,6 @@ configure(subprojects - techProjects) {
             exceptionFormat = 'full'
         }
     }
-}
-
-project(':acceptance-tests') {
-
-    test {
-        exclude '**/*.*'
-    }
-
-    task acceptanceTests(type: Test) {
-        jvmArgs systemPropsFromGradle()
-        testLogging {
-            exceptionFormat = 'full'
-        }
-        include '**/*.*'
-
-        group = "Verification"
-        description = "Runs the acceptance tests"
-    }
-}
-
-boolean whatToTest(String propName) {
-    String whatToTestProp = "WHAT_TO_TEST"
-    return propName.equalsIgnoreCase(project.gradle.startParameter.systemPropertiesArgs.get(whatToTestProp)) ?:
-            propName.equalsIgnoreCase(System.getenv(whatToTestProp))
 }
 
 boolean defaultSettingsApplied() {

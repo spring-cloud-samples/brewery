@@ -1,3 +1,5 @@
+moduleEnabled(project.gradle.startParameter.systemPropertiesArgs.get('spring.profiles.active')?.split(',')?.contains('dev') ?: false)
+
 dependencies {
     compile "org.apache.curator:curator-test:2.8.0"
 }

@@ -41,10 +41,12 @@ Since pictures say more than words...
 ├── aggregating      (service that aggregates ingredients)
 ├── bottling         (service that bottles the beer)
 ├── common           (common code for the services)
+├── eureka           (Eureka server needed for Eureka tests)
 ├── gradle           (gradle related stuff)
 ├── img              (the fabulous diagram of the brewery)
 ├── maturing         (service that matures the beer)
 ├── presenting       (UI of the brewery)
+├── zipkin           (Zipkin related classes)
 └── zookeeper        (embedded zookeeper)
 ```
 
@@ -106,25 +108,16 @@ To run a single module just execute (e.g. `presenting` module):
 
 ## How to test it?
 
-You can check this script: https://github.com/spring-cloud/spring-cloud-zookeeper/blob/master/scripts/runAcceptanceTests.sh
-
-In general you need to:
-- boot up all the apps
-- run the tests of the `accepatance-tests` project
-
 The easiest way is to:
 
-Build the docker files and boot up the apps.
-
-```
-./gradlew clean build docker --parallel
-docker-compose up -d
-```
-Once their up just run the script:
-
-```
- bash -e runAcceptanceTests.sh
-```
+* Create a symbolic link somewhere on your drive to the `acceptance-tests/scripts/runDockerAcceptanceTests.sh` file.
+* You can execute that script with such options
+    * `-t` what do you want to test (`SLEUTH`, `ZOOKEEPER` etc.)
+    * `-v` in which version (`1.0.0.BUILD-SNAPSHOT`)
+    * `-i` is brewery repo already in place and doesn't need to be cloned again? (very useful for offline work)
+     
+Once you run the script, the brewery app will be cloned, built with proper lib versions and proper tests
+will be executed
 
 ## Authors
 
