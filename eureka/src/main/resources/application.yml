@@ -1,16 +1,17 @@
-spring.application.name: eureka
-
 logging:
   pattern:
     level: '%clr([trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}]){yellow} %5p'
 
 logging.file: build/log/application.log
 
+server:
+  port: 8761
+
 eureka:
   instance:
-    hostname: eureka
+    hostname: discovery
   client:
     registerWithEureka: false
     fetchRegistry: false
     serviceUrl:
-      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+      defaultZone: http://discovery:${server.port}/eureka/

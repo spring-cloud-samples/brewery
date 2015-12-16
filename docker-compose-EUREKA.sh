@@ -6,7 +6,7 @@ docker-compose -f $dockerComposeFile kill
 docker-compose -f $dockerComposeFile build
 
 # First boot up Zipkin Web and all of it's dependencies
-docker-compose -f $dockerComposeFile up -d eureka
+docker-compose -f $dockerComposeFile up -d discovery
 
 # Wait for the Zipkin apps to boot up
 READY_FOR_TESTS="no"

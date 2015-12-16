@@ -1,4 +1,0 @@
-spring.cloud.zookeeper:
-  dependencies:
-    maturing:
-      path: uservices/maturing

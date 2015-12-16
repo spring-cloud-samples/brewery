@@ -1,47 +1,41 @@
 aggregating:
   build: aggregating/build/docker
-  links:
-    - eureka
   environment:
-    spring.zipkin.enabled: 'false'
-  command: --eureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka/
+    spring.profiles.active: eureka
+  links:
+    - discovery
   ports:
     - 9992:9992
 
 maturing:
   build: maturing/build/docker
-  links:
-    - eureka
   environment:
-    spring.zipkin.enabled: 'false'
-  command: --eureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka/
+    spring.profiles.active: eureka
+  links:
+    - discovery
   ports:
     - 9993:9993
 
 bottling:
   build: bottling/build/docker
-  links:
-    - eureka
   environment:
-    spring.zipkin.enabled: 'false'
-  command: --eureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka/
+    spring.profiles.active: eureka
+  links:
+    - discovery
   ports:
     - 9994:9994
 
 presenting:
   build: presenting/build/docker
-  links:
-    - eureka
   environment:
-    spring.zipkin.enabled: 'false'
-  command: --eureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka/
+    spring.profiles.active: eureka
+  links:
+    - discovery
   ports:
     - 9991:9991
 
-eureka:
+discovery:
   build: eureka/build/docker
-  environment:
-    spring.zipkin.enabled: 'false'
   ports:
     - 8761:8761
 
