@@ -39,6 +39,5 @@ discovery:
   command: -server -bootstrap
   expose:
     - 8400
+    - 8500
     - 8600
-  ports:
-    - 8500:8500
