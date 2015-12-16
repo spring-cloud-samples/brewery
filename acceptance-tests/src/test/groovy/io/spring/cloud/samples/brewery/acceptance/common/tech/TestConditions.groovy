@@ -30,5 +30,6 @@ class TestConditions {
 		String whatToTestProp = getAndLogWhatToTestSystemProp()
 		return whatToTest.any {
 			it.toString().equalsIgnoreCase(whatToTestProp)
+		}
 	}
 }
