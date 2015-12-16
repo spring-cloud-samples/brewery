@@ -1,0 +1,78 @@
+aggregating:
+  build: aggregating/build/docker
+  links:
+    - zookeeper:zk
+    - rabbitmq
+  environment:
+      RABBIT_HOST: rabbitmq
+  command: --spring.cloud.zookeeper.connectString=zk:2181
+  ports:
+    - 9992:9992
+
+maturing:
+  build: maturing/build/docker
+  links:
+    - zookeeper:zk
+    - rabbitmq
+  environment:
+      RABBIT_HOST: rabbitmq
+  command: --spring.cloud.zookeeper.connectString=zk:2181
+  ports:
+    - 9993:9993
+
+bottling:
+  build: bottling/build/docker
+  links:
+    - zookeeper:zk
+    - rabbitmq
+  environment:
+      RABBIT_HOST: rabbitmq
+  command: --spring.cloud.zookeeper.connectString=zk:2181
+  ports:
+    - 9994:9994
+
+presenting:
+  build: presenting/build/docker
+  links:
+    - zookeeper:zk
+    - rabbitmq
+  environment:
+      RABBIT_HOST: rabbitmq
+  command: --spring.cloud.zookeeper.connectString=zk:2181
+  ports:
+    - 9991:9991
+
+zookeeper:
+  image: jplock/zookeeper
+  expose:
+    - 2181
+
+rabbitmq:
+  image: rabbitmq:management
+  expose:
+    - 5672
+  ports:
+    - 5672:5672
+    - 15672:15672
+
+zipkin:
+  build: zipkin-server/build/docker
+  environment:
+    - RABBIT_HOST=rabbitmq
+  expose:
+    - 9411
+  ports:
+    - 9411:9411
+  links:
+    - rabbitmq
+
+web:
+  image: openzipkin/zipkin-web:1.25.0
+  environment:
+    # Remove TRANSPORT_TYPE to disable tracing
+    - TRANSPORT_TYPE=http
+  ports:
+    - 8080:8080
+    - 9990:9990
+  links:
+    - zipkin:query

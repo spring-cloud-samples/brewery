@@ -1,0 +1,21 @@
+spring.application.name: zipkin
+
+logging:
+  pattern:
+    level: '%clr([trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}]){yellow} %5p'
+
+server:
+  port: 9411
+
+spring:
+  rabbitmq:
+    host: ${RABBIT_HOST:localhost}
+  sleuth:
+    enabled: false
+zipkin:
+  store:
+    type: mem
+
+spring.cloud.zookeeper.discovery.root: /pl
+
+logging.file: build/log/application.log

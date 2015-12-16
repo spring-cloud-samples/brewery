@@ -24,16 +24,14 @@ buildscript {
 def commonProject = project(':common')
 def acceptanceTestsProject = project(':acceptance-tests')
 def zipkinProject = project(':zipkin')
+def zipkinServerProject = project(':zipkin-server')
 def eurekaProject = project(':eureka')
-def techProjects = [commonProject, eurekaProject, zipkinProject]
+def techProjects = [commonProject, eurekaProject, zipkinProject, zipkinServerProject]
 def nonDockerProjects = [commonProject, acceptanceTestsProject, zipkinProject]
-
-allprojects {
-    apply plugin: 'groovy'
-}
 
 configure(subprojects) {
 
+    apply plugin: 'groovy'
     apply plugin: 'spring-boot'
     apply plugin: 'maven-publish'
 
@@ -103,6 +101,15 @@ configure(subprojects) {
             url "http://repo.spring.io/milestone"
         }
     }
+}
+
+configure(subprojects - zipkinServerProject) {
+
+    dependencyManagement {
+        imports { 
+            mavenBom "org.springframework.cloud:spring-cloud-starter-parent:Brixton.BUILD-SNAPSHOT"
+        }
+    }
 
     dependencies {
         compile 'org.projectlombok:lombok:1.16.6'
@@ -113,7 +120,10 @@ configure(subprojects) {
         compile 'org.apache.tomcat.embed:tomcat-embed-core:8.0.23'
         compile "org.springframework.cloud:spring-cloud-starter-sleuth:$SLEUTH"
         if (whatToTest('SLEUTH')) { compile "org.springframework.cloud:spring-cloud-starter-zipkin:$SLEUTH" }
-        if (whatToTest('SLEUTH_STREAM')) { compile "org.springframework.cloud:spring-cloud-sleuth-zipkin-stream:$SLEUTH_STREAM" }
+        if (whatToTest('SLEUTH_STREAM')) { 
+            compile "org.springframework.cloud:spring-cloud-starter-stream-rabbit"
+            compile "org.springframework.cloud:spring-cloud-sleuth-stream:$SLEUTH_STREAM"
+        }
     }
 }
 
@@ -146,7 +156,7 @@ configure(subprojects - techProjects) {
         compile "org.springframework.boot:spring-boot-starter-actuator"
         compile "org.springframework:spring-context-support"
         compile 'com.fasterxml.jackson.core:jackson-databind'
-        if (defaultSettingsApplied() || whatToTest('ZOOKEEPER') || whatToTest('SLEUTH')) {
+        if (!whatToTest('CONSUL') && !whatToTest('EUREKA')) {
             compile "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery:$ZOOKEEPER"
         }
         if (whatToTest('CONSUL')) { compile "org.springframework.cloud:spring-cloud-starter-consul-discovery:$CONSUL" }
