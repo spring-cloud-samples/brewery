@@ -57,8 +57,6 @@ zipkin:
   build: zipkin-server/build/docker
   environment:
     - RABBIT_HOST=rabbitmq
-  expose:
-    - 9411
   ports:
     - 9411:9411
   links:

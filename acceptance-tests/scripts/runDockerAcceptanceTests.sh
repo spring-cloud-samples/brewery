@@ -75,11 +75,15 @@ else
     fi
 fi
 
+echo -e "\nAppending if not present the following entry to gradle.properties\n"
+
 # Update the desired library version
 grep "${WHAT_TO_TEST}=${VERSION}" gradle.properties || echo "${WHAT_TO_TEST}=${VERSION}" >> gradle.properties
 
-echo "Using the following gradle.properties"
+echo -e "\n\nUsing the following gradle.properties"
 cat gradle.properties
+
+echo -e "\n\n"
 
 # Build and run docker images
 ./gradlew clean build docker --parallel --configure-on-demand

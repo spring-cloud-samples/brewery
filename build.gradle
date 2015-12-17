@@ -23,11 +23,10 @@ buildscript {
 
 def commonProject = project(':common')
 def acceptanceTestsProject = project(':acceptance-tests')
-def zipkinProject = project(':zipkin')
 def zipkinServerProject = project(':zipkin-server')
 def eurekaProject = project(':eureka')
-def techProjects = [commonProject, eurekaProject, zipkinProject, zipkinServerProject]
-def nonDockerProjects = [commonProject, acceptanceTestsProject, zipkinProject]
+def techProjects = [commonProject, eurekaProject, zipkinServerProject]
+def nonDockerProjects = [commonProject, acceptanceTestsProject]
 
 configure(subprojects) {
 

@@ -1,6 +1,4 @@
 dependencies {
-    if (whatToTest('SLEUTH')) { compile project(':zipkin') }
-
     compile 'org.springframework.retry:spring-retry:1.1.2.RELEASE'
 }
 
