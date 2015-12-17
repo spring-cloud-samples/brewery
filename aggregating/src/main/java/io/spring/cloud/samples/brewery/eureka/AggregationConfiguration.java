@@ -25,11 +25,6 @@ class AggregationConfiguration {
         return ingredientsProperties;
     }
 
-    @Bean(initMethod = "start", destroyMethod = "close")
-    ExternalServicesStub externalServicesStub(IngredientsProperties  ingredientsProperties) throws IOException {
-        return new ExternalServicesStub(ingredientsProperties);
-    }
-
     @Bean
     AsyncRestTemplate asyncRestTemplate() {
         return new AsyncRestTemplate();
@@ -38,11 +33,11 @@ class AggregationConfiguration {
     @Bean
     IngredientsAggregator ingredientsAggregator(IngredientsProperties ingredientsProperties,
                                                 IngredientWarehouse ingredientWarehouse,
-                                                TraceManager traceManager, AsyncRestTemplate asyncRestTemplate,
+                                                TraceManager traceManager,
                                                 MaturingServiceClient maturingServiceClient,
                                                 @LoadBalanced RestTemplate restTemplate) {
-        return new IngredientsAggregator(ingredientsProperties, ingredientWarehouse, traceManager,
-                asyncRestTemplate, maturingServiceClient, restTemplate);
+        return new IngredientsAggregator(ingredientsProperties, ingredientWarehouse,
+                traceManager, maturingServiceClient, restTemplate);
     }
 }
 

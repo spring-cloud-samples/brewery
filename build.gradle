@@ -30,7 +30,7 @@ def nonDockerProjects = [commonProject, acceptanceTestsProject]
 
 configure(subprojects) {
 
-    apply plugin: 'groovy'
+    apply plugin: 'java'
     apply plugin: 'spring-boot'
     apply plugin: 'maven-publish'
 
@@ -68,9 +68,6 @@ configure(subprojects) {
     group = 'io.spring.cloud.samples.brewery'
     version = buildNrLoc
 
-    sourceSets.main.java.srcDirs = []
-    sourceSets.main.groovy.srcDirs += ["src/main/java"]
-
     sourceCompatibility = '1.8'
 
     configurations {
@@ -81,9 +78,6 @@ configure(subprojects) {
                     // all modularized Groovy jars are replaced with groovy-all.jar by default.
                     if (details.requested.group == 'org.codehaus.groovy' && details.requested.name != "groovy-all") {
                         details.useTarget("org.codehaus.groovy:groovy-all:${details.requested.version}")
-                    }
-                    if (details.requested.name == 'servlet-api') {
-                        details.useTarget("org.apache.tomcat.embed:tomcat-embed-core:8.0.23")
                     }
                 }
             }
@@ -114,8 +108,6 @@ configure(subprojects - zipkinServerProject) {
         compile 'org.projectlombok:lombok:1.16.6'
         compile "org.springframework.boot:spring-boot-starter-web"
         compile "org.springframework:spring-web"
-        compile 'org.codehaus.groovy:groovy-all:2.4.5'
-        compile 'com.google.guava:guava:18.0'
         compile 'org.apache.tomcat.embed:tomcat-embed-core:8.0.23'
         compile "org.springframework.cloud:spring-cloud-starter-sleuth:$SLEUTH"
         if (whatToTest('SLEUTH')) { compile "org.springframework.cloud:spring-cloud-starter-zipkin:$SLEUTH" }
@@ -164,30 +156,14 @@ configure(subprojects - techProjects) {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonMapper"
         compile "org.codehaus.jackson:jackson-core-asl:$jacksonMapper"
         compile 'org.apache.commons:commons-lang3:3.4'
-        compile 'org.apache.tomcat.embed:tomcat-embed-el'
         compile 'com.jayway.jsonpath:json-path-assert:2.0.0'
         compile 'org.yaml:snakeyaml'
         compile 'org.hibernate:hibernate-validator'
         compile "org.aspectj:aspectjrt"
-        compile 'org.codehaus.gpars:gpars:1.2.1'
-        compile 'net.sf.ehcache:ehcache:2.10.1'
-        compile 'org.jolokia:jolokia-core'
 
         runtime 'cglib:cglib-nodep:3.1'
         runtime 'org.objenesis:objenesis:2.2'
         runtime 'org.aspectj:aspectjweaver'
-
-        testCompile 'com.jayway.awaitility:awaitility:1.6.5'
-        testCompile('com.github.tomakehurst:wiremock:2.0.4-beta') {
-            exclude group: 'org.mortbay.jetty', module: 'servlet-api'
-        }
-        testCompile "org.springframework.boot:spring-boot-starter-test"
-        testCompile "com.jayway.restassured:rest-assured:$restAssuredVersion"
-        testCompile "com.jayway.restassured:spring-mock-mvc:$restAssuredVersion"
-        testCompile( 'com.athaydes:spock-reports:1.2.7' ) {
-            transitive = false // this avoids affecting your version of Groovy/Spock
-        }
-        testCompile "org.spockframework:spock-spring"
     }
 
     wrapper {
@@ -204,10 +180,4 @@ configure(subprojects - techProjects) {
             exceptionFormat = 'full'
         }
     }
-}
-
-boolean defaultSettingsApplied() {
-    String whatToTestProp = "WHAT_TO_TEST"
-    return !project.gradle.startParameter.systemPropertiesArgs.containsKey(whatToTestProp) &&
-            !System.getenv().containsKey(whatToTestProp)
 }

@@ -1,10 +1,25 @@
+apply plugin: 'groovy'
+
 dependencies {
     compile 'org.springframework.retry:spring-retry:1.1.2.RELEASE'
+    compile 'org.codehaus.groovy:groovy-all:2.4.5'
+
+    testCompile 'com.jayway.awaitility:awaitility:1.6.5'
+    testCompile "org.springframework.boot:spring-boot-starter-test"
+    testCompile "com.jayway.restassured:rest-assured:$restAssuredVersion"
+    testCompile "com.jayway.restassured:spring-mock-mvc:$restAssuredVersion"
+    testCompile( 'com.athaydes:spock-reports:1.2.7' ) {
+        transitive = false // this avoids affecting your version of Groovy/Spock
+    }
+    testCompile "org.spockframework:spock-spring"
 }
 
 test {
     exclude '**/*.*'
 }
+
+sourceSets.main.java.srcDirs = []
+sourceSets.main.groovy.srcDirs += ["src/main/java"]
 
 task acceptanceTests(type: Test) {
     jvmArgs systemPropsFromGradle()

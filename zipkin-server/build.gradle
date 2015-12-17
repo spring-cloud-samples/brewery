@@ -12,8 +12,6 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-actuator"
     compile "org.springframework.cloud:spring-cloud-sleuth-zipkin-stream"
     compile "org.springframework.cloud:spring-cloud-starter-stream-rabbit"
-    // why?
-    compile 'org.codehaus.groovy:groovy-all:2.4.5'
 }
 
 createDockerTaskWithPort(9411)
