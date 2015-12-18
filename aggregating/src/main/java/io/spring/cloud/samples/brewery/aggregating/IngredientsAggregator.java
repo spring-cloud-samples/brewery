@@ -1,44 +1,28 @@
-package io.spring.cloud.samples.brewery.eureka;
+package io.spring.cloud.samples.brewery.aggregating;
 
-import static com.netflix.hystrix.HystrixCommand.Setter.withGroupKey;
-import static com.netflix.hystrix.HystrixCommandGroupKey.Factory.asKey;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import io.spring.cloud.samples.brewery.eureka.model.IngredientType;
-import io.spring.cloud.samples.brewery.eureka.model.Ingredients;
-import org.springframework.cloud.sleuth.TraceManager;
-import org.springframework.cloud.sleuth.instrument.hystrix.TraceCommand;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.web.client.AsyncRestTemplate;
+import io.spring.cloud.samples.brewery.aggregating.model.Ingredients;
 import org.springframework.web.client.RestTemplate;
 
-import com.netflix.hystrix.HystrixCommandKey;
 import lombok.extern.slf4j.Slf4j;
-import io.spring.cloud.samples.brewery.eureka.model.Ingredient;
-import io.spring.cloud.samples.brewery.eureka.model.Order;
+import io.spring.cloud.samples.brewery.aggregating.model.Ingredient;
+import io.spring.cloud.samples.brewery.aggregating.model.Order;
 
 @Slf4j
 class IngredientsAggregator {
 
-    private static final Integer DEFAULT_QUANTITY = 1000;
-
     private final IngredientsProperties ingredientsProperties;
     private final MaturingServiceUpdater maturingUpdater;
     private final IngredientWarehouse ingredientWarehouse;
-    private final TraceManager traceManager;
+    private final Integer threshold;
 
     IngredientsAggregator(IngredientsProperties ingredientsProperties,
                           IngredientWarehouse ingredientWarehouse,
-                          TraceManager traceManager,
                           MaturingServiceClient maturingServiceClient, RestTemplate restTemplate) {
         this.ingredientWarehouse = ingredientWarehouse;
-        this.traceManager = traceManager;
+        this.threshold = ingredientsProperties.getThreshold();
         this.maturingUpdater = new MaturingServiceUpdater(ingredientsProperties,
                 ingredientWarehouse, maturingServiceClient, restTemplate);
         this.ingredientsProperties = ingredientsProperties;
@@ -46,6 +30,8 @@ class IngredientsAggregator {
 
     // TODO: Consider simplifying the case by removing the DB (always matches threshold)
     Ingredients fetchIngredients(Order order, String processId) {
+        log.info("Fetching ingredients for order [{}] , processId [{}] and threshold [{}]",
+                order, processId, threshold);
         ingredients(order).stream()
                 .filter(ingredient -> ingredient != null)
                 .forEach(ingredientWarehouse::addIngredient);
@@ -56,7 +42,7 @@ class IngredientsAggregator {
     private List<Ingredient> ingredients(Order order) {
         return order.getItems()
                 .stream()
-                .map(ingredientType -> new Ingredient(ingredientType, DEFAULT_QUANTITY))
+                .map(ingredientType -> new Ingredient(ingredientType, ingredientsProperties.getReturnedIngredientsQuantity()))
                 .collect(Collectors.toList());
     }
 

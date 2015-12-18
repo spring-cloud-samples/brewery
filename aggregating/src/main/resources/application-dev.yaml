@@ -1,1 +1,2 @@
 spring.zipkin.enabled: false
+ingredients.threshold: 1500

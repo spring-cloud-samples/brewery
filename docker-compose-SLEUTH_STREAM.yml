@@ -3,8 +3,10 @@ aggregating:
   links:
     - zookeeper:zk
     - rabbitmq
+    - configserver
   environment:
       RABBIT_HOST: rabbitmq
+      spring.cloud.config.uri: http://configserver:8888
   command: --spring.cloud.zookeeper.connectString=zk:2181
   ports:
     - 9992:9992
@@ -14,8 +16,10 @@ maturing:
   links:
     - zookeeper:zk
     - rabbitmq
+    - configserver
   environment:
       RABBIT_HOST: rabbitmq
+      spring.cloud.config.uri: http://configserver:8888
   command: --spring.cloud.zookeeper.connectString=zk:2181
   ports:
     - 9993:9993
@@ -25,8 +29,10 @@ bottling:
   links:
     - zookeeper:zk
     - rabbitmq
+    - configserver
   environment:
       RABBIT_HOST: rabbitmq
+      spring.cloud.config.uri: http://configserver:8888
   command: --spring.cloud.zookeeper.connectString=zk:2181
   ports:
     - 9994:9994
@@ -36,11 +42,18 @@ presenting:
   links:
     - zookeeper:zk
     - rabbitmq
+    - configserver
   environment:
       RABBIT_HOST: rabbitmq
+      spring.cloud.config.uri: http://configserver:8888
   command: --spring.cloud.zookeeper.connectString=zk:2181
   ports:
     - 9991:9991
+
+configserver:
+  build: config-server/build/docker
+  ports:
+    - 8888:8888
 
 zookeeper:
   image: jplock/zookeeper

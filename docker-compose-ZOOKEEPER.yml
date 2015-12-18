@@ -2,9 +2,11 @@ aggregating:
   build: aggregating/build/docker
   links:
     - zookeeper:zk
+    - configserver
   environment:
     spring.zipkin.enabled: 'false'
     spring.profiles.active: deps
+    spring.cloud.config.uri: http://configserver:8888
   command: --spring.cloud.zookeeper.connectString=zk:2181
   ports:
     - 9992:9992
@@ -13,9 +15,11 @@ maturing:
   build: maturing/build/docker
   links:
     - zookeeper:zk
+    - configserver
   environment:
     spring.zipkin.enabled: 'false'
     spring.profiles.active: deps
+    spring.cloud.config.uri: http://configserver:8888
   command: --spring.cloud.zookeeper.connectString=zk:2181
   ports:
     - 9993:9993
@@ -24,9 +28,11 @@ bottling:
   build: bottling/build/docker
   links:
     - zookeeper:zk
+    - configserver
   environment:
     spring.zipkin.enabled: 'false'
     spring.profiles.active: deps
+    spring.cloud.config.uri: http://configserver:8888
   command: --spring.cloud.zookeeper.connectString=zk:2181
   ports:
     - 9994:9994
@@ -35,12 +41,19 @@ presenting:
   build: presenting/build/docker
   links:
     - zookeeper:zk
+    - configserver
   environment:
     spring.zipkin.enabled: 'false'
     spring.profiles.active: deps
+    spring.cloud.config.uri: http://configserver:8888
   command: --spring.cloud.zookeeper.connectString=zk:2181
   ports:
     - 9991:9991
+
+configserver:
+  build: config-server/build/docker
+  ports:
+    - 8888:8888
 
 zookeeper:
   image: jplock/zookeeper

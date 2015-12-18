@@ -1,4 +1,4 @@
-package io.spring.cloud.samples.brewery.eureka.model;
+package io.spring.cloud.samples.brewery.aggregating.model;
 
 import lombok.Data;
 

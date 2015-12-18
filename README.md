@@ -8,7 +8,13 @@ Ever wanted to brew your beer using microservices? This repository will allow yo
 
 Since pictures say more than words...
 
+Here is the business flow of the app
+
 ![Diagram](img/Brewery.png)
+
+And here additional tech related applications:
+
+![Diagram](img/Tech_apps.png)
 
 ### Presenting service (point of entry to the system)
 

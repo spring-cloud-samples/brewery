@@ -1,9 +1,9 @@
-package io.spring.cloud.samples.brewery.eureka;
+package io.spring.cloud.samples.brewery.aggregating;
 
-import io.spring.cloud.samples.brewery.eureka.model.IngredientType;
-import io.spring.cloud.samples.brewery.eureka.model.Ingredients;
+import io.spring.cloud.samples.brewery.aggregating.model.IngredientType;
+import io.spring.cloud.samples.brewery.aggregating.model.Ingredients;
 import org.springframework.stereotype.Service;
-import io.spring.cloud.samples.brewery.eureka.model.Ingredient;
+import io.spring.cloud.samples.brewery.aggregating.model.Ingredient;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

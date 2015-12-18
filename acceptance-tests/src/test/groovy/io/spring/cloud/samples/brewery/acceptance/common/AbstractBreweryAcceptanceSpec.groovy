@@ -141,8 +141,10 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 		headers.add(SPAN_ID_HEADER_NAME, new JdkIdGenerator().generateId().toString())
 		headers.add("TEST-COMMUNICATION-TYPE", communicationType.name())
 		URI uri = URI.create("${serviceUrlFetcher.presentingServiceUrl()}/present/order")
-		log.info("Request with order for all ingredients to presenting service for uri [$uri] with headers [$headers] is ready")
-		return new RequestEntity<>(allIngredients(), headers, HttpMethod.POST, uri)
+		Order allIngredients = allIngredients()
+		RequestEntity requestEntity = new RequestEntity<>(allIngredients, headers, HttpMethod.POST, uri)
+		log.info("Request with order for all ingredients to presenting service [$requestEntity] is ready")
+		return requestEntity
 	}
 
 	ResponseEntity<String> presenting_service_has_been_called(RequestEntity requestEntity) {

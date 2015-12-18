@@ -1,8 +1,8 @@
-package io.spring.cloud.samples.brewery.eureka;
+package io.spring.cloud.samples.brewery.aggregating;
 
-import io.spring.cloud.samples.brewery.eureka.model.IngredientType;
-import io.spring.cloud.samples.brewery.eureka.model.Ingredients;
-import io.spring.cloud.samples.brewery.eureka.model.Version;
+import io.spring.cloud.samples.brewery.aggregating.model.IngredientType;
+import io.spring.cloud.samples.brewery.aggregating.model.Ingredients;
+import io.spring.cloud.samples.brewery.aggregating.model.Version;
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
@@ -30,7 +30,8 @@ class MaturingServiceUpdater {
 
     Ingredients updateIfLimitReached(Ingredients ingredients, String processId) {
         if (ingredientsMatchTheThreshold(ingredients)) {
-            log.info("Ingredients match the threshold - time to notify the maturing service!");
+            log.info("Ingredients match the threshold [{}] - time to notify the maturing service!",
+                    ingredientsProperties.getThreshold());
             notifyMaturingService(ingredients, processId);
             ingredientWarehouse.useIngredients(ingredientsProperties.getThreshold());
         }

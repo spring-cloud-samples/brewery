@@ -1,4 +1,4 @@
-package io.spring.cloud.samples.brewery.eureka;
+package io.spring.cloud.samples.brewery.aggregating;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
