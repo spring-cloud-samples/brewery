@@ -182,6 +182,7 @@ configure(subprojects - techProjects) {
         jvmArgs systemPropsFromGradle()
         testLogging {
             exceptionFormat = 'full'
+            showStandardStreams = true
         }
     }
 }

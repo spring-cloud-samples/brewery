@@ -25,6 +25,7 @@ task acceptanceTests(type: Test) {
     jvmArgs systemPropsFromGradle()
     testLogging {
         exceptionFormat = 'full'
+        showStandardStreams = true
     }
     include '**/*.*'
 
