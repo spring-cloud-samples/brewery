@@ -78,7 +78,7 @@ fi
 echo -e "\nAppending if not present the following entry to gradle.properties\n"
 
 # Update the desired library version
-grep "${WHAT_TO_TEST}=${VERSION}" gradle.properties || echo "${WHAT_TO_TEST}=${VERSION}" >> gradle.properties
+grep "${WHAT_TO_TEST}=${VERSION}" gradle.properties || echo -e "\n${WHAT_TO_TEST}=${VERSION}" >> gradle.properties
 
 echo -e "\n\nUsing the following gradle.properties"
 cat gradle.properties
