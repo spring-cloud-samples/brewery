@@ -116,8 +116,6 @@ if [[ "${TESTS_PASSED}" == "yes" ]] ; then
     echo -e "\n\nTests passed successfully."
     exit 0
 else
-    echo "\n\nTests failed - printing docker logs."
-    docker-compose -f docker-compose-$WHAT_TO_TEST.yml logs > log.log &
-    cat log.log
+    echo -e "\n\nTests failed..."
     exit 1
 fi
