@@ -1,7 +1,7 @@
 moduleEnabled(whatToTest('EUREKA'))
 
 dependencies {
-    compile "org.springframework.cloud:spring-cloud-starter-eureka-server:$EUREKA"
+    compile "org.springframework.cloud:spring-cloud-starter-eureka-server"
 }
 
 createDockerTaskWithPort(8761)

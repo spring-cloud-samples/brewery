@@ -94,7 +94,7 @@ configure(subprojects) {
 
     dependencyManagement {
         imports {
-            mavenBom "org.springframework.cloud:spring-cloud-starter-parent:Brixton.BUILD-SNAPSHOT"
+            mavenBom "org.springframework.cloud:spring-cloud-starter-parent:$BOM_VERSION"
         }
     }
 }
@@ -106,11 +106,11 @@ configure(subprojects - zipkinServerProject - acceptanceTestsProject) {
         compile "org.springframework.boot:spring-boot-starter-web"
         compile "org.springframework:spring-web"
         compile 'org.apache.tomcat.embed:tomcat-embed-core:8.0.23'
-        compile "org.springframework.cloud:spring-cloud-starter-sleuth:$SLEUTH"
-        compile "org.springframework.cloud:spring-cloud-starter-config:$CONFIG_SERVER"
+        compile "org.springframework.cloud:spring-cloud-starter-sleuth"
+        compile "org.springframework.cloud:spring-cloud-starter-config"
         if (whatToTest('SLEUTH_STREAM')) {
             compile "org.springframework.cloud:spring-cloud-starter-stream-rabbit"
-            compile "org.springframework.cloud:spring-cloud-sleuth-stream:$SLEUTH_STREAM"
+            compile "org.springframework.cloud:spring-cloud-sleuth-stream"
         }
     }
 }
@@ -118,7 +118,7 @@ configure(subprojects - zipkinServerProject - acceptanceTestsProject) {
 configure(zipkinRelatedProjects) {
 
     dependencies {
-        if (whatToTest('SLEUTH')) { compile "org.springframework.cloud:spring-cloud-starter-zipkin:$SLEUTH" }
+        if (whatToTest('SLEUTH')) { compile "org.springframework.cloud:spring-cloud-starter-zipkin" }
     }
 }
 
@@ -152,10 +152,10 @@ configure(subprojects - techProjects) {
         compile "org.springframework:spring-context-support"
         compile 'com.fasterxml.jackson.core:jackson-databind'
         if (!whatToTest('CONSUL') && !whatToTest('EUREKA')) {
-            compile "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery:$ZOOKEEPER"
+            compile "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery"
         }
-        if (whatToTest('CONSUL')) { compile "org.springframework.cloud:spring-cloud-starter-consul-discovery:$CONSUL" }
-        if (whatToTest('EUREKA')) { compile "org.springframework.cloud:spring-cloud-starter-eureka:$EUREKA" }
+        if (whatToTest('CONSUL')) { compile "org.springframework.cloud:spring-cloud-starter-consul-discovery" }
+        if (whatToTest('EUREKA')) { compile "org.springframework.cloud:spring-cloud-starter-eureka" }
         compile "org.springframework.cloud:spring-cloud-starter-feign:+"
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonMapper"
         compile "org.codehaus.jackson:jackson-core-asl:$jacksonMapper"

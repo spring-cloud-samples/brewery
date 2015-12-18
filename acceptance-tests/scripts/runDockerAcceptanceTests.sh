@@ -11,11 +11,13 @@ else
 fi
 WAIT_TIME="${WAIT_TIME:-5}"
 RETRIES="${RETRIES:-48}"
-DEFAULT_VERSION="${DEFAULT_VERSION:-1.0.0.BUILD-SNAPSHOT}"
+DEFAULT_VERSION="${DEFAULT_VERSION:-Brixton.BUILD-SNAPSHOT}"
 
 HEALTH_HOST="127.0.0.1"
 HEALTH_PORTS=('9991' '9992' '9993' '9994')
 HEALTH_ENDPOINTS="$( printf "http://${HEALTH_HOST}:%s/health " "${HEALTH_PORTS[@]}" )"
+
+BOM_VERSION_PROP_NAME="BOM_VERSION"
 
 # Parse the script arguments
 while getopts ":t:o:v:r" opt; do
@@ -62,6 +64,7 @@ export VERSION=$VERSION
 export HEALTH_HOST=$HEALTH_HOST
 export WAIT_TIME=$WAIT_TIME
 export RETRIES=$RETRIES
+export BOM_VERSION_PROP_NAME=$BOM_VERSION_PROP_NAME
 
 # Clone or update the brewery repository
 if [[ ! -e "${REPO_LOCAL}/.git" ]]; then
@@ -77,8 +80,8 @@ fi
 
 echo -e "\nAppending if not present the following entry to gradle.properties\n"
 
-# Update the desired library version
-grep "${WHAT_TO_TEST}=${VERSION}" gradle.properties || echo -e "\n${WHAT_TO_TEST}=${VERSION}" >> gradle.properties
+# Update the desired BOM version
+grep "${BOM_VERSION_PROP_NAME}=${VERSION}" gradle.properties || echo -e "\n${BOM_VERSION_PROP_NAME}=${VERSION}" >> gradle.properties
 
 echo -e "\n\nUsing the following gradle.properties"
 cat gradle.properties
