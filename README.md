@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/spring-cloud-samples/brewery.svg)](https://travis-ci.org/spring-cloud-samples/brewery)
+
 # Brewery
 
 Ever wanted to brew your beer using microservices? This repository will allow you to do so!

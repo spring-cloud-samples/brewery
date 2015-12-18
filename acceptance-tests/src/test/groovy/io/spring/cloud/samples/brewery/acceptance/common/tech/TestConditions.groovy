@@ -11,6 +11,10 @@ class TestConditions {
 		String whatToTestProp = System.getProperty(WhatToTest.WHAT_TO_TEST) ?:
 				System.getenv(WhatToTest.WHAT_TO_TEST)
 		println "WHAT_TO_TEST system prop equals [$whatToTestProp]"
+		if (!whatToTestProp) {
+			throw new WhatToTestSystemPropertyMissingException("You have to provide the WHAT_TO_TEST system property! " +
+					"It can have one of these values ${WhatToTest.values()}")
+		}
 		return whatToTestProp.trim()
 	}
 
@@ -30,6 +34,12 @@ class TestConditions {
 		String whatToTestProp = getAndLogWhatToTestSystemProp()
 		return whatToTest.any {
 			it.toString().equalsIgnoreCase(whatToTestProp)
+		}
+	}
+
+	static class WhatToTestSystemPropertyMissingException extends RuntimeException {
+		WhatToTestSystemPropertyMissingException(String msg) {
+			super(msg)
 		}
 	}
 }

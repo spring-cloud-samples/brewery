@@ -29,7 +29,6 @@ import io.spring.cloud.samples.brewery.acceptance.model.ProcessState
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.SpringApplicationContextLoader
-import org.springframework.boot.test.WebIntegrationTest
 import org.springframework.http.*
 import org.springframework.retry.RetryCallback
 import org.springframework.retry.RetryContext
@@ -42,7 +41,6 @@ import spock.lang.Specification
  *  TODO: Split responsibilities
  */
 @ContextConfiguration(classes = TestConfiguration, loader = SpringApplicationContextLoader)
-@WebIntegrationTest(randomPort = true)
 @Slf4j
 abstract class AbstractBreweryAcceptanceSpec extends Specification implements SleuthHashing {
 
