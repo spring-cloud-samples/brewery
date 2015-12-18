@@ -22,9 +22,6 @@ import org.springframework.util.JdkIdGenerator
 import spock.lang.Requires
 import spock.lang.Unroll
 
-import static com.jayway.awaitility.Awaitility.await
-import static java.util.concurrent.TimeUnit.SECONDS
-
 @Requires({ TestConditions.SLEUTH() })
 class SleuthBreweryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 
@@ -35,13 +32,9 @@ class SleuthBreweryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 		when: 'the presenting service has been called with all ingredients'
 			presenting_service_has_been_called(requestEntity)
 		then: 'eventually beer will be brewed with same Trace-Id as the first request'
-			await()
-					.atMost(timeout, SECONDS)
-					.until(beer_has_been_brewed_for_process_id(referenceProcessId))
+			beer_has_been_brewed_for_process_id(referenceProcessId)
 		and: 'entry will be present in Zipkin'
-			await()
-					.atMost(timeout, SECONDS)
-					.until(entry_for_trace_id_is_present_in_Zipkin(referenceProcessId))
+			entry_for_trace_id_is_present_in_Zipkin(referenceProcessId)
 		where:
 		    // will add FEIGN once REST_TEMPLATE tests stabilize
 			communicationType << [CommunicationType.REST_TEMPLATE]

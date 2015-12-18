@@ -37,6 +37,9 @@ import org.springframework.util.JdkIdGenerator
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 
+import static com.jayway.awaitility.Awaitility.await
+import static java.util.concurrent.TimeUnit.SECONDS
+
 /**
  *  TODO: Split responsibilities
  */
@@ -59,8 +62,8 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 		log.info("Finished test")
 	}
 
-	Runnable beer_has_been_brewed_for_process_id(String processId) {
-		return new Runnable() {
+	void beer_has_been_brewed_for_process_id(String processId) {
+		await().atMost(timeout, SECONDS).until(new Runnable() {
 			@Override
 			void run() {
 				ResponseEntity<String> process = checkStateOfTheProcess(processId)
@@ -68,11 +71,11 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 				assert process.statusCode == HttpStatus.OK
 				assert stateFromJson(process) == ProcessState.DONE.name()
 			}
-		}
+		})
 	}
 
-	Runnable entry_for_trace_id_is_present_in_Zipkin(String traceId) {
-		return new Runnable() {
+	void entry_for_trace_id_is_present_in_Zipkin(String traceId) {
+		await().atMost(timeout, SECONDS).until(new Runnable() {
 			@Override
 			void run() {
 				ResponseEntity<String> response = checkStateOfTheTraceId(traceId)
@@ -83,7 +86,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 						response.body.contains(it)
 					}
 			}
-		}
+		})
 	}
 
 	ResponseEntity<String> checkStateOfTheProcess(String processId) {
@@ -147,14 +150,19 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 		return requestEntity
 	}
 
-	ResponseEntity<String> presenting_service_has_been_called(RequestEntity requestEntity) {
-		return new ExceptionLoggingRetryTemplate(timeout).execute(
-				new RetryCallback<ResponseEntity<String>, Exception>() {
-					@Override
-					ResponseEntity<String> doWithRetry(RetryContext retryContext) throws Exception {
-						return restTemplate().exchange(requestEntity, String)
-					}
+	void presenting_service_has_been_called(RequestEntity requestEntity) {
+		await().atMost(timeout, SECONDS).until(new Runnable() {
+				@Override
+				void run() {
+					new ExceptionLoggingRetryTemplate(timeout).execute(
+							new RetryCallback<ResponseEntity<String>, Exception>() {
+								@Override
+								ResponseEntity<String> doWithRetry(RetryContext retryContext) throws Exception {
+									return restTemplate().exchange(requestEntity, String)
+								}
+							})
 				}
+			}
 		)
 	}
 

@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 package io.spring.cloud.samples.brewery.acceptance
-
 import io.spring.cloud.samples.brewery.acceptance.common.AbstractBreweryAcceptanceSpec
-import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConditions
 import io.spring.cloud.samples.brewery.acceptance.common.WhatToTest
+import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConditions
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
 import org.springframework.http.RequestEntity
 import org.springframework.util.JdkIdGenerator
 import spock.lang.Requires
 import spock.lang.Unroll
-
-import static com.jayway.awaitility.Awaitility.await
-import static java.util.concurrent.TimeUnit.SECONDS
 
 @Requires({ TestConditions.SERVICE_DISCOVERY() })
 class ServiceDiscoveryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
@@ -37,7 +33,7 @@ class ServiceDiscoveryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 		when: 'the presenting service has been called with all ingredients'
 			presenting_service_has_been_called(requestEntity)
 		then: 'eventually beer for that process id will be brewed'
-			await().atMost(timeout, SECONDS).until(beer_has_been_brewed_for_process_id(referenceProcessId))
+			beer_has_been_brewed_for_process_id(referenceProcessId)
 		where:
 		    // will add FEIGN once REST_TEMPLATE tests stabilize
 			communicationType << [CommunicationType.REST_TEMPLATE]
