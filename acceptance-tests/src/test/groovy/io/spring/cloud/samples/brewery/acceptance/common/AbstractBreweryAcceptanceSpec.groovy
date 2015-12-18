@@ -63,7 +63,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	}
 
 	void beer_has_been_brewed_for_process_id(String processId) {
-		await().atMost(timeout, SECONDS).until(new Runnable() {
+		await().pollInterval(1, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
 			@Override
 			void run() {
 				ResponseEntity<String> process = checkStateOfTheProcess(processId)
@@ -75,7 +75,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	}
 
 	void entry_for_trace_id_is_present_in_Zipkin(String traceId) {
-		await().atMost(timeout, SECONDS).until(new Runnable() {
+		await().pollInterval(1, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
 			@Override
 			void run() {
 				ResponseEntity<String> response = checkStateOfTheTraceId(traceId)
@@ -151,14 +151,16 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	}
 
 	void presenting_service_has_been_called(RequestEntity requestEntity) {
-		await().atMost(timeout, SECONDS).until(new Runnable() {
+		await().pollInterval(1, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
 				@Override
 				void run() {
 					new ExceptionLoggingRetryTemplate(timeout).execute(
 							new RetryCallback<ResponseEntity<String>, Exception>() {
 								@Override
 								ResponseEntity<String> doWithRetry(RetryContext retryContext) throws Exception {
-									return restTemplate().exchange(requestEntity, String)
+									ResponseEntity<String> responseEntity = restTemplate().exchange(requestEntity, String)
+									assert responseEntity.statusCode == HttpStatus.OK
+									return responseEntity
 								}
 							})
 				}

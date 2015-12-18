@@ -6,7 +6,7 @@ REPO_URL="${REPO_URL:-https://github.com/spring-cloud-samples/brewery.git}"
 REPO_BRANCH="${REPO_BRANCH:-master}"
 if [[ -d acceptance-tests ]]; then
   REPO_LOCAL="${REPO_LOCAL:-.}"
-else 
+else
   REPO_LOCAL="${REPO_LOCAL:-brewery}"
 fi
 WAIT_TIME="${WAIT_TIME:-5}"
@@ -117,5 +117,11 @@ if [[ "${TESTS_PASSED}" == "yes" ]] ; then
     exit 0
 else
     echo -e "\n\nTests failed..."
+    NUMBER_OF_LINES_TO_LOG=200
+    echo `docker ps | sed -n '1!p'` > /tmp/containers.txt
+    while read field1 field2 field3; do
+      echo -e "\n\nContainer name [$field2] with id [$field1] logs: \n\n"
+      docker logs --tail=$NUMBER_OF_LINES_TO_LOG -t $field1
+    done < /tmp/containers.txt
     exit 1
 fi
