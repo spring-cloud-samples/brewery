@@ -17,5 +17,10 @@ for i in $( seq 1 "${RETRIES}" ); do
     echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
 done
 
+if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
+    echo "Config server failed to start..."
+    exit 1
+fi
+
 echo -e "\n\nStarting brewery apps..."
 docker-compose -f $dockerComposeFile up -d
