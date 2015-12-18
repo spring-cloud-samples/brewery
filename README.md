@@ -49,6 +49,7 @@ And here additional tech related applications:
 ├── aggregating      (service that aggregates ingredients)
 ├── bottling         (service that bottles the beer)
 ├── common           (common code for the services)
+├── config-server    (set up for the config server)
 ├── eureka           (Eureka server needed for Eureka tests)
 ├── gradle           (gradle related stuff)
 ├── img              (the fabulous diagram of the brewery)
