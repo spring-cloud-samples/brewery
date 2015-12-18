@@ -15,8 +15,8 @@
  */
 package io.spring.cloud.samples.brewery.acceptance.common
 
+import java.lang.invoke.MethodHandles
 import groovy.json.JsonSlurper
-import groovy.util.logging.Slf4j
 import io.spring.cloud.samples.brewery.acceptance.common.sleuth.SleuthHashing
 import io.spring.cloud.samples.brewery.acceptance.common.tech.ExceptionLoggingRestTemplate
 import io.spring.cloud.samples.brewery.acceptance.common.tech.ExceptionLoggingRetryTemplate
@@ -26,6 +26,8 @@ import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
 import io.spring.cloud.samples.brewery.acceptance.model.IngredientType
 import io.spring.cloud.samples.brewery.acceptance.model.Order
 import io.spring.cloud.samples.brewery.acceptance.model.ProcessState
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.SpringApplicationContextLoader
@@ -44,11 +46,12 @@ import static java.util.concurrent.TimeUnit.SECONDS
  *  TODO: Split responsibilities
  */
 @ContextConfiguration(classes = TestConfiguration, loader = SpringApplicationContextLoader)
-@Slf4j
 abstract class AbstractBreweryAcceptanceSpec extends Specification implements SleuthHashing {
 
 	public static final String TRACE_ID_HEADER_NAME = 'X-TRACE-ID'
 	public static final String SPAN_ID_HEADER_NAME = 'X-SPAN-ID'
+
+	public static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	@Autowired ServiceUrlFetcher serviceUrlFetcher
 	@Value('${presenting.timeout:30}') Integer timeout
