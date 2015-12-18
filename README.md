@@ -51,6 +51,7 @@ And here additional tech related applications:
 ├── common           (common code for the services)
 ├── config-server    (set up for the config server)
 ├── eureka           (Eureka server needed for Eureka tests)
+├── git-props        (properties for config-server to pick)
 ├── gradle           (gradle related stuff)
 ├── img              (the fabulous diagram of the brewery)
 ├── maturing         (service that matures the beer)
