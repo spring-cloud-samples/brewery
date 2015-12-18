@@ -15,7 +15,6 @@
  */
 package io.spring.cloud.samples.brewery.acceptance.common
 
-import java.lang.invoke.MethodHandles
 import groovy.json.JsonSlurper
 import io.spring.cloud.samples.brewery.acceptance.common.sleuth.SleuthHashing
 import io.spring.cloud.samples.brewery.acceptance.common.tech.ExceptionLoggingRestTemplate
@@ -41,7 +40,6 @@ import spock.lang.Specification
 
 import static com.jayway.awaitility.Awaitility.await
 import static java.util.concurrent.TimeUnit.SECONDS
-
 /**
  *  TODO: Split responsibilities
  */
@@ -51,7 +49,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	public static final String TRACE_ID_HEADER_NAME = 'X-TRACE-ID'
 	public static final String SPAN_ID_HEADER_NAME = 'X-SPAN-ID'
 
-	public static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+	public static final Logger log = LoggerFactory.getLogger(AbstractBreweryAcceptanceSpec);
 
 	@Autowired ServiceUrlFetcher serviceUrlFetcher
 	@Value('${presenting.timeout:30}') Integer timeout
@@ -73,6 +71,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 				log.info("Response from the presenting service about the process state [$process] for process with id [$processId]")
 				assert process.statusCode == HttpStatus.OK
 				assert stateFromJson(process) == ProcessState.DONE.name()
+				log.info("Beer has been successfully brewed! Service discovery is working! Let's be happy!")
 			}
 		})
 	}
@@ -88,6 +87,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 				assert ['presenting', 'maturing', 'bottling', 'aggregating'].every {
 						response.body.contains(it)
 					}
+				log.info("Zipkin tracing is working! Sleuth is working! Let's be happy!")
 			}
 		})
 	}
