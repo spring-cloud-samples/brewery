@@ -158,8 +158,11 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 							new RetryCallback<ResponseEntity<String>, Exception>() {
 								@Override
 								ResponseEntity<String> doWithRetry(RetryContext retryContext) throws Exception {
+									log.info("Sending [$requestEntity] to start brewing the beer.")
 									ResponseEntity<String> responseEntity = restTemplate().exchange(requestEntity, String)
+									log.info("Received [$responseEntity] from the presenting service.")
 									assert responseEntity.statusCode == HttpStatus.OK
+									log.info("Beer brewing process has successfully been started!")
 									return responseEntity
 								}
 							})
