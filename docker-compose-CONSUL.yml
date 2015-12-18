@@ -50,7 +50,7 @@ configserver:
 discovery:
   image: progrium/consul
   command: -server -bootstrap
-  expose:
-    - 8400
-    - 8500
-    - 8600
+  ports:
+    - 8400:8400
+    - 8500:8500
+    - 8600:8600
