@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.spring.cloud.samples.brewery.acceptance.common
+
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import io.spring.cloud.samples.brewery.acceptance.common.sleuth.SleuthHashing
@@ -36,6 +37,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.util.JdkIdGenerator
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
+
 /**
  *  TODO: Split responsibilities
  */
@@ -51,22 +53,20 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	@Value('${presenting.timeout:30}') Integer timeout
 	@Value('${LOCAL_URL:http://localhost}') String zipkinQueryUrl
 
+	def setup() {
+		log.info("Starting test")
+	}
+
+	def cleanup() {
+		log.info("Finished test")
+	}
+
 	Runnable beer_has_been_brewed_for_process_id(String processId) {
 		return new Runnable() {
 			@Override
 			void run() {
 				ResponseEntity<String> process = checkStateOfTheProcess(processId)
-				assert process.statusCode == HttpStatus.OK
-				assert stateFromJson(process) == ProcessState.DONE.name()
-			}
-		}
-	}
-
-	Runnable beer_has_been_brewed_for_process_and_trace_id(String processId) {
-		return new Runnable() {
-			@Override
-			void run() {
-				ResponseEntity<String> process = checkStateOfTheProcess(processId)
+				log.info("Response from the presenting service about the process state [$process] for process with id [$processId]")
 				assert process.statusCode == HttpStatus.OK
 				assert stateFromJson(process) == ProcessState.DONE.name()
 			}
@@ -78,6 +78,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 			@Override
 			void run() {
 				ResponseEntity<String> response = checkStateOfTheTraceId(traceId)
+				log.info("Response from the Zipkin query service about the trace id [$response] for trace with id [$traceId]")
 				assert response.statusCode == HttpStatus.OK
 				assert response.hasBody()
 				assert ['presenting', 'maturing', 'bottling', 'aggregating'].every {
@@ -89,13 +90,13 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 
 	ResponseEntity<String> checkStateOfTheProcess(String processId) {
 		URI uri = URI.create("${serviceUrlFetcher.presentingServiceUrl()}/feed/process/$processId")
-		HttpHeaders headers = new HttpHeaders()
 		return new ExceptionLoggingRetryTemplate(timeout).execute(
 				new RetryCallback<ResponseEntity<String>, Exception>() {
 					@Override
 					ResponseEntity<String> doWithRetry(RetryContext retryContext) throws Exception {
+						log.info("Sending request to the presenting service [$uri] to check the beer brewing process. The process id is [$processId]")
 						return restTemplate().exchange(
-								new RequestEntity<>(headers, HttpMethod.GET, uri), String
+								new RequestEntity<>(new HttpHeaders(), HttpMethod.GET, uri), String
 						)
 					}
 				}
@@ -105,12 +106,12 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	ResponseEntity<String> checkStateOfTheTraceId(String traceId) {
 		String hexTraceId = convertToTraceIdZipkinRequest(traceId)
 		URI uri = URI.create("${wrapQueryWithProtocolIfPresent() ?: zipkinQueryUrl}:9411/api/v1/trace/$hexTraceId")
-		log.info("Performing a request for trace id [$traceId] and hex version [$hexTraceId]")
 		HttpHeaders headers = new HttpHeaders()
 		return new ExceptionLoggingRetryTemplate(timeout).execute(
 				new RetryCallback<ResponseEntity<String>, Exception>() {
 					@Override
 					ResponseEntity<String> doWithRetry(RetryContext retryContext) throws Exception {
+						log.info("Sending request to the Zipkin query service [$uri]. Checking presence of trace id [$traceId] and its hex version [$hexTraceId]")
 						return new ExceptionLoggingRestTemplate().exchange(
 								new RequestEntity<>(headers, HttpMethod.GET, uri), String
 						)

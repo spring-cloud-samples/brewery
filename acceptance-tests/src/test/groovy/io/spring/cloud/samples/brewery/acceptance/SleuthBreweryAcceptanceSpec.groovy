@@ -37,7 +37,7 @@ class SleuthBreweryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 		then: 'eventually beer will be brewed with same Trace-Id as the first request'
 			await()
 					.atMost(timeout, SECONDS)
-					.until(beer_has_been_brewed_for_process_and_trace_id(referenceProcessId))
+					.until(beer_has_been_brewed_for_process_id(referenceProcessId))
 		and: 'entry will be present in Zipkin'
 			await()
 					.atMost(timeout, SECONDS)
