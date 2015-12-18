@@ -46,7 +46,7 @@ Since pictures say more than words...
 ├── img              (the fabulous diagram of the brewery)
 ├── maturing         (service that matures the beer)
 ├── presenting       (UI of the brewery)
-├── zipkin           (Zipkin related classes)
+├── zipkin-server    (Zipkin Server for Sleuth Stream tests)
 └── zookeeper        (embedded zookeeper)
 ```
 
@@ -82,6 +82,12 @@ docker-compose up
 
 This will build and run all the apps from jars. Also Zookeeper will be set up automatically.
 
+To kill containers just type
+
+```
+docker-compose kill -f
+```
+
 To remove the containers just type
 
 ```
@@ -98,7 +104,7 @@ To run it all without local Zipkin server and with an embedded Zookeeper server 
 
 Your logs will be visible in the console and in the respective `build/logs/application.log` folder.
 
-## How to run a single module with embedded Zookeeper?
+## How to run a single module?
 
 To run a single module just execute (e.g. `presenting` module):
 
