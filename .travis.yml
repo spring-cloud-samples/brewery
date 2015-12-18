@@ -15,6 +15,7 @@ before_script:
  - "echo $JAVA_OPTS"
  - "export JAVA_OPTS=-Xmx512m"
 
-script:
-- ./gradlew clean build --parallel -DWHAT_TO_TEST=SLEUTH
-- bash -e scripts/runAcceptanceTests.sh -t SLEUTH -v 1.0.0.BUILD-SNAPSHOT
+script: |
+  cd ..
+  ln -s brewery/acceptance-tests/scripts/runDockerAcceptanceTests.sh .
+  bash -e runDockerAcceptanceTests -t SLEUTH -v 1.0.0.BUILD-SNAPSHOT
