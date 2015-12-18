@@ -18,7 +18,7 @@ before_script:
 script: |
   cd ..
   ln -s brewery/acceptance-tests/scripts/runDockerAcceptanceTests.sh .
-  bash -e runDockerAcceptanceTests.sh -t SLEUTH -v 1.0.0.BUILD-SNAPSHOT
+  bash -e runDockerAcceptanceTests.sh -t SLEUTH
 
 env:
   global:
