@@ -22,8 +22,9 @@ def zipkinServerProject = project(':zipkin-server')
 def eurekaProject = project(':eureka')
 def configServerProject = project(':config-server')
 def techProjects = [commonProject, eurekaProject, zipkinServerProject, configServerProject]
+def nonZipkinProjects = techProjects - zipkinServerProject
 def nonDockerProjects = [commonProject, acceptanceTestsProject]
-def zipkinRelatedProjects = subprojects - nonDockerProjects - eurekaProject
+def zipkinRelatedProjects = subprojects - nonZipkinProjects
 
 configure(subprojects) {
 

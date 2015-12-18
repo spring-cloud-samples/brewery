@@ -11,7 +11,7 @@ docker-compose -f $dockerComposeFile up -d mysql web collector query
 READY_FOR_TESTS="no"
 PORT_TO_CHECK=9410
 
-echo "Waiting for the apps to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
+echo "Waiting for the Zipkin apps to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
 for i in $( seq 1 "${RETRIES}" ); do
     sleep "${WAIT_TIME}"
     nc -v -z -w 1 $HEALTH_HOST $PORT_TO_CHECK && READY_FOR_TESTS="yes" && break
