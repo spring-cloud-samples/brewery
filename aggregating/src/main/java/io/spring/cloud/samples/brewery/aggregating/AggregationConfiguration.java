@@ -26,10 +26,25 @@ class AggregationConfiguration {
 	@Bean
 	IngredientsAggregator ingredientsAggregator(IngredientsProperties ingredientsProperties,
 												IngredientWarehouse ingredientWarehouse,
-												MaturingServiceClient maturingServiceClient,
-												@LoadBalanced RestTemplate restTemplate) {
+												MaturingServiceUpdater maturingServiceUpdater,
+												IngredientsCollector ingredientsCollector) {
 		return new IngredientsAggregator(ingredientsProperties, ingredientWarehouse,
-				maturingServiceClient, restTemplate);
+				maturingServiceUpdater, ingredientsCollector);
+	}
+
+	@Bean
+	MaturingServiceUpdater maturingServiceUpdater(IngredientsProperties ingredientsProperties,
+												  IngredientWarehouse ingredientWarehouse,
+												  MaturingServiceClient maturingServiceClient,
+												  @LoadBalanced RestTemplate restTemplate) {
+		return new MaturingServiceUpdater(ingredientsProperties,
+				ingredientWarehouse, maturingServiceClient, restTemplate);
+	}
+
+	@Bean
+	IngredientsCollector ingredientsCollector(@LoadBalanced RestTemplate restTemplate,
+											  IngredientsProxy ingredientsProxy) {
+		return new IngredientsCollector(restTemplate, ingredientsProxy);
 	}
 }
 

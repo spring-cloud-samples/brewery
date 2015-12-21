@@ -1,0 +1,18 @@
+logging:
+  pattern:
+    level: '%clr([trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}]){yellow} %5p'
+
+logging.file: build/log/application.log
+
+server:
+  port: 9995
+
+spring.rabbitmq.host: ${RABBIT_HOST:localhost}
+
+# TODO: Not working?
+#zuul.route.ingredients: /
+
+zuul:
+  ignoredServices: '*'
+  routes:
+    ingredients: /**

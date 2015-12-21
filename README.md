@@ -25,10 +25,20 @@ And here additional tech related applications:
 ### Aggregating service
 
 - Service contains a warehouse ("database") where is stores the ingredients
-- Basing on the order placed it will contact the external services to retrieve the real ingredients
+- Basing on the order placed it will contact the Zuul proxy to fetch ingredients
 - You have to have all 4 ingredients reach their threshold (1000) to start maturing the beer
 - Once the threshold is met the application sends a request to the maturing service
 - Each time a request is sent to the aggregating service it returns as a response its warehouse state
+
+### Zuul proxy
+
+- Proxy over the "adapters" to external world to fetch ingredients
+- Routes all requests to the respective "ingredient adapter"
+- For simplicity we have one ingredient adapter called "ingredients" that returns a stubbed quantity
+
+### Ingredients service
+
+- Returns a fixed value of ingredients
 
 ### Maturing service
 
@@ -54,10 +64,12 @@ And here additional tech related applications:
 ├── git-props        (properties for config-server to pick)
 ├── gradle           (gradle related stuff)
 ├── img              (the fabulous diagram of the brewery)
+├── ingredients      (service that "connects" to ext. services for ingredients)
 ├── maturing         (service that matures the beer)
 ├── presenting       (UI of the brewery)
 ├── zipkin-server    (Zipkin Server for Sleuth Stream tests)
-└── zookeeper        (embedded zookeeper)
+├── zookeeper        (embedded zookeeper)
+└── zuul             (Zuul proxy that forwards requests to ingredients)
 ```
 
 ## How to build it?
@@ -129,11 +141,11 @@ The easiest way is to:
 * Create a symbolic link somewhere on your drive to the `acceptance-tests/scripts/runDockerAcceptanceTests.sh` file.
 * You can execute that script with such options
     * `-t` what do you want to test (`SLEUTH`, `ZOOKEEPER` etc.)
-    * `-v` in which version (`1.0.0.BUILD-SNAPSHOT`)
+    * `-v` in which version of the BOM (defaults to `Brixton.BUILD-SNAPSHOT`)
     * `-r` is brewery repo already in place and needs to be reset?
      
 Once you run the script, the brewery app will be cloned, built with proper lib versions and proper tests
-will be executed
+will be executed.
 
 ## Authors
 

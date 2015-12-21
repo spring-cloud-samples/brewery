@@ -16,6 +16,4 @@ zipkin:
   store:
     type: mem
 
-spring.cloud.zookeeper.discovery.root: /pl
-
 logging.file: build/log/application.log

@@ -7,7 +7,6 @@ logging:
 server:
   port: 9992
 
-spring.cloud.zookeeper.discovery.root: /pl
 spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 
 logging.file: build/log/application.log

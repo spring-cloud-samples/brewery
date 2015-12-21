@@ -1,11 +1,11 @@
-spring.application.name: bottling
+spring.application.name: ingredients
 
 logging:
   pattern:
     level: '%clr([trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}]){yellow} %5p'
 
 server:
-  port: 9994
+  port: 9996
 
 spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 

@@ -42,6 +42,28 @@ presenting:
   ports:
     - 9991:9991
 
+zuul:
+  build: zuul/build/docker
+  environment:
+    spring.profiles.active: consul
+    spring.cloud.config.uri: http://configserver:8888
+  links:
+    - discovery
+    - configserver
+  ports:
+    - 9995:9995
+
+ingredients:
+  build: ingredients/build/docker
+  environment:
+    spring.profiles.active: consul
+    spring.cloud.config.uri: http://configserver:8888
+  links:
+    - discovery
+    - configserver
+  ports:
+    - 9996:9996
+
 configserver:
   build: config-server/build/docker
   ports:

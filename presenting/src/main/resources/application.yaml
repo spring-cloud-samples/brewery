@@ -7,7 +7,6 @@ logging:
 server:
   port: 9991
 
-spring.cloud.zookeeper.discovery.root: /pl
 spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 spring.sleuth.instrument.web.skipPattern: /api-docs.*|/autoconfig|/configprops|/dump|/info|/metrics.*|/mappings|/trace|/swagger.*|.*\.png|.*\.css|.*\.js|.*\.html|/favicon.ico|/hystrix.stream
 

@@ -50,6 +50,32 @@ presenting:
   ports:
     - 9991:9991
 
+zuul:
+  build: zuul/build/docker
+  links:
+    - zookeeper:zk
+    - rabbitmq
+    - configserver
+  environment:
+      RABBIT_HOST: rabbitmq
+      spring.cloud.config.uri: http://configserver:8888
+  command: --spring.cloud.zookeeper.connectString=zk:2181
+  ports:
+    - 9995:9995
+
+ingredients:
+  build: ingredients/build/docker
+  links:
+    - zookeeper:zk
+    - rabbitmq
+    - configserver
+  environment:
+      RABBIT_HOST: rabbitmq
+      spring.cloud.config.uri: http://configserver:8888
+  command: --spring.cloud.zookeeper.connectString=zk:2181
+  ports:
+    - 9996:9996
+
 configserver:
   build: config-server/build/docker
   ports:

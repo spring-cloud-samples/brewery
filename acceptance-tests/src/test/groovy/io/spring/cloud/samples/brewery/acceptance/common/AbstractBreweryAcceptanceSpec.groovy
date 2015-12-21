@@ -46,8 +46,10 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 
 	public static final String TRACE_ID_HEADER_NAME = 'X-TRACE-ID'
 	public static final String SPAN_ID_HEADER_NAME = 'X-SPAN-ID'
-
 	public static final Logger log = LoggerFactory.getLogger(AbstractBreweryAcceptanceSpec)
+
+	private static final List<String> APPS_NAMES_AND_PORTS_IN_ZIPKIN = ['presenting:9991', 'maturing:9993', 'bottling:9994',
+															  'aggregating:9992', ':9995', 'ingredients:9996']
 
 	@Autowired ServiceUrlFetcher serviceUrlFetcher
 	@Value('${presenting.poll.interval:1}') Integer pollInterval
@@ -84,7 +86,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 				log.info("Response from the Zipkin query service about the trace id [$response] for trace with id [$traceId]")
 				assert response.statusCode == HttpStatus.OK
 				assert response.hasBody()
-				assert ['presenting', 'maturing', 'bottling', 'aggregating'].every {
+				assert APPS_NAMES_AND_PORTS_IN_ZIPKIN.every {
 						response.body.contains(it)
 					}
 				log.info("Zipkin tracing is working! Sleuth is working! Let's be happy!")

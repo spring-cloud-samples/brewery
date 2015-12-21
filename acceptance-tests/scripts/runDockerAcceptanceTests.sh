@@ -14,7 +14,7 @@ RETRIES="${RETRIES:-48}"
 DEFAULT_VERSION="${DEFAULT_VERSION:-Brixton.BUILD-SNAPSHOT}"
 
 HEALTH_HOST="127.0.0.1"
-HEALTH_PORTS=('9991' '9992' '9993' '9994')
+HEALTH_PORTS=('9991' '9992' '9993' '9994' '9995' '9996')
 HEALTH_ENDPOINTS="$( printf "http://${HEALTH_HOST}:%s/health " "${HEALTH_PORTS[@]}" )"
 
 BOM_VERSION_PROP_NAME="BOM_VERSION"
@@ -93,10 +93,18 @@ echo -e "\n\n"
 ./docker-compose-$WHAT_TO_TEST.sh
 
 # Wait for the apps to boot up
-echo "Waiting for the apps to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
+echo -e "\n\nWaiting for the apps to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
 for i in $( seq 1 "${RETRIES}" ); do
     sleep "${WAIT_TIME}"
     curl -m 5 ${HEALTH_ENDPOINTS} && READY_FOR_TESTS="yes" && break
+    echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
+done
+
+echo -e "\n\nChecking for the presence of all services in Service Discovery for [$(( WAIT_TIME * RETRIES ))] seconds"
+for i in $( seq 1 "${RETRIES}" ); do
+    sleep "${WAIT_TIME}"
+    curl -m 5 http://localhost:9991/health | grep presenting | grep aggregating |
+        grep maturing | grep bottling | grep ingredients && READY_FOR_TESTS="yes" && break
     echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
 done
 
@@ -106,7 +114,7 @@ TESTS_PASSED="no"
 
 # Run acceptance tests
 if [[ "${READY_FOR_TESTS}" == "yes" ]] ; then
-    echo "Successfully booted up all the apps. Proceeding with the acceptance tests"
+    echo -e "\n\nSuccessfully booted up all the apps. Proceeding with the acceptance tests"
     COMMAND_LINE_ARGS="-DWHAT_TO_TEST=${WHAT_TO_TEST}"
     if [ ! -z "$TEST_OPTS" ]; then
         COMMAND_LINE_ARGS="\"${COMMAND_LINE_ARGS}\" \"${TEST_OPTS}\""
