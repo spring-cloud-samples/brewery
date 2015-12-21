@@ -35,8 +35,7 @@ class ServiceDiscoveryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 		then: 'eventually beer for that process id will be brewed'
 			beer_has_been_brewed_for_process_id(referenceProcessId)
 		where:
-		    // will add FEIGN once REST_TEMPLATE tests stabilize
-			communicationType << [CommunicationType.REST_TEMPLATE]
+			communicationType << [CommunicationType.REST_TEMPLATE, CommunicationType.FEIGN]
 			referenceProcessId = new JdkIdGenerator().generateId().toString()
 			serviceDiscovery = System.getProperty(WhatToTest.WHAT_TO_TEST)
 	}
