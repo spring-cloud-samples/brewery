@@ -120,11 +120,10 @@ if [[ "${TESTS_PASSED}" == "yes" ]] ; then
     exit 0
 else
     echo -e "\n\nTests failed..."
-    NUMBER_OF_LINES_TO_LOG=200
     docker ps | sed -n '1!p' > /tmp/containers.txt
     while read field1 field2 field3; do
       echo -e "\n\nContainer name [$field2] with id [$field1] logs: \n\n"
-      docker logs --tail=$NUMBER_OF_LINES_TO_LOG -t $field1
+      docker logs -t $field1
     done < /tmp/containers.txt
     exit 1
 fi
