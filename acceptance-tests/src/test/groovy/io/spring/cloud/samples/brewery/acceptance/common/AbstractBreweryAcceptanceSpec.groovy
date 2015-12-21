@@ -49,9 +49,8 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 
 	public static final Logger log = LoggerFactory.getLogger(AbstractBreweryAcceptanceSpec)
 
-	private static final Integer DEFAULT_POLL_INTERVAL = 1
-
 	@Autowired ServiceUrlFetcher serviceUrlFetcher
+	@Value('${presenting.poll.interval:1}') Integer pollInterval
 	@Value('${presenting.timeout:30}') Integer timeout
 	@Value('${zipkin.query.port:9411}') Integer zipkinQueryPort
 	@Value('${LOCAL_URL:http://localhost}') String zipkinQueryUrl
@@ -65,7 +64,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	}
 
 	void beer_has_been_brewed_for_process_id(String processId) {
-		await().pollInterval(DEFAULT_POLL_INTERVAL, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
+		await().pollInterval(pollInterval, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
 			@Override
 			void run() {
 				ResponseEntity<String> process = checkStateOfTheProcess(processId)
@@ -78,7 +77,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	}
 
 	void entry_for_trace_id_is_present_in_Zipkin(String traceId) {
-		await().pollInterval(DEFAULT_POLL_INTERVAL, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
+		await().pollInterval(pollInterval, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
 			@Override
 			void run() {
 				ResponseEntity<String> response = checkStateOfTheTraceId(traceId)
@@ -141,7 +140,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	}
 
 	void presenting_service_has_been_called(RequestEntity requestEntity) {
-		await().pollInterval(DEFAULT_POLL_INTERVAL, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
+		await().pollInterval(pollInterval, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
 				@Override
 				void run() {
 					log.info("Sending [$requestEntity] to start brewing the beer.")
