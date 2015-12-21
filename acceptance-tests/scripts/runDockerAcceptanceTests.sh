@@ -107,7 +107,11 @@ TESTS_PASSED="no"
 # Run acceptance tests
 if [[ "${READY_FOR_TESTS}" == "yes" ]] ; then
     echo "Successfully booted up all the apps. Proceeding with the acceptance tests"
-    bash -e runAcceptanceTests.sh "-DWHAT_TO_TEST=${WHAT_TO_TEST}" "${TEST_OPTS}" && TESTS_PASSED="yes"
+    COMMAND_LINE_ARGS="-DWHAT_TO_TEST=${WHAT_TO_TEST}"
+    if [ ! -z "$TEST_OPTS" ]; then
+        COMMAND_LINE_ARGS="\"${COMMAND_LINE_ARGS}\" \"${TEST_OPTS}\""
+    fi
+    bash -e runAcceptanceTests.sh "${COMMAND_LINE_ARGS}" && TESTS_PASSED="yes"
 else
     echo "\n\nTests failed - printing docker logs."
     docker-compose -f docker-compose-$WHAT_TO_TEST.yml logs
