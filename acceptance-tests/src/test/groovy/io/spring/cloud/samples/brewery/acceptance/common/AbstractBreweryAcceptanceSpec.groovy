@@ -18,7 +18,6 @@ package io.spring.cloud.samples.brewery.acceptance.common
 import groovy.json.JsonSlurper
 import io.spring.cloud.samples.brewery.acceptance.common.sleuth.SleuthHashing
 import io.spring.cloud.samples.brewery.acceptance.common.tech.ExceptionLoggingRestTemplate
-import io.spring.cloud.samples.brewery.acceptance.common.tech.ExceptionLoggingRetryTemplate
 import io.spring.cloud.samples.brewery.acceptance.common.tech.ServiceUrlFetcher
 import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConfiguration
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
@@ -31,8 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.http.*
-import org.springframework.retry.RetryCallback
-import org.springframework.retry.RetryContext
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.util.JdkIdGenerator
 import org.springframework.web.client.RestTemplate
@@ -40,6 +37,7 @@ import spock.lang.Specification
 
 import static com.jayway.awaitility.Awaitility.await
 import static java.util.concurrent.TimeUnit.SECONDS
+
 /**
  *  TODO: Split responsibilities
  */
@@ -49,10 +47,13 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	public static final String TRACE_ID_HEADER_NAME = 'X-TRACE-ID'
 	public static final String SPAN_ID_HEADER_NAME = 'X-SPAN-ID'
 
-	public static final Logger log = LoggerFactory.getLogger(AbstractBreweryAcceptanceSpec);
+	public static final Logger log = LoggerFactory.getLogger(AbstractBreweryAcceptanceSpec)
+
+	private static final Integer DEFAULT_POLL_INTERVAL = 1
 
 	@Autowired ServiceUrlFetcher serviceUrlFetcher
 	@Value('${presenting.timeout:30}') Integer timeout
+	@Value('${zipkin.query.port:9411}') Integer zipkinQueryPort
 	@Value('${LOCAL_URL:http://localhost}') String zipkinQueryUrl
 
 	def setup() {
@@ -64,7 +65,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	}
 
 	void beer_has_been_brewed_for_process_id(String processId) {
-		await().pollInterval(1, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
+		await().pollInterval(DEFAULT_POLL_INTERVAL, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
 			@Override
 			void run() {
 				ResponseEntity<String> process = checkStateOfTheProcess(processId)
@@ -77,7 +78,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	}
 
 	void entry_for_trace_id_is_present_in_Zipkin(String traceId) {
-		await().pollInterval(1, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
+		await().pollInterval(DEFAULT_POLL_INTERVAL, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
 			@Override
 			void run() {
 				ResponseEntity<String> response = checkStateOfTheTraceId(traceId)
@@ -94,33 +95,19 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 
 	ResponseEntity<String> checkStateOfTheProcess(String processId) {
 		URI uri = URI.create("${serviceUrlFetcher.presentingServiceUrl()}/feed/process/$processId")
-		return new ExceptionLoggingRetryTemplate(timeout).execute(
-				new RetryCallback<ResponseEntity<String>, Exception>() {
-					@Override
-					ResponseEntity<String> doWithRetry(RetryContext retryContext) throws Exception {
-						log.info("Sending request to the presenting service [$uri] to check the beer brewing process. The process id is [$processId]")
-						return restTemplate().exchange(
-								new RequestEntity<>(new HttpHeaders(), HttpMethod.GET, uri), String
-						)
-					}
-				}
+		log.info("Sending request to the presenting service [$uri] to check the beer brewing process. The process id is [$processId]")
+		return restTemplate().exchange(
+				new RequestEntity<>(new HttpHeaders(), HttpMethod.GET, uri), String
 		)
 	}
 
 	ResponseEntity<String> checkStateOfTheTraceId(String traceId) {
 		String hexTraceId = convertToTraceIdZipkinRequest(traceId)
-		URI uri = URI.create("${wrapQueryWithProtocolIfPresent() ?: zipkinQueryUrl}:9411/api/v1/trace/$hexTraceId")
+		URI uri = URI.create("${wrapQueryWithProtocolIfPresent() ?: zipkinQueryUrl}:${zipkinQueryPort}/api/v1/trace/$hexTraceId")
 		HttpHeaders headers = new HttpHeaders()
-		return new ExceptionLoggingRetryTemplate(timeout).execute(
-				new RetryCallback<ResponseEntity<String>, Exception>() {
-					@Override
-					ResponseEntity<String> doWithRetry(RetryContext retryContext) throws Exception {
-						log.info("Sending request to the Zipkin query service [$uri]. Checking presence of trace id [$traceId] and its hex version [$hexTraceId]")
-						return new ExceptionLoggingRestTemplate().exchange(
-								new RequestEntity<>(headers, HttpMethod.GET, uri), String
-						)
-					}
-				}
+		log.info("Sending request to the Zipkin query service [$uri]. Checking presence of trace id [$traceId] and its hex version [$hexTraceId]")
+		return new ExceptionLoggingRestTemplate().exchange(
+				new RequestEntity<>(headers, HttpMethod.GET, uri), String
 		)
 	}
 
@@ -154,21 +141,14 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	}
 
 	void presenting_service_has_been_called(RequestEntity requestEntity) {
-		await().pollInterval(1, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
+		await().pollInterval(DEFAULT_POLL_INTERVAL, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
 				@Override
 				void run() {
-					new ExceptionLoggingRetryTemplate(timeout).execute(
-							new RetryCallback<ResponseEntity<String>, Exception>() {
-								@Override
-								ResponseEntity<String> doWithRetry(RetryContext retryContext) throws Exception {
-									log.info("Sending [$requestEntity] to start brewing the beer.")
-									ResponseEntity<String> responseEntity = restTemplate().exchange(requestEntity, String)
-									log.info("Received [$responseEntity] from the presenting service.")
-									assert responseEntity.statusCode == HttpStatus.OK
-									log.info("Beer brewing process has successfully been started!")
-									return responseEntity
-								}
-							})
+					log.info("Sending [$requestEntity] to start brewing the beer.")
+					ResponseEntity<String> responseEntity = restTemplate().exchange(requestEntity, String)
+					log.info("Received [$responseEntity] from the presenting service.")
+					assert responseEntity.statusCode == HttpStatus.OK
+					log.info("Beer brewing process has successfully been started!")
 				}
 			}
 		)
