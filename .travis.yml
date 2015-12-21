@@ -13,7 +13,7 @@ install:
 
 before_script:
  - "echo $JAVA_OPTS"
- - "export JAVA_OPTS=-Xmx1024m"
+ - "export JAVA_OPTS=-Xmx256m"
 
 script: |
   cd ..
