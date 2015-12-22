@@ -30,6 +30,10 @@ class TestConditions {
 		)
 	}
 
+	public static final Closure<Boolean> SYSTEM_PROP_IS_VALID = {
+		return whatToTestSystemPropMatchesAny(WhatToTest.values().toList())
+	}
+
 	private static boolean whatToTestSystemPropMatchesAny(List<WhatToTest> whatToTest) {
 		String whatToTestProp = getAndLogWhatToTestSystemProp()
 		return whatToTest.any {
