@@ -11,4 +11,4 @@ spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 
 logging.file: build/log/application.log
 
-hystrix.command.default.execution.isolation.strategy: SEMAPHORE
+#hystrix.command.default.execution.isolation.strategy: SEMAPHORE

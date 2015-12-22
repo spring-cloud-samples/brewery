@@ -17,4 +17,4 @@ zuul:
   routes:
     ingredients: /**
 
-hystrix.command.default.execution.isolation.strategy: SEMAPHORE
+#hystrix.command.default.execution.isolation.strategy: SEMAPHORE

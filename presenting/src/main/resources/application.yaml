@@ -12,4 +12,4 @@ spring.sleuth.instrument.web.skipPattern: /api-docs.*|/autoconfig|/configprops|/
 
 logging.file: build/log/application.log
 
-hystrix.command.default.execution.isolation.strategy: SEMAPHORE
+#hystrix.command.default.execution.isolation.strategy: SEMAPHORE

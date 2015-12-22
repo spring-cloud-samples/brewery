@@ -18,4 +18,4 @@ zipkin:
 
 logging.file: build/log/application.log
 
-hystrix.command.default.execution.isolation.strategy: SEMAPHORE
+#hystrix.command.default.execution.isolation.strategy: SEMAPHORE
