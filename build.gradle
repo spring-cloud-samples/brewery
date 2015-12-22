@@ -38,7 +38,7 @@ configure(subprojects) {
             addFile("${libsDir}/${project.name}-${buildNrLoc}.jar", "/${project.name}/${project.name}.jar")
             exposePort(port)
             // Random beacuse of https://wiki.apache.org/tomcat/HowTo/FasterStartUp
-            entryPoint(['java', '-Djava.security.egd=file:/dev/./urandom', '-jar', "/${project.name}/${project.name}.jar"])
+            entryPoint(['java', '-Xmx64m', '-Xss1024k', '-Djava.security.egd=file:/dev/./urandom', '-jar', "/${project.name}/${project.name}.jar"])
         }
         createDockerTaskWithPort = { int port ->
             project.task([type: Docker], "docker", ext.dockerConfiguration.curry(port))
