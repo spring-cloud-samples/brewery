@@ -36,8 +36,7 @@ class SleuthBreweryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 		and: 'entry will be present in Zipkin'
 			entry_for_trace_id_is_present_in_Zipkin(referenceProcessId)
 		where:
-		    // will add FEIGN once REST_TEMPLATE tests stabilize
-			communicationType << [CommunicationType.REST_TEMPLATE]
+			communicationType << [CommunicationType.REST_TEMPLATE, CommunicationType.FEIGN]
 			referenceProcessId = new JdkIdGenerator().generateId().toString()
 	}
 

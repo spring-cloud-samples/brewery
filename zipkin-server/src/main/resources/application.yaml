@@ -17,3 +17,5 @@ zipkin:
     type: mem
 
 logging.file: build/log/application.log
+
+hystrix.command.default.execution.isolation.strategy: SEMAPHORE
