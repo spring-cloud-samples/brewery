@@ -171,7 +171,7 @@ configure(subprojects - techProjects) {
     }
 
     wrapper {
-        gradleVersion '2.9'
+        gradleVersion '2.10'
     }
 
     bootRun {
