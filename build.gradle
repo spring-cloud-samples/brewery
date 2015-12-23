@@ -108,7 +108,7 @@ configure(subprojects - zipkinServerProject - acceptanceTestsProject) {
         compile 'org.apache.tomcat.embed:tomcat-embed-core:8.0.23'
         compile "org.springframework.cloud:spring-cloud-starter-sleuth"
         compile "org.springframework.cloud:spring-cloud-starter-config"
-        compile "com.netflix.hystrix:hystrix-javanica"
+        compile "org.springframework.cloud:spring-cloud-starter-hystrix"
         if (whatToTest('SLEUTH_STREAM')) {
             compile "org.springframework.cloud:spring-cloud-starter-stream-rabbit"
             compile "org.springframework.cloud:spring-cloud-sleuth-stream"
