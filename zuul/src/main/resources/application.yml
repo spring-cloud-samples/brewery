@@ -16,5 +16,3 @@ zuul:
   ignoredServices: '*'
   routes:
     ingredients: /**
-
-#hystrix.command.default.execution.isolation.strategy: SEMAPHORE
