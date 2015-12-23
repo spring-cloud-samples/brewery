@@ -1,21 +1,19 @@
 # Brewery Acceptance Tests 
 
-Tests that check various Spring Cloud functionalities on the Brewey project.
+Tests that check various Spring Cloud functionalities on the Brewery project.
 
 ## What are we testing?
 
 Service Discovery (do applications talk to each other properly)
 
 - Zookeeper
-- Eureka *
-- Consul *
+- Eureka
+- Consul 
 
-Tracing (does tracing work properly)
+Tracing (does request instrumentalization work properly)
 
-- Sleuth
-- Zipkin *
-
-(*) in progress
+- Sleuth with Zipkin
+- Sleuth Stream with Zipkin
 
 ## How to run it?
 
@@ -43,13 +41,14 @@ If you don't want the acceptance tests to connect to a Zookeeper in a Docker con
 the tests in a Docker container too) you can run the tests in a "local" mode.
 
 ```
-./gradlew acceptance-tests:clean acceptance-tests:test -Dspring.profiles.active=local -DWHAT_TO_TEST=ZOOKEEPER
+./gradlew acceptance-tests:clean acceptance-tests:test -DWHAT_TO_TEST=ZOOKEEPER
 ```
 
 In addition to this you can provide a couple of more parameters:
 
 ```
-# will by default point to http://localhost to find the presenting service
+# will by default point to http://localhost to find the presenting service (If you don't provide this option
+# you'll still access localhost by default)
 -DLOCAL
 ```
 

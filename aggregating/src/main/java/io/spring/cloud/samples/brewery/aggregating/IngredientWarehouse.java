@@ -1,13 +1,14 @@
 package io.spring.cloud.samples.brewery.aggregating;
 
-import io.spring.cloud.samples.brewery.aggregating.model.IngredientType;
-import io.spring.cloud.samples.brewery.aggregating.model.Ingredients;
-import org.springframework.stereotype.Service;
-import io.spring.cloud.samples.brewery.aggregating.model.Ingredient;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import io.spring.cloud.samples.brewery.aggregating.model.Ingredient;
+import io.spring.cloud.samples.brewery.aggregating.model.IngredientType;
+import io.spring.cloud.samples.brewery.aggregating.model.Ingredients;
 
 @Service
 class IngredientWarehouse {
@@ -21,10 +22,6 @@ class IngredientWarehouse {
 
     public void useIngredients(Integer amount) {
         DATABASE.forEach((ingredientType, integer) -> DATABASE.put(ingredientType, integer - amount));
-    }
-
-    public Integer getIngredientCountOfType(IngredientType ingredientType) {
-        return DATABASE.getOrDefault(ingredientType, 0);
     }
 
     public Ingredients getCurrentState() {

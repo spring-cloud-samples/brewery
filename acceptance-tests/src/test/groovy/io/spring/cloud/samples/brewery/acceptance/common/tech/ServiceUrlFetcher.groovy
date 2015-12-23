@@ -28,26 +28,11 @@ class ServiceUrlFetcher {
 
 	String presentingServiceUrl() {
 		String rootUrl = getRootUrlForRibbon()
-		if (isLocalMode()) {
-			return "$rootUrl:9991"
-		}
-		return "${stripTrailingSlash(rootUrl)}/presenting"
-	}
-
-	private boolean isLocalMode() {
-		return localSpringModeIsActive() ||
-				hasProp(LOCAL_MODE_PROP) || hasProp(LOCAL_MODE_URL_PROP)
+		return "$rootUrl:9991"
 	}
 
 	private boolean localSpringModeIsActive() {
 		return environment.getActiveProfiles().contains(LOCAL_SPRING_PROFILE)
-	}
-
-	private String stripTrailingSlash(String url) {
-		if (url.endsWith('/')) {
-			return url.substring(0, url.length() - 1)
-		}
-		return url
 	}
 
 	private String getRootUrlForRibbon() {
@@ -58,7 +43,7 @@ class ServiceUrlFetcher {
 		} else if (localSpringModeIsActive()) {
 			return LOCALHOST
 		}
-		return "http://"
+		return LOCALHOST
 	}
 
 	private boolean hasProp(String propName) {

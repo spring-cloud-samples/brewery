@@ -1,15 +1,16 @@
 package io.spring.cloud.samples.brewery.aggregating;
 
+import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
+import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
+
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestTemplate;
+
 import io.spring.cloud.samples.brewery.aggregating.model.IngredientType;
 import io.spring.cloud.samples.brewery.aggregating.model.Ingredients;
 import io.spring.cloud.samples.brewery.aggregating.model.Version;
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpMethod;
-import org.springframework.web.client.RestTemplate;
-
-import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
-import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
 
 @Slf4j
 class MaturingServiceUpdater {
@@ -28,7 +29,7 @@ class MaturingServiceUpdater {
         this.restTemplate = restTemplate;
     }
 
-    Ingredients updateIfLimitReached(Ingredients ingredients, String processId) {
+    public Ingredients updateIfLimitReached(Ingredients ingredients, String processId) {
         if (ingredientsMatchTheThreshold(ingredients)) {
             log.info("Ingredients match the threshold [{}] - time to notify the maturing service!",
                     ingredientsProperties.getThreshold());

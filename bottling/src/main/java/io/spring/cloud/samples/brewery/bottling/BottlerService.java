@@ -1,27 +1,34 @@
 package io.spring.cloud.samples.brewery.bottling;
 
-import io.spring.cloud.samples.brewery.bottling.model.BottleRequest;
-import io.spring.cloud.samples.brewery.bottling.model.Version;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpMethod;
-import org.springframework.web.client.RestTemplate;
-
 import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TEST_CONFIG;
 import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
 import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
 
+import java.net.URI;
+
+import org.springframework.http.HttpMethod;
+import org.springframework.http.RequestEntity;
+import org.springframework.web.client.AsyncRestTemplate;
+import org.springframework.web.client.RestTemplate;
+
+import io.spring.cloud.samples.brewery.bottling.model.BottleRequest;
+import io.spring.cloud.samples.brewery.bottling.model.Version;
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 class BottlerService {
 
-    private BottlingWorker bottlingWorker;
-    private PresentingClient presentingClient;
-    private RestTemplate restTemplate;
+    private final BottlingWorker bottlingWorker;
+    private final PresentingClient presentingClient;
+    private final RestTemplate restTemplate;
+    private final AsyncRestTemplate asyncRestTemplate;
 
     public BottlerService(BottlingWorker bottlingWorker, PresentingClient presentingClient,
-                          RestTemplate restTemplate) {
+                          RestTemplate restTemplate, AsyncRestTemplate asyncRestTemplate) {
         this.bottlingWorker = bottlingWorker;
         this.presentingClient = presentingClient;
         this.restTemplate = restTemplate;
+        this.asyncRestTemplate = asyncRestTemplate;
     }
 
     void bottle(BottleRequest bottleRequest, String processId) {
@@ -43,14 +50,19 @@ class BottlerService {
         presentingClient.bottlingFeed(processId, FEIGN.name());
     }
 
+	/**
+     * [SLEUTH] AsyncRestTemplate with sync @LoadBalanced RestTemplate
+     */
     private void useRestTemplateToCallPresenting(String processId) {
         log.info("Notifying presenting about beer. Process id [{}]", processId);
-        restTemplate.exchange(requestEntity()
+        RequestEntity requestEntity = requestEntity()
                 .processId(processId)
                 .contentTypeVersion(Version.PRESENTING_V1)
                 .serviceName("presenting")
                 .url("feed/bottling")
                 .httpMethod(HttpMethod.PUT)
-                .build(), String.class);
+                .build();
+        URI uri = URI.create("http://presenting/feed/bottling");
+        asyncRestTemplate.put(uri, requestEntity);
     }
 }
