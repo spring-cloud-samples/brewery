@@ -4,16 +4,30 @@ Tests that check various Spring Cloud functionalities on the Brewery project.
 
 ## What are we testing?
 
-Service Discovery (do applications talk to each other properly)
+### Service Discovery 
+
+Do applications talk to each other properly via:
 
 - Zookeeper
 - Eureka
 - Consul 
 
-Tracing (does request instrumentalization work properly)
+### Tracing 
+
+Does request instrumentalization work properly with:
 
 - Sleuth with Zipkin
 - Sleuth Stream with Zipkin
+
+In tracing approach we're checking the following integrations:
+
+- WebAsyncTask
+- Explicit TraceCommand calls
+- AsyncRestTemplate with @LoadBalanced RestTemplate
+- @Async annotated methods
+- CompletableFuture.supplyAsync(...) with TraceableExecutorService
+- Controllers with Callable returning methods
+- Javanica (@HystrixCommand annotated methods)
 
 ## How to run it?
 
