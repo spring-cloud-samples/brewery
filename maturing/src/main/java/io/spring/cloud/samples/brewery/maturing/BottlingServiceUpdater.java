@@ -1,10 +1,8 @@
 package io.spring.cloud.samples.brewery.maturing;
 
-import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
-import io.spring.cloud.samples.brewery.maturing.model.Ingredients;
-import io.spring.cloud.samples.brewery.maturing.model.Version;
-import io.spring.cloud.samples.brewery.maturing.model.Wort;
-import lombok.extern.slf4j.Slf4j;
+import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
+import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
+
 import org.springframework.cloud.sleuth.Trace;
 import org.springframework.cloud.sleuth.TraceManager;
 import org.springframework.cloud.sleuth.trace.TraceContextHolder;
@@ -13,8 +11,12 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
-import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
-import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
+import io.spring.cloud.samples.brewery.maturing.model.Ingredients;
+import io.spring.cloud.samples.brewery.maturing.model.Version;
+import io.spring.cloud.samples.brewery.maturing.model.Wort;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 class BottlingServiceUpdater {
@@ -68,7 +70,11 @@ class BottlingServiceUpdater {
         presentingServiceClient.maturingFeed(correlationId, FEIGN.name());
     }
 
-    private void notifyBottlingService(Ingredients ingredients, String correlationId) {
+	/**
+     * [SLEUTH] HystrixCommand - Javanica integration
+     */
+    @HystrixCommand
+    public void notifyBottlingService(Ingredients ingredients, String correlationId) {
         Trace scope = this.traceManager.startSpan("calling_bottling", TraceContextHolder.getCurrentSpan());
         switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
