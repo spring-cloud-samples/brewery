@@ -49,7 +49,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	public static final Logger log = LoggerFactory.getLogger(AbstractBreweryAcceptanceSpec)
 
 	private static final List<String> APPS_NAMES_AND_PORTS_IN_ZIPKIN = ['presenting:9991', 'maturing:9993', 'bottling:9994',
-															  'aggregating:9992', ':9995', 'ingredients:9996']
+															  'aggregating:9992', ':9995', 'ingredients:9996', 'reporting:9997']
 
 	@Autowired ServiceUrlFetcher serviceUrlFetcher
 	@Value('${presenting.poll.interval:1}') Integer pollInterval

@@ -3,9 +3,11 @@ aggregating:
   environment:
     spring.profiles.active: eureka
     spring.cloud.config.uri: http://configserver:8888
+    RABBIT_HOST: rabbitmq
   links:
     - discovery
     - configserver
+    - rabbitmq
   ports:
     - 9992:9992
 
@@ -14,9 +16,11 @@ maturing:
   environment:
     spring.profiles.active: eureka
     spring.cloud.config.uri: http://configserver:8888
+    RABBIT_HOST: rabbitmq
   links:
     - discovery
     - configserver
+    - rabbitmq
   ports:
     - 9993:9993
 
@@ -25,9 +29,11 @@ bottling:
   environment:
     spring.profiles.active: eureka
     spring.cloud.config.uri: http://configserver:8888
+    RABBIT_HOST: rabbitmq
   links:
     - discovery
     - configserver
+    - rabbitmq
   ports:
     - 9994:9994
 
@@ -36,9 +42,11 @@ presenting:
   environment:
     spring.profiles.active: eureka
     spring.cloud.config.uri: http://configserver:8888
+    RABBIT_HOST: rabbitmq
   links:
     - discovery
     - configserver
+    - rabbitmq
   ports:
     - 9991:9991
 
@@ -47,9 +55,11 @@ zuul:
   environment:
     spring.profiles.active: eureka
     spring.cloud.config.uri: http://configserver:8888
+    RABBIT_HOST: rabbitmq
   links:
     - discovery
     - configserver
+    - rabbitmq
   ports:
     - 9995:9995
 
@@ -58,11 +68,26 @@ ingredients:
   environment:
     spring.profiles.active: eureka
     spring.cloud.config.uri: http://configserver:8888
+    RABBIT_HOST: rabbitmq
   links:
     - discovery
     - configserver
+    - rabbitmq
   ports:
     - 9996:9996
+
+reporting:
+  build: reporting/build/docker
+  environment:
+    spring.profiles.active: eureka
+    spring.cloud.config.uri: http://configserver:8888
+    RABBIT_HOST: rabbitmq
+  links:
+    - discovery
+    - configserver
+    - rabbitmq
+  ports:
+    - 9997:9997
 
 configserver:
   build: config-server/build/docker
@@ -73,4 +98,11 @@ discovery:
   build: eureka/build/docker
   ports:
     - 8761:8761
+
+rabbitmq:
+  image: rabbitmq:management
+  expose:
+    - 5672
+    - 15672
+
 

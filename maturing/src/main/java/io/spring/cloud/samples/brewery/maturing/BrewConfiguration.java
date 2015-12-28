@@ -1,6 +1,7 @@
 package io.spring.cloud.samples.brewery.maturing;
 
 import io.spring.cloud.samples.brewery.common.TestConfiguration;
+import io.spring.cloud.samples.brewery.common.events.EventGateway;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.sleuth.TraceManager;
 import org.springframework.context.annotation.Bean;
@@ -15,9 +16,10 @@ class BrewConfiguration {
     @Bean
     BottlingServiceUpdater bottlingServiceUpdater(TraceManager trace, PresentingServiceClient presentingServiceClient,
                                                   BottlingServiceClient bottlingServiceClient,
-                                                  @LoadBalanced RestTemplate restTemplate) {
+                                                  @LoadBalanced RestTemplate restTemplate,
+                                                  EventGateway eventGateway) {
         return new BottlingServiceUpdater(brewProperties(), trace, presentingServiceClient,
-                bottlingServiceClient, restTemplate);
+                bottlingServiceClient, restTemplate, eventGateway);
     }
 
     @Bean

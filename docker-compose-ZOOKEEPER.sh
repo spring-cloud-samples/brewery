@@ -4,6 +4,9 @@ dockerComposeFile="docker-compose-${WHAT_TO_TEST}.yml"
 docker-compose -f $dockerComposeFile kill
 docker-compose -f $dockerComposeFile build
 
+echo -e "\n\nBooting up RabbitMQ"
+docker-compose -f $dockerComposeFile up -d rabbitmq
+
 # Boot config-server
 READY_FOR_TESTS="no"
 PORT_TO_CHECK=8888

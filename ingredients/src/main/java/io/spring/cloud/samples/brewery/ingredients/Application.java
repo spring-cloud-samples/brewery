@@ -1,20 +1,15 @@
 package io.spring.cloud.samples.brewery.ingredients;
 
-import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TEST_COMMUNICATION_TYPE_HEADER_NAME;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.sleuth.trace.TraceContextHolder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.WebAsyncTask;
 
-import lombok.extern.slf4j.Slf4j;
+import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TEST_COMMUNICATION_TYPE_HEADER_NAME;
 
 @SpringBootApplication
 @EnableDiscoveryClient
@@ -32,10 +27,12 @@ public class Application {
                                                @RequestHeader("PROCESS-ID") String processId,
                                                @RequestHeader(TEST_COMMUNICATION_TYPE_HEADER_NAME) String testCommunicationType) {
         log.info("Received a request to [/{}] with process id [{}] and communication type [{}] and trace id [{}]", ingredientType,
-                processId, testCommunicationType, TraceContextHolder.getCurrentSpan().getTraceId());
+                processId, testCommunicationType, TraceContextHolder.isTracing() ?
+                        TraceContextHolder.getCurrentSpan().getTraceId() : "");
         return new WebAsyncTask<>(() -> {
             Ingredient ingredient = new Ingredient(ingredientType, ingredientsProperties.getReturnedIngredientsQuantity());
-            log.info("Returning [{}] as fetched ingredient from an external service. Trace id [{}]", ingredient, TraceContextHolder.getCurrentSpan().getTraceId());
+            log.info("Returning [{}] as fetched ingredient from an external service. Trace id [{}]", ingredient, TraceContextHolder.isTracing() ?
+                    TraceContextHolder.getCurrentSpan().getTraceId() : "");
             return ingredient;
         });
     }

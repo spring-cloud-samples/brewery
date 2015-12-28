@@ -1,21 +1,20 @@
 package io.spring.cloud.samples.brewery.bottling;
 
-import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TEST_CONFIG;
-import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
-import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
-
-import java.net.URI;
-
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import io.spring.cloud.samples.brewery.bottling.model.BottleRequest;
+import io.spring.cloud.samples.brewery.bottling.model.Version;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.sleuth.trace.TraceContextHolder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
 
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import io.spring.cloud.samples.brewery.bottling.model.BottleRequest;
-import io.spring.cloud.samples.brewery.bottling.model.Version;
-import lombok.extern.slf4j.Slf4j;
+import java.net.URI;
+
+import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TEST_CONFIG;
+import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
+import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
 
 @Slf4j
 class BottlerService {
@@ -60,7 +59,8 @@ class BottlerService {
      * [SLEUTH] AsyncRestTemplate with sync @LoadBalanced RestTemplate
      */
     private void useRestTemplateToCallPresenting(String processId) {
-        log.info("Notifying presenting about beer. Process id [{}]. Trace id [{}]", processId, TraceContextHolder.getCurrentSpan().getTraceId());
+        log.info("Notifying presenting about beer. Process id [{}]. Trace id [{}]", processId, TraceContextHolder.isTracing() ?
+                TraceContextHolder.getCurrentSpan().getTraceId() : "");
         RequestEntity requestEntity = requestEntity()
                 .processId(processId)
                 .contentTypeVersion(Version.PRESENTING_V1)

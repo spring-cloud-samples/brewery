@@ -109,6 +109,9 @@ configure(subprojects - zipkinServerProject - acceptanceTestsProject) {
         compile "org.springframework.cloud:spring-cloud-starter-sleuth"
         compile "org.springframework.cloud:spring-cloud-starter-config"
         compile "org.springframework.cloud:spring-cloud-starter-hystrix"
+        compile "org.springframework.integration:spring-integration-core"
+        compile "org.springframework.integration:spring-integration-amqp"
+        compile "org.springframework.integration:spring-integration-java-dsl"
         if (whatToTest('SLEUTH_STREAM')) {
             compile "org.springframework.cloud:spring-cloud-starter-stream-rabbit"
             compile "org.springframework.cloud:spring-cloud-sleuth-stream"
