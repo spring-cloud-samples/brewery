@@ -1,26 +1,27 @@
 package io.spring.cloud.samples.brewery.reporting;
 
-import io.spring.cloud.samples.brewery.common.events.Event;
-import io.spring.cloud.samples.brewery.common.events.RabbitMqConfiguration;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cloud.sleuth.Span;
-import org.springframework.cloud.sleuth.trace.TraceContextHolder;
+import org.springframework.cloud.sleuth.sampler.AlwaysSampler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.integration.amqp.inbound.AmqpInboundGateway;
-import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageHandler;
+
+import io.spring.cloud.samples.brewery.common.events.RabbitMqConfiguration;
+import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @Import(RabbitMqConfiguration.class)
 @Slf4j
 public class ReportingConfiguration {
+
+	@Bean AlwaysSampler alwaysSampler() {
+		return new AlwaysSampler();
+	}
 
 	@Bean
 	public MessageChannel amqpInputChannel() {
