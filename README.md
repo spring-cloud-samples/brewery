@@ -4,6 +4,9 @@
 
 Ever wanted to brew your beer using microservices? This repository will allow you to do so!
 
+This repository is used throughout the Spring Cloud libraries builds as end to end testing set up. Check
+[Acceptance Tests Readme](acceptance-tests/README.md) for more information.
+
 ## How does the brewery work?
 
 Since pictures say more than words...
@@ -151,6 +154,6 @@ will be executed.
 
 The code is ported from https://github.com/uservices-hackathon
 
-The authors of the code are:
+The authors of the initial version of the code are:
 - Marcin Grzejszczak (marcingrzejszczak)
 - Tomasz Szymanski (szimano)

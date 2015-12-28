@@ -3,12 +3,37 @@
 set -o errexit
 
 # Functions
+
+# Iterates over active containers and prints their logs to stdout
 function print_docker_logs {
+    echo -e "\n\nSomething went wrong... Printing logs of active containers:\n"
     docker ps | sed -n '1!p' > /tmp/containers.txt
     while read field1 field2 field3; do
       echo -e "\n\nContainer name [$field2] with id [$field1] logs: \n\n"
       docker logs -t $field1
     done < /tmp/containers.txt
+}
+
+# ${RETRIES} number of times will try to netcat to passed port $1
+function netcat_port {
+    local READY_FOR_TESTS=1
+    for i in $( seq 1 "${RETRIES}" ); do
+        sleep "${WAIT_TIME}"
+        nc -v -z -w 1 $HEALTH_HOST $1 && READY_FOR_TESTS=0 && break
+        echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
+    done
+    return $READY_FOR_TESTS
+}
+
+# ${RETRIES} number of times will try to curl to /health endpoint to passed port $1
+function curl_health_endpoint {
+    local READY_FOR_TESTS=1
+    for i in $( seq 1 "${RETRIES}" ); do
+        sleep "${WAIT_TIME}"
+        curl -m 5 "${HEALTH_HOST}:$1/health" && READY_FOR_TESTS=0 && break
+        echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
+    done
+    return $READY_FOR_TESTS
 }
 
 # Variables
@@ -22,24 +47,21 @@ fi
 WAIT_TIME="${WAIT_TIME:-5}"
 RETRIES="${RETRIES:-48}"
 DEFAULT_VERSION="${DEFAULT_VERSION:-Brixton.BUILD-SNAPSHOT}"
-
-HEALTH_HOST="127.0.0.1"
-HEALTH_PORTS=('9991' '9992' '9993' '9994' '9995' '9996')
-HEALTH_ENDPOINTS="$( printf "http://${HEALTH_HOST}:%s/health " "${HEALTH_PORTS[@]}" )"
+DEFAULT_HEALTH_HOST="${DEFAULT_HEALTH_HOST:-127.0.0.1}"
 
 BOM_VERSION_PROP_NAME="BOM_VERSION"
 
 # Parse the script arguments
-while getopts ":t:o:v:r" opt; do
+while getopts ":t:v:h:r" opt; do
     case $opt in
         t)
             WHAT_TO_TEST="${OPTARG}"
             ;;
-        o)
-            TEST_OPTS="${OPTARG}"
-            ;;
         v)
             VERSION="${OPTARG}"
+            ;;
+        h)
+            HEALTH_HOST="${OPTARG}"
             ;;
         r)
             RESET=0
@@ -57,24 +79,31 @@ done
 
 [[ -z "${WHAT_TO_TEST}" ]] && WHAT_TO_TEST=ZOOKEEPER
 [[ -z "${VERSION}" ]] && VERSION="${DEFAULT_VERSION}"
+[[ -z "${HEALTH_HOST}" ]] && HEALTH_HOST="${DEFAULT_HEALTH_HOST}"
+
+HEALTH_PORTS=('9991' '9992' '9993' '9994' '9995' '9996')
+HEALTH_ENDPOINTS="$( printf "http://${HEALTH_HOST}:%s/health " "${HEALTH_PORTS[@]}" )"
 
 cat <<EOF
 
 Running tests with the following parameters
 
+HEALTH_HOST=${HEALTH_HOST}
 WHAT_TO_TEST=${WHAT_TO_TEST}
-TEST_OPTS=${TEST_OPTS}
 VERSION=${VERSION}
 
 EOF
 
 export WHAT_TO_TEST=$WHAT_TO_TEST
-export TEST_OPTS=$TEST_OPTS
 export VERSION=$VERSION
 export HEALTH_HOST=$HEALTH_HOST
 export WAIT_TIME=$WAIT_TIME
 export RETRIES=$RETRIES
 export BOM_VERSION_PROP_NAME=$BOM_VERSION_PROP_NAME
+
+export -f print_docker_logs
+export -f netcat_port
+export -f curl_health_endpoint
 
 # Clone or update the brewery repository
 if [[ ! -e "${REPO_LOCAL}/.git" ]]; then
@@ -142,8 +171,7 @@ TESTS_PASSED="no"
 
 if [[ "${READY_FOR_TESTS}" == "yes" ]] ; then
     echo -e "\n\nSuccessfully booted up all the apps. Proceeding with the acceptance tests"
-    COMMAND_LINE_ARGS="-DWHAT_TO_TEST=${WHAT_TO_TEST}"
-    bash -e runAcceptanceTests.sh "${COMMAND_LINE_ARGS}" && TESTS_PASSED="yes"
+    bash -e runAcceptanceTests.sh && TESTS_PASSED="yes"
 fi
 
 # Check the result of tests execution

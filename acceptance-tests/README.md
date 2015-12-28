@@ -21,7 +21,7 @@ Does request instrumentalization work properly with:
 
 In tracing approach we're checking the following integrations:
 
-- WebAsyncTask
+- WebAsyncTask returning Controller's methods
 - Explicit TraceCommand calls
 - AsyncRestTemplate with @LoadBalanced RestTemplate
 - @Async annotated methods
@@ -49,29 +49,12 @@ from that enum. E.g.
 ./gradlew test -DWHAT_TO_TEST=SLEUTH
 ```
 
-### Local test mode
-
-If you don't want the acceptance tests to connect to a Zookeeper in a Docker container (you would have to run
-the tests in a Docker container too) you can run the tests in a "local" mode.
-
-```
-./gradlew acceptance-tests:clean acceptance-tests:test -DWHAT_TO_TEST=ZOOKEEPER
-```
+### Parameters
 
 In addition to this you can provide a couple of more parameters:
 
 ```
-# will by default point to http://localhost to find the presenting service (If you don't provide this option
-# you'll still access localhost by default)
--DLOCAL
-```
-
-```
-# will point to the desired URL to find the presenting service (e.g. http://192.168.99.100)
+# will point to the desired URL to find the all services (e.g. http://192.168.99.100), Useful when working
+# with docker-machine
 -DLOCAL_URL=http://192.168.99.100
-```
-
-```
-# will point to a custom Zipkin Query server
--Dspring.zipkin.query.url=http://192.168.99.100:9411
 ```
