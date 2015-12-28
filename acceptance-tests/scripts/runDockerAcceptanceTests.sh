@@ -2,6 +2,16 @@
 
 set -o errexit
 
+# Functions
+function print_docker_logs {
+    docker ps | sed -n '1!p' > /tmp/containers.txt
+    while read field1 field2 field3; do
+      echo -e "\n\nContainer name [$field2] with id [$field1] logs: \n\n"
+      docker logs -t $field1
+    done < /tmp/containers.txt
+}
+
+# Variables
 REPO_URL="${REPO_URL:-https://github.com/spring-cloud-samples/brewery.git}"
 REPO_BRANCH="${REPO_BRANCH:-master}"
 if [[ -d acceptance-tests ]]; then
@@ -93,12 +103,23 @@ echo -e "\n\n"
 ./docker-compose-$WHAT_TO_TEST.sh
 
 # Wait for the apps to boot up
+APPS_ARE_RUNNING="no"
+
 echo -e "\n\nWaiting for the apps to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
 for i in $( seq 1 "${RETRIES}" ); do
     sleep "${WAIT_TIME}"
-    curl -m 5 ${HEALTH_ENDPOINTS} && READY_FOR_TESTS="yes" && break
+    curl -m 5 ${HEALTH_ENDPOINTS} && APPS_ARE_RUNNING="yes" && break
     echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
 done
+
+if [[ "${APPS_ARE_RUNNING}" == "no" ]] ; then
+    echo "\n\nFailed to boot the apps!"
+    print_docker_logs
+    exit 1
+fi
+
+# Wait for the apps to register in Service Discovery
+READY_FOR_TESTS="no"
 
 echo -e "\n\nChecking for the presence of all services in Service Discovery for [$(( WAIT_TIME * RETRIES ))] seconds"
 for i in $( seq 1 "${RETRIES}" ); do
@@ -108,34 +129,29 @@ for i in $( seq 1 "${RETRIES}" ); do
     echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
 done
 
-echo
-
-TESTS_PASSED="no"
-
-# Run acceptance tests
-if [[ "${READY_FOR_TESTS}" == "yes" ]] ; then
-    echo -e "\n\nSuccessfully booted up all the apps. Proceeding with the acceptance tests"
-    COMMAND_LINE_ARGS="-DWHAT_TO_TEST=${WHAT_TO_TEST}"
-    if [ ! -z "$TEST_OPTS" ]; then
-        COMMAND_LINE_ARGS="\"${COMMAND_LINE_ARGS}\" \"${TEST_OPTS}\""
-    fi
-    bash -e runAcceptanceTests.sh "${COMMAND_LINE_ARGS}" && TESTS_PASSED="yes"
-else
-    echo "\n\nTests failed - printing docker logs."
-    docker-compose -f docker-compose-$WHAT_TO_TEST.yml logs
+if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
+    echo "\n\nThe apps failed to register in Service Discovery!"
+    print_docker_logs
     exit 1
 fi
 
+echo
+
 # Run acceptance tests
+TESTS_PASSED="no"
+
+if [[ "${READY_FOR_TESTS}" == "yes" ]] ; then
+    echo -e "\n\nSuccessfully booted up all the apps. Proceeding with the acceptance tests"
+    COMMAND_LINE_ARGS="-DWHAT_TO_TEST=${WHAT_TO_TEST}"
+    bash -e runAcceptanceTests.sh "${COMMAND_LINE_ARGS}" && TESTS_PASSED="yes"
+fi
+
+# Check the result of tests execution
 if [[ "${TESTS_PASSED}" == "yes" ]] ; then
     echo -e "\n\nTests passed successfully."
     exit 0
 else
     echo -e "\n\nTests failed..."
-    docker ps | sed -n '1!p' > /tmp/containers.txt
-    while read field1 field2 field3; do
-      echo -e "\n\nContainer name [$field2] with id [$field1] logs: \n\n"
-      docker logs -t $field1
-    done < /tmp/containers.txt
+    print_docker_logs
     exit 1
 fi
