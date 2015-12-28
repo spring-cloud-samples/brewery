@@ -145,7 +145,8 @@ The easiest way is to:
 * You can execute that script with such options
     * `-t` what do you want to test (`SLEUTH`, `ZOOKEEPER` etc.)
     * `-v` in which version of the BOM (defaults to `Brixton.BUILD-SNAPSHOT`)
-    * `-r` is brewery repo already in place and needs to be reset?
+    * `-h` where is your docker host? (defaults to '127.0.0.1' - provide your docker-machine host here)
+    * `-r` is brewery repo already in place and needs to be reset? (defaults to `not` resetting of repo)
      
 Once you run the script, the brewery app will be cloned, built with proper lib versions and proper tests
 will be executed.
