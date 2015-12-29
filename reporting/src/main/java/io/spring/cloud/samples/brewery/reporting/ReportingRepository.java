@@ -1,10 +1,12 @@
 package io.spring.cloud.samples.brewery.reporting;
 
-import io.spring.cloud.samples.brewery.common.events.Event;
-
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import io.spring.cloud.samples.brewery.common.events.Event;
 
 class ReportingRepository {
 
@@ -12,18 +14,20 @@ class ReportingRepository {
 
 	public void createOrUpdate(Event event) {
 		BeerEvents beerEvents = eventsDatabase.getOrDefault(event.getProcessId(), new BeerEvents());
+		LocalDateTime time = event.getEventTime();
+		String convertedTime = DateTimeFormatter.ISO_DATE_TIME.format(time);
 		switch(event.getEventType()) {
 			case INGREDIENTS_ORDERED:
-				beerEvents.setIngredientsOrderedTime(event.getEventTime());
+				beerEvents.setIngredientsOrderedTime(convertedTime);
 				break;
 			case BREWING_STARTED:
-				beerEvents.setBrewingStartedTime(event.getEventTime());
+				beerEvents.setBrewingStartedTime(convertedTime);
 				break;
 			case BEER_MATURED:
-				beerEvents.setBeerMaturedTime(event.getEventTime());
+				beerEvents.setBeerMaturedTime(convertedTime);
 				break;
 			case BEER_BOTTLED:
-				beerEvents.setBeerBottledTime(event.getEventTime());
+				beerEvents.setBeerBottledTime(convertedTime);
 				break;
 		}
 		eventsDatabase.put(event.getProcessId(), beerEvents);

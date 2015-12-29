@@ -33,12 +33,16 @@ configure(subprojects) {
 
     ext {
         dockerConfiguration = { int port ->
+            int debugPort = port-1000
             dependsOn 'build'
             dryRun true
             addFile("${libsDir}/${project.name}-${buildNrLoc}.jar", "/${project.name}/${project.name}.jar")
             exposePort(port)
+            exposePort(debugPort)
             // Random beacuse of https://wiki.apache.org/tomcat/HowTo/FasterStartUp
-            entryPoint(['java', '-Xmx64m', '-Xss1024k', '-Djava.security.egd=file:/dev/./urandom', '-jar', "/${project.name}/${project.name}.jar"])
+            entryPoint(['java', '-Xmx64m', '-Xss1024k',
+                        "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=$debugPort",
+                        '-Djava.security.egd=file:/dev/./urandom', '-jar', "/${project.name}/${project.name}.jar"])
         }
         createDockerTaskWithPort = { int port ->
             project.task([type: Docker], "docker", ext.dockerConfiguration.curry(port))
@@ -109,13 +113,8 @@ configure(subprojects - zipkinServerProject - acceptanceTestsProject) {
         compile "org.springframework.cloud:spring-cloud-starter-sleuth"
         compile "org.springframework.cloud:spring-cloud-starter-config"
         compile "org.springframework.cloud:spring-cloud-starter-hystrix"
-        compile "org.springframework.integration:spring-integration-core"
-        compile "org.springframework.integration:spring-integration-amqp"
-        compile "org.springframework.integration:spring-integration-java-dsl"
-        if (whatToTest('SLEUTH_STREAM')) {
-            compile "org.springframework.cloud:spring-cloud-starter-stream-rabbit"
-            compile "org.springframework.cloud:spring-cloud-sleuth-stream"
-        }
+        compile "org.springframework.cloud:spring-cloud-starter-stream-rabbit"
+        compile "org.springframework.cloud:spring-cloud-sleuth-stream"
     }
 }
 

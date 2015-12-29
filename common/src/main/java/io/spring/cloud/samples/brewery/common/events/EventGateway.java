@@ -1,12 +1,15 @@
 package io.spring.cloud.samples.brewery.common.events;
 
-import org.springframework.integration.annotation.Gateway;
-import org.springframework.integration.annotation.MessagingGateway;
+import org.springframework.integration.annotation.MessageEndpoint;
+import org.springframework.integration.annotation.Publisher;
 import org.springframework.messaging.Message;
 
-@MessagingGateway(defaultRequestChannel = "amqpOutboundChannel")
-public interface EventGateway {
+@MessageEndpoint
+public class EventGateway {
 
-	@Gateway
-	void emitEvent(Message<Event> event);
+	@Publisher(channel = EventSource.OUTPUT)
+	public Message<Event> emitEvent(Message<Event> event) {
+		return event;
+	}
+
 }

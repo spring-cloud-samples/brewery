@@ -12,6 +12,7 @@ import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.messaging.handler.annotation.Headers;
 
 import io.spring.cloud.samples.brewery.common.events.Event;
+import io.spring.cloud.samples.brewery.common.events.EventSink;
 import lombok.extern.slf4j.Slf4j;
 
 @MessageEndpoint
@@ -21,7 +22,7 @@ public class EventListener {
 	@Autowired ReportingRepository reportingRepository;
 	@Autowired TraceManager traceManager;
 
-	@ServiceActivator(inputChannel = "amqpInputChannel")
+	@ServiceActivator(inputChannel = EventSink.INPUT)
 	public void handleEvents(Event event, @Headers Map<String, Object> headers) {
 		Span span = TraceContextHolder.getCurrentSpan();
 		log.info("Received the following message with headers [{}] and body [{}]. " +
