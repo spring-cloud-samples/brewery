@@ -16,3 +16,5 @@ zuul:
   ignoredServices: '*'
   routes:
     ingredients: /**
+
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000

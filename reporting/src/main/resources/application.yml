@@ -1,0 +1,14 @@
+spring.application.name: reporting
+
+logging:
+  pattern:
+    level: '%clr([trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}]){yellow} %5p'
+
+server:
+  port: 9997
+
+spring.rabbitmq.host: ${RABBIT_HOST:localhost}
+
+logging.file: build/log/application.log
+
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000

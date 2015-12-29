@@ -1,9 +1,9 @@
 .idea
 *.iml
 build
-/bin
+bin/
 .gradle
-.poject
+.project
 .settings
 .classpath
 commitHash.txt

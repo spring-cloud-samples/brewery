@@ -1,8 +1,14 @@
 package io.spring.cloud.samples.brewery.maturing;
 
-import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
-import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
-
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
+import io.spring.cloud.samples.brewery.common.events.Event;
+import io.spring.cloud.samples.brewery.common.events.EventGateway;
+import io.spring.cloud.samples.brewery.common.events.EventType;
+import io.spring.cloud.samples.brewery.maturing.model.Ingredients;
+import io.spring.cloud.samples.brewery.maturing.model.Version;
+import io.spring.cloud.samples.brewery.maturing.model.Wort;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.sleuth.Trace;
 import org.springframework.cloud.sleuth.TraceManager;
 import org.springframework.cloud.sleuth.trace.TraceContextHolder;
@@ -11,12 +17,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
-import io.spring.cloud.samples.brewery.maturing.model.Ingredients;
-import io.spring.cloud.samples.brewery.maturing.model.Version;
-import io.spring.cloud.samples.brewery.maturing.model.Wort;
-import lombok.extern.slf4j.Slf4j;
+import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
+import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
 
 @Slf4j
 class BottlingServiceUpdater {
@@ -26,17 +28,19 @@ class BottlingServiceUpdater {
     private final PresentingServiceClient presentingServiceClient;
     private final BottlingServiceClient bottlingServiceClient;
     private final RestTemplate restTemplate;
+    private final EventGateway eventGateway;
 
     public BottlingServiceUpdater(BrewProperties brewProperties,
                                   TraceManager traceManager,
                                   PresentingServiceClient presentingServiceClient,
                                   BottlingServiceClient bottlingServiceClient,
-                                  RestTemplate restTemplate) {
+                                  RestTemplate restTemplate, EventGateway eventGateway) {
         this.brewProperties = brewProperties;
         this.traceManager = traceManager;
         this.presentingServiceClient = presentingServiceClient;
         this.bottlingServiceClient = bottlingServiceClient;
         this.restTemplate = restTemplate;
+        this.eventGateway = eventGateway;
     }
 
     @Async
@@ -51,6 +55,7 @@ class BottlingServiceUpdater {
         } catch (InterruptedException e) {
             log.error("Exception occurred while brewing beer", e);
         }
+        eventGateway.emitEvent(Event.builder().eventType(EventType.BEER_MATURED).processId(processId).build());
         notifyBottlingService(ingredients, processId);
     }
 
