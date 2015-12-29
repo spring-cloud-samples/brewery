@@ -54,7 +54,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 
 	@Autowired ServiceUrlFetcher serviceUrlFetcher
 	@Value('${presenting.poll.interval:1}') Integer pollInterval
-	@Value('${presenting.timeout:30}') Integer timeout
+	@Value('${presenting.timeout:60}') Integer timeout
 	@Value('${zipkin.query.port:9411}') Integer zipkinQueryPort
 	@Value('${LOCAL_URL:http://localhost}') String zipkinQueryUrl
 

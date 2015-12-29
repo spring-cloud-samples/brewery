@@ -7,6 +7,6 @@ import org.springframework.integration.annotation.MessagingGateway;
 public interface EventGateway {
 
 	@Gateway(requestChannel=EventSource.OUTPUT)
-	public void emitEvent(Event event);
+	void emitEvent(Event event);
 
 }

@@ -17,10 +17,16 @@ import lombok.extern.slf4j.Slf4j;
 
 @MessageEndpoint
 @Slf4j
-public class EventListener {
+class EventListener {
 
-	@Autowired ReportingRepository reportingRepository;
-	@Autowired TraceManager traceManager;
+	private final ReportingRepository reportingRepository;
+	private final TraceManager traceManager;
+
+	@Autowired
+	public EventListener(ReportingRepository reportingRepository, TraceManager traceManager) {
+		this.reportingRepository = reportingRepository;
+		this.traceManager = traceManager;
+	}
 
 	@ServiceActivator(inputChannel = EventSink.INPUT)
 	public void handleEvents(Event event, @Headers Map<String, Object> headers) {
