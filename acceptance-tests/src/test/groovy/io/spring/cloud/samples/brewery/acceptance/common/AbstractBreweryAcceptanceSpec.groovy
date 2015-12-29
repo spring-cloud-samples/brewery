@@ -90,7 +90,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 				List<Span> spans = Codec.JSON.readSpans(response.body.bytes)
 				List<String> servicesFoundInAnnotations = spans.collect { it.annotations.endpoint.serviceName }.flatten().unique()
 				List<String> servicesFoundInBinaryAnnotations = spans.collect { it.binaryAnnotations.endpoint.serviceName }.flatten().unique()
-				List<String> servicesNotFoundInZipkin = (APP_NAMES - servicesFoundInAnnotations - servicesFoundInBinaryAnnotations)
+				List<String> servicesNotFoundInZipkin = (APP_NAMES - servicesFoundInAnnotations - servicesFoundInBinaryAnnotations )
 				log.info("The following services were not found in Zipkin $servicesNotFoundInZipkin")
 				assert servicesNotFoundInZipkin.empty
 				log.info("Zipkin tracing is working! Sleuth is working! Let's be happy!")
