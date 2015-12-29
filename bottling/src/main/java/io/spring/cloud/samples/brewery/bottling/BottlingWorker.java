@@ -2,6 +2,9 @@ package io.spring.cloud.samples.brewery.bottling;
 
 import io.spring.cloud.samples.brewery.bottling.model.Version;
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
+import io.spring.cloud.samples.brewery.common.events.Event;
+import io.spring.cloud.samples.brewery.common.events.EventGateway;
+import io.spring.cloud.samples.brewery.common.events.EventType;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,14 +12,11 @@ import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.sleuth.Trace;
 import org.springframework.cloud.sleuth.TraceManager;
 import org.springframework.cloud.sleuth.trace.TraceContextHolder;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.RequestEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,23 +29,26 @@ public class BottlingWorker {
 
 
     private Map<String, State> PROCESS_STATE = new ConcurrentHashMap<>();
-    private TraceManager traceManager;
-    private PresentingClient presentingClient;
-    private RestTemplate restTemplate;
+    private final TraceManager traceManager;
+    private final PresentingClient presentingClient;
+    private final RestTemplate restTemplate;
+    private final EventGateway eventGateway;
 
     @Autowired
     public BottlingWorker(TraceManager traceManager,
                           PresentingClient presentingClient,
-                          @LoadBalanced RestTemplate restTemplate) {
+                          @LoadBalanced RestTemplate restTemplate, EventGateway eventGateway) {
         this.traceManager = traceManager;
         this.presentingClient = presentingClient;
         this.restTemplate = restTemplate;
+        this.eventGateway = eventGateway;
     }
 
     @Async
     public void bottleBeer(Integer wortAmount, String processId, TestConfigurationHolder configurationHolder) {
         TestConfigurationHolder.TEST_CONFIG.set(configurationHolder);
         increaseBottles(wortAmount, processId);
+        eventGateway.emitEvent(Event.builder().eventType(EventType.BEER_BOTTLED).processId(processId).build());
         notifyPresentingService(processId);
     }
 

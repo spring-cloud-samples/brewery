@@ -11,7 +11,8 @@ This repository is used throughout the Spring Cloud libraries builds as end to e
 
 Since pictures say more than words...
 
-Here is the business flow of the app
+Here is the business flow of the app. Below you'll see more detailed explanation with numbers corresponding
+to the numbers in the diagram
 
 ![Diagram](img/Brewery.png)
 
@@ -21,39 +22,48 @@ And here additional tech related applications:
 
 ### Presenting service (point of entry to the system)
 
-- Go to the presenting service (http://localhost:9991) and order ingredients
-- A request from the presenting service is sent to the aggregating service when order is placed
+- Go to the presenting service (http://localhost:9991) and order ingredients **(1)**
+- A request from the presenting service is sent to the aggregating service when order is placed **(2)**
 - A "PROCESS-ID" header is set and will be passed through each part of beer brewing
 
 ### Aggregating service
 
 - Service contains a warehouse ("database") where is stores the ingredients
-- Basing on the order placed it will contact the Zuul proxy to fetch ingredients
-- You have to have all 4 ingredients reach their threshold (1000) to start maturing the beer
-- Once the threshold is met the application sends a request to the maturing service
+- Basing on the order placed it will contact the Zuul proxy to fetch ingredients **(3)**
+- Once the ingredients have been received an event is emitted **(7)**
+- You have to have all 4 ingredients reach their threshold (1000) to start maturing the beer 
+- Once the brewing has been started an event is emitted **(7)**
+- Once the threshold is met the application sends a request to the maturing service **(8)**
 - Each time a request is sent to the aggregating service it returns as a response its warehouse state
 
 ### Zuul proxy
 
 - Proxy over the "adapters" to external world to fetch ingredients
-- Routes all requests to the respective "ingredient adapter"
+- Routes all requests to the respective "ingredient adapter" **(4)**
 - For simplicity we have one ingredient adapter called "ingredients" that returns a stubbed quantity
+- Returns back the ingredients to the aggregating **(6)**
 
 ### Ingredients service
 
-- Returns a fixed value of ingredients
+- Returns a fixed value of ingredients **(5)**
 
 ### Maturing service
 
 - It receives a request with ingredients needed to brew a beer
 - The brewing process starts thanks to the `Thread.sleep` method
-- Once it's done a request to the bottling service is sent with number of worts
+- Once it's done an event is emitted **(9)** 
+- And a request to the bottling service is sent with number of worts **(10)**
 - Presenting service is called to update the current status of the beer brewing process
 
 ### Bottling service
 
 - Waits some time to bottle the beer
-- Presenting service is called to update the current status of the beer brewing process
+- Once it's done an event is emitted **(11)** 
+- Presenting service is called to update the current status of the beer brewing process **(12)**
+
+### Reporting service
+
+- Listens to events and stores them in the "database"
 
 ## Project structure
 
@@ -70,6 +80,7 @@ And here additional tech related applications:
 ├── ingredients      (service that "connects" to ext. services for ingredients)
 ├── maturing         (service that matures the beer)
 ├── presenting       (UI of the brewery)
+├── reporting        (the reporting service that listens to events)
 ├── zipkin-server    (Zipkin Server for Sleuth Stream tests)
 ├── zookeeper        (embedded zookeeper)
 └── zuul             (Zuul proxy that forwards requests to ingredients)

@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.sleuth.Span;
+import org.springframework.cloud.sleuth.Trace;
+import org.springframework.cloud.sleuth.TraceManager;
 import org.springframework.cloud.sleuth.trace.TraceContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -23,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class Application {
 
     @Autowired private IngredientsProperties ingredientsProperties;
+    @Autowired private TraceManager traceManager;
 
 	/**
      * [SLEUTH] WebAsyncTask
@@ -32,10 +36,15 @@ public class Application {
                                                @RequestHeader("PROCESS-ID") String processId,
                                                @RequestHeader(TEST_COMMUNICATION_TYPE_HEADER_NAME) String testCommunicationType) {
         log.info("Received a request to [/{}] with process id [{}] and communication type [{}] and trace id [{}]", ingredientType,
-                processId, testCommunicationType, TraceContextHolder.getCurrentSpan().getTraceId());
+                processId, testCommunicationType, TraceContextHolder.isTracing() ?
+                        TraceContextHolder.getCurrentSpan().getTraceId() : "");
         return new WebAsyncTask<>(() -> {
+            Span currentSpan = TraceContextHolder.getCurrentSpan();
+            Trace trace = traceManager.startSpan("fetching_ingredients", currentSpan);
             Ingredient ingredient = new Ingredient(ingredientType, ingredientsProperties.getReturnedIngredientsQuantity());
-            log.info("Returning [{}] as fetched ingredient from an external service. Trace id [{}]", ingredient, TraceContextHolder.getCurrentSpan().getTraceId());
+            log.info("Returning [{}] as fetched ingredient from an external service. Trace id [{}]", ingredient, TraceContextHolder.isTracing() ?
+                    TraceContextHolder.getCurrentSpan().getTraceId() : "");
+            traceManager.close(trace);
             return ingredient;
         });
     }

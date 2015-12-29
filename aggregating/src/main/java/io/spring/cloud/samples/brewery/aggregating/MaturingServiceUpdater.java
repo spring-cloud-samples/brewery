@@ -1,16 +1,18 @@
 package io.spring.cloud.samples.brewery.aggregating;
 
-import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
-import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
-
-import org.springframework.http.HttpMethod;
-import org.springframework.web.client.RestTemplate;
-
 import io.spring.cloud.samples.brewery.aggregating.model.IngredientType;
 import io.spring.cloud.samples.brewery.aggregating.model.Ingredients;
 import io.spring.cloud.samples.brewery.aggregating.model.Version;
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
+import io.spring.cloud.samples.brewery.common.events.Event;
+import io.spring.cloud.samples.brewery.common.events.EventGateway;
+import io.spring.cloud.samples.brewery.common.events.EventType;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestTemplate;
+
+import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
+import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
 
 @Slf4j
 class MaturingServiceUpdater {
@@ -19,20 +21,23 @@ class MaturingServiceUpdater {
     private final IngredientWarehouse ingredientWarehouse;
     private final MaturingServiceClient maturingServiceClient;
     private final RestTemplate restTemplate;
+    private final EventGateway eventGateway;
 
     public MaturingServiceUpdater(IngredientsProperties ingredientsProperties,
                                   IngredientWarehouse ingredientWarehouse,
-                                  MaturingServiceClient maturingServiceClient, RestTemplate restTemplate) {
+                                  MaturingServiceClient maturingServiceClient, RestTemplate restTemplate, EventGateway eventGateway) {
         this.ingredientsProperties = ingredientsProperties;
         this.ingredientWarehouse = ingredientWarehouse;
         this.maturingServiceClient = maturingServiceClient;
         this.restTemplate = restTemplate;
+        this.eventGateway = eventGateway;
     }
 
     public Ingredients updateIfLimitReached(Ingredients ingredients, String processId) {
         if (ingredientsMatchTheThreshold(ingredients)) {
             log.info("Ingredients match the threshold [{}] - time to notify the maturing service!",
                     ingredientsProperties.getThreshold());
+            eventGateway.emitEvent(Event.builder().eventType(EventType.BREWING_STARTED).processId(processId).build());
             notifyMaturingService(ingredients, processId);
             ingredientWarehouse.useIngredients(ingredientsProperties.getThreshold());
         }

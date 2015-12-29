@@ -10,7 +10,7 @@ function print_docker_logs {
     docker ps | sed -n '1!p' > /tmp/containers.txt
     while read field1 field2 field3; do
       echo -e "\n\nContainer name [$field2] with id [$field1] logs: \n\n"
-      docker logs -t $field1
+      docker logs --tail=$NUMBER_OF_LINES_TO_LOG -t $field1
     done < /tmp/containers.txt
 }
 
@@ -48,11 +48,12 @@ WAIT_TIME="${WAIT_TIME:-5}"
 RETRIES="${RETRIES:-48}"
 DEFAULT_VERSION="${DEFAULT_VERSION:-Brixton.BUILD-SNAPSHOT}"
 DEFAULT_HEALTH_HOST="${DEFAULT_HEALTH_HOST:-127.0.0.1}"
+DEFAULT_NUMBER_OF_LINES_TO_LOG="${DEFAULT_NUMBER_OF_LINES_TO_LOG:-1000}"
 
 BOM_VERSION_PROP_NAME="BOM_VERSION"
 
 # Parse the script arguments
-while getopts ":t:v:h:r" opt; do
+while getopts ":t:v:h:n:r" opt; do
     case $opt in
         t)
             WHAT_TO_TEST="${OPTARG}"
@@ -62,6 +63,9 @@ while getopts ":t:v:h:r" opt; do
             ;;
         h)
             HEALTH_HOST="${OPTARG}"
+            ;;
+        n)
+            NUMBER_OF_LINES_TO_LOG="${OPTARG}"
             ;;
         r)
             RESET=0
@@ -80,8 +84,9 @@ done
 [[ -z "${WHAT_TO_TEST}" ]] && WHAT_TO_TEST=ZOOKEEPER
 [[ -z "${VERSION}" ]] && VERSION="${DEFAULT_VERSION}"
 [[ -z "${HEALTH_HOST}" ]] && HEALTH_HOST="${DEFAULT_HEALTH_HOST}"
+[[ -z "${NUMBER_OF_LINES_TO_LOG}" ]] && NUMBER_OF_LINES_TO_LOG="${DEFAULT_NUMBER_OF_LINES_TO_LOG}"
 
-HEALTH_PORTS=('9991' '9992' '9993' '9994' '9995' '9996')
+HEALTH_PORTS=('9991' '9992' '9993' '9994' '9995' '9996' '9997')
 HEALTH_ENDPOINTS="$( printf "http://${HEALTH_HOST}:%s/health " "${HEALTH_PORTS[@]}" )"
 
 cat <<EOF
@@ -91,6 +96,7 @@ Running tests with the following parameters
 HEALTH_HOST=${HEALTH_HOST}
 WHAT_TO_TEST=${WHAT_TO_TEST}
 VERSION=${VERSION}
+NUMBER_OF_LINES_TO_LOG=${NUMBER_OF_LINES_TO_LOG}
 
 EOF
 
@@ -100,6 +106,7 @@ export HEALTH_HOST=$HEALTH_HOST
 export WAIT_TIME=$WAIT_TIME
 export RETRIES=$RETRIES
 export BOM_VERSION_PROP_NAME=$BOM_VERSION_PROP_NAME
+export NUMBER_OF_LINES_TO_LOG=$NUMBER_OF_LINES_TO_LOG
 
 export -f print_docker_logs
 export -f netcat_port
@@ -154,7 +161,7 @@ echo -e "\n\nChecking for the presence of all services in Service Discovery for 
 for i in $( seq 1 "${RETRIES}" ); do
     sleep "${WAIT_TIME}"
     curl -m 5 http://localhost:9991/health | grep presenting | grep aggregating |
-        grep maturing | grep bottling | grep ingredients && READY_FOR_TESTS="yes" && break
+        grep maturing | grep bottling | grep ingredients | grep reporting && READY_FOR_TESTS="yes" && break
     echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
 done
 
