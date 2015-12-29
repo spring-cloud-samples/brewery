@@ -160,7 +160,7 @@ configure(subprojects - techProjects) {
         }
         if (whatToTest('CONSUL')) { compile "org.springframework.cloud:spring-cloud-starter-consul-discovery" }
         if (whatToTest('EUREKA')) { compile "org.springframework.cloud:spring-cloud-starter-eureka" }
-        compile "org.springframework.cloud:spring-cloud-starter-feign:+"
+        compile "org.springframework.cloud:spring-cloud-starter-feign"
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonMapper"
         compile "org.codehaus.jackson:jackson-core-asl:$jacksonMapper"
         compile 'org.apache.commons:commons-lang3:3.4'
