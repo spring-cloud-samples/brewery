@@ -30,8 +30,8 @@ public class Application {
     }
 
     @RequestMapping("/events/{processId}")
-    public ResponseEntity beerEvents(@PathVariable String processId) {
-        BeerEvents beerEvents = reportingRepository.read(processId);
+    public ResponseEntity<?> beerEvents(@PathVariable String processId) {
+        BeerEvents beerEvents = this.reportingRepository.read(processId);
         if (beerEvents == null) {
             return ResponseEntity.notFound().build();
         }
@@ -40,6 +40,6 @@ public class Application {
 
     @RequestMapping("/events")
     public Set<Map.Entry<String, BeerEvents>> beerEvents() {
-        return reportingRepository.read();
+        return this.reportingRepository.read();
     }
 }

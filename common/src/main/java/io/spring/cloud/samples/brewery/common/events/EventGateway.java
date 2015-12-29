@@ -1,15 +1,12 @@
 package io.spring.cloud.samples.brewery.common.events;
 
-import org.springframework.integration.annotation.MessageEndpoint;
-import org.springframework.integration.annotation.Publisher;
-import org.springframework.messaging.Message;
+import org.springframework.integration.annotation.Gateway;
+import org.springframework.integration.annotation.MessagingGateway;
 
-@MessageEndpoint
-public class EventGateway {
+@MessagingGateway
+public interface EventGateway {
 
-	@Publisher(channel = EventSource.OUTPUT)
-	public Message<Event> emitEvent(Message<Event> event) {
-		return event;
-	}
+	@Gateway(requestChannel=EventSource.OUTPUT)
+	public void emitEvent(Event event);
 
 }

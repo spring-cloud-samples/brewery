@@ -1,20 +1,10 @@
-acceptance-tests:
-  build: build/docker
-  links:
-    - zookeeper:zk
-  environment:
-    spring.cloud.zookeeper.connectString: zk:2181
-    spring.zipkin.enabled: 'false'
-    TERM: dumb
-  command: ./gradlew --version --no-daemon
-  dns:
-    - 8.8.8.8
-    - 8.8.4.4
-
 aggregating:
   build: aggregating/build/docker
   links:
     - zookeeper:zk
+    - rabbitmq
+  environment:
+    - RABBIT_HOST=rabbitmq
   command: --spring.cloud.zookeeper.connectString=zk:2181 \
            --spring.zipkin.enabled=false
   ports:
@@ -24,6 +14,9 @@ maturing:
   build: maturing/build/docker
   links:
     - zookeeper:zk
+    - rabbitmq
+  environment:
+    - RABBIT_HOST=rabbitmq
   command: --spring.cloud.zookeeper.connectString=zk:2181 \
            --spring.zipkin.enabled=false
   ports:
@@ -33,6 +26,9 @@ bottling:
   build: bottling/build/docker
   links:
     - zookeeper:zk
+    - rabbitmq
+  environment:
+    - RABBIT_HOST=rabbitmq
   command: --spring.cloud.zookeeper.connectString=zk:2181 \
            --spring.zipkin.enabled=false
   ports:
@@ -42,12 +38,34 @@ presenting:
   build: presenting/build/docker
   links:
     - zookeeper:zk
+    - rabbitmq
+  environment:
+    - RABBIT_HOST=rabbitmq
   command: --spring.cloud.zookeeper.connectString=zk:2181 \
            --spring.zipkin.enabled=false
   ports:
     - 9991:9991
 
+reporting:
+  build: reporting/build/docker
+  links:
+    - zookeeper:zk
+    - rabbitmq
+  environment:
+    - RABBIT_HOST=rabbitmq
+  command: --spring.cloud.zookeeper.connectString=zk:2181 \
+           --spring.zipkin.enabled=false
+  ports:
+    - 9997:9997
+    - 8997:8997
+
 zookeeper:
   image: jplock/zookeeper
   expose:
     - 2181
+
+rabbitmq:
+  image: rabbitmq:management
+  ports:
+    - "5672:5672"
+    - "15672:15672"

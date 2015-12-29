@@ -1,11 +1,9 @@
 package io.spring.cloud.samples.brewery.common.events;
 
-import lombok.Data;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import lombok.Data;
 
 @Data
 public class Event implements Serializable {
@@ -39,8 +37,8 @@ public class Event implements Serializable {
 			return this;
 		}
 
-		public Message<Event> build() {
-			return MessageBuilder.withPayload(new Event(processId, eventType)).build();
+		public Event build() {
+			return new Event(this.processId, this.eventType);
 		}
 
 	}
