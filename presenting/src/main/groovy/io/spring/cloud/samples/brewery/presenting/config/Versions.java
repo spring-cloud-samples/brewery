@@ -7,5 +7,5 @@ public final class Versions {
 
     public static final String PRESENTING_JSON_VERSION_1 = "application/vnd.io.spring.cloud.presenting.v1+json";
 
-    public static final String AGGREGATING_CONTENT_TYPE_V1 = "application/vnd.io.spring.cloud.aggregating.v1+json";
+    public static final String BREWING_CONTENT_TYPE_V1 = "application/vnd.io.spring.cloud.brewing.v1+json";
 }

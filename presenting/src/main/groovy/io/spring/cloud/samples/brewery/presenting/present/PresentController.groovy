@@ -13,7 +13,6 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.util.JdkIdGenerator
 import org.springframework.util.StringUtils
-import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.RestTemplate
@@ -33,12 +32,12 @@ class PresentController {
 
     private final FeedRepository feedRepository
     private final TraceManager traceManager
-    private final AggregationServiceClient aggregationServiceClient
+    private final BrewingServiceClient aggregationServiceClient
     private final RestTemplate restTemplate
 
     @Autowired
     public PresentController(FeedRepository feedRepository, TraceManager traceManager,
-                             AggregationServiceClient aggregationServiceClient, @LoadBalanced RestTemplate restTemplate) {
+                             BrewingServiceClient aggregationServiceClient, @LoadBalanced RestTemplate restTemplate) {
         this.feedRepository = feedRepository
         this.traceManager = traceManager
         this.aggregationServiceClient = aggregationServiceClient
@@ -69,7 +68,7 @@ class PresentController {
 
     private String useRestTemplateToCallAggregation(HttpEntity<String> body, String processId) {
         return restTemplate.exchange(requestEntity()
-                .contentTypeVersion(Versions.AGGREGATING_CONTENT_TYPE_V1)
+                .contentTypeVersion(Versions.BREWING_CONTENT_TYPE_V1)
                 .serviceName("aggregating")
                 .url("ingredients")
                 .httpMethod(HttpMethod.POST)

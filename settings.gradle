@@ -1,7 +1,5 @@
 rootProject.name = "brewery"
-include 'aggregating',
-		'bottling',
-		'maturing',
+include 'brewing',
 		'presenting',
 		'common',
 		'zookeeper',
@@ -9,6 +7,4 @@ include 'aggregating',
 		'eureka',
 		'zipkin-server',
 		'config-server',
-		'zuul',
-		'ingredients',
-		'reporting'
+		'zuul'

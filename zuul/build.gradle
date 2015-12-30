@@ -2,4 +2,4 @@ dependencies {
     compile "org.springframework.cloud:spring-cloud-starter-zuul"
 }
 
-createDockerTaskWithPort(9995)
+createDockerTaskWithPort(9993)

@@ -49,8 +49,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	public static final String SPAN_ID_HEADER_NAME = 'X-SPAN-ID'
 	public static final Logger log = LoggerFactory.getLogger(AbstractBreweryAcceptanceSpec)
 
-	private static final List<String> APP_NAMES = ['presenting', 'maturing', 'bottling',
-												   'aggregating', 'zuul', 'ingredients', 'reporting']
+	private static final List<String> APP_NAMES = ['presenting', 'brewing', 'zuul']
 
 	@Autowired ServiceUrlFetcher serviceUrlFetcher
 	@Value('${presenting.poll.interval:1}') Integer pollInterval

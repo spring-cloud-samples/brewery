@@ -86,7 +86,7 @@ done
 [[ -z "${HEALTH_HOST}" ]] && HEALTH_HOST="${DEFAULT_HEALTH_HOST}"
 [[ -z "${NUMBER_OF_LINES_TO_LOG}" ]] && NUMBER_OF_LINES_TO_LOG="${DEFAULT_NUMBER_OF_LINES_TO_LOG}"
 
-HEALTH_PORTS=('9991' '9992' '9993' '9994' '9995' '9996' '9997')
+HEALTH_PORTS=('9991' '9992' '9993')
 HEALTH_ENDPOINTS="$( printf "http://${HEALTH_HOST}:%s/health " "${HEALTH_PORTS[@]}" )"
 
 cat <<EOF
@@ -160,8 +160,8 @@ READY_FOR_TESTS="no"
 echo -e "\n\nChecking for the presence of all services in Service Discovery for [$(( WAIT_TIME * RETRIES ))] seconds"
 for i in $( seq 1 "${RETRIES}" ); do
     sleep "${WAIT_TIME}"
-    curl -m 5 http://${HEALTH_HOST}:9991/health | grep presenting | grep aggregating |
-        grep maturing | grep bottling | grep ingredients | grep reporting && READY_FOR_TESTS="yes" && break
+    curl -m 5 http://${HEALTH_HOST}:9991/health | grep presenting |
+        grep brewing && READY_FOR_TESTS="yes" && break
     echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
 done
 

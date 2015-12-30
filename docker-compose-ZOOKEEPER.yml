@@ -1,5 +1,5 @@
-aggregating:
-  build: aggregating/build/docker
+brewing:
+  build: brewing/build/docker
   links:
     - zookeeper:zk
     - rabbitmq
@@ -13,38 +13,6 @@ aggregating:
   ports:
     - 9992:9992
     - 8992:8992
-
-maturing:
-  build: maturing/build/docker
-  links:
-    - zookeeper:zk
-    - rabbitmq
-    - configserver
-  environment:
-    RABBIT_HOST: rabbitmq
-    spring.zipkin.enabled: 'false'
-    spring.profiles.active: deps
-    spring.cloud.config.uri: http://configserver:8888
-  command: --spring.cloud.zookeeper.connectString=zk:2181
-  ports:
-    - 9993:9993
-    - 8993:8993
-
-bottling:
-  build: bottling/build/docker
-  links:
-    - zookeeper:zk
-    - rabbitmq
-    - configserver
-  environment:
-    RABBIT_HOST: rabbitmq
-    spring.zipkin.enabled: 'false'
-    spring.profiles.active: deps
-    spring.cloud.config.uri: http://configserver:8888
-  command: --spring.cloud.zookeeper.connectString=zk:2181
-  ports:
-    - 9994:9994
-    - 8994:8994
 
 presenting:
   build: presenting/build/docker
@@ -75,40 +43,8 @@ zuul:
     spring.cloud.config.uri: http://configserver:8888
   command: --spring.cloud.zookeeper.connectString=zk:2181
   ports:
-    - 9995:9995
-    - 8995:8995
-
-ingredients:
-  build: ingredients/build/docker
-  links:
-    - zookeeper:zk
-    - rabbitmq
-    - configserver
-  environment:
-    RABBIT_HOST: rabbitmq
-    spring.zipkin.enabled: 'false'
-    spring.profiles.active: deps
-    spring.cloud.config.uri: http://configserver:8888
-  command: --spring.cloud.zookeeper.connectString=zk:2181
-  ports:
-    - 9996:9996
-    - 8996:8996
-
-reporting:
-  build: reporting/build/docker
-  links:
-    - zookeeper:zk
-    - rabbitmq
-    - configserver
-  environment:
-    RABBIT_HOST: rabbitmq
-    spring.zipkin.enabled: 'false'
-    spring.profiles.active: deps
-    spring.cloud.config.uri: http://configserver:8888
-  command: --spring.cloud.zookeeper.connectString=zk:2181
-  ports:
-    - 9997:9997
-    - 8997:8997
+    - 9993:9993
+    - 8993:8993
 
 configserver:
   build: config-server/build/docker
