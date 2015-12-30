@@ -57,7 +57,8 @@ class IngredientsAggregator {
                     ingredientsCollector.collectIngredients(order, processId).stream()
                             .filter(ingredient -> ingredient != null)
                             .forEach((Ingredient ingredient) -> {
-                                log.info("Adding an ingredient for order [{}] , processId [{}], traceid [{}]", order, processId, TraceContextHolder.isTracing() ?
+                                log.info("Adding an ingredient [{}] for order [{}] , processId [{}], traceid [{}]", ingredient,
+                                        order, processId, TraceContextHolder.isTracing() ?
                                         TraceContextHolder.getCurrentSpan().getTraceId() : "");
                                 ingredientWarehouse.addIngredient(ingredient);
                             });

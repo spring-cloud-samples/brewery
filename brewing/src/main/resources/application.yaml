@@ -12,3 +12,4 @@ spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 logging.file: build/log/application.log
 
 hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
+spring.cloud.stream.binder.rabbit.default.maxConcurrency: 5

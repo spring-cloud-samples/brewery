@@ -45,7 +45,7 @@ class IngredientsCollector {
 						restTemplate.exchange(requestEntity()
 								.processId(processId)
 								.serviceName(Collaborators.ZUUL)
-								.url(item.name())
+								.url("/ingredient/" + item.name())
 								.httpMethod(HttpMethod.POST)
 								.build(), Ingredient.class).getBody()
 				)

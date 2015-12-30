@@ -1,5 +1,6 @@
 package io.spring.cloud.samples.brewery;
 
+import io.spring.cloud.samples.brewery.common.events.EventSink;
 import io.spring.cloud.samples.brewery.common.events.EventSource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,7 +15,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableDiscoveryClient
 @EnableFeignClients
-@EnableBinding(EventSource.class)
+@EnableBinding({EventSource.class, EventSink.class})
 public class Application {
 
     public static void main(String[] args) {

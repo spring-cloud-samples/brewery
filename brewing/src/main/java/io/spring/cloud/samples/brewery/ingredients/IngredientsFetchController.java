@@ -27,7 +27,7 @@ class IngredientsFetchController {
 	/**
 	 * [SLEUTH] WebAsyncTask
 	 */
-	@RequestMapping(value = "/{ingredient}", method = RequestMethod.POST)
+	@RequestMapping(value = "/ingredient/{ingredient}", method = RequestMethod.POST)
 	public WebAsyncTask<Ingredient> ingredients(@PathVariable("ingredient") IngredientType ingredientType,
 												@RequestHeader("PROCESS-ID") String processId,
 												@RequestHeader(TestConfigurationHolder.TEST_COMMUNICATION_TYPE_HEADER_NAME) String testCommunicationType) {

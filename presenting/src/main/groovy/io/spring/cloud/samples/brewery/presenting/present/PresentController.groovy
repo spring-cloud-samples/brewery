@@ -2,6 +2,7 @@ package io.spring.cloud.samples.brewery.presenting.present
 import groovy.transform.TypeChecked
 import groovy.util.logging.Slf4j
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder
+import io.spring.cloud.samples.brewery.presenting.config.Collaborators
 import io.spring.cloud.samples.brewery.presenting.config.Versions
 import io.spring.cloud.samples.brewery.presenting.feed.FeedRepository
 import io.spring.cloud.samples.brewery.presenting.feed.ProcessState
@@ -69,7 +70,7 @@ class PresentController {
     private String useRestTemplateToCallAggregation(HttpEntity<String> body, String processId) {
         return restTemplate.exchange(requestEntity()
                 .contentTypeVersion(Versions.BREWING_CONTENT_TYPE_V1)
-                .serviceName("aggregating")
+                .serviceName(Collaborators.BREWING)
                 .url("ingredients")
                 .httpMethod(HttpMethod.POST)
                 .processId(processId)

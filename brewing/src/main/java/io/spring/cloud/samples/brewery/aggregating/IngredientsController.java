@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.concurrent.Callable;
 
 @RestController
-@RequestMapping(value = "/ingredients", consumes = Version.AGGREGATING_V1, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/ingredients", consumes = Version.BREWING_V1, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 class IngredientsController {
 

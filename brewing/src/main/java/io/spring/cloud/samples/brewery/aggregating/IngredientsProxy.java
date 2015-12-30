@@ -13,7 +13,7 @@ import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TES
 @FeignClient(Collaborators.ZUUL)
 interface IngredientsProxy {
 
-	@RequestMapping(value = "/{ingredient}", method = RequestMethod.POST)
+	@RequestMapping(value = "/ingredient/{ingredient}", method = RequestMethod.POST)
 	Ingredient ingredients(@PathVariable("ingredient") IngredientType ingredientType,
 						   @RequestHeader("PROCESS-ID") String processId,
 						   @RequestHeader(TEST_COMMUNICATION_TYPE_HEADER_NAME) String testCommunicationType);
