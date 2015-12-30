@@ -26,7 +26,11 @@ And here additional tech related applications:
 - A request from the presenting service is sent to the aggregating service when order is placed **(2)**
 - A "PROCESS-ID" header is set and will be passed through each part of beer brewing
 
-### Aggregating service
+### Brewing service
+
+Brewing service contains the following functionalities:
+
+#### Aggregating
 
 - Service contains a warehouse ("database") where is stores the ingredients
 - Basing on the order placed it will contact the Zuul proxy to fetch ingredients **(3)**
@@ -36,18 +40,11 @@ And here additional tech related applications:
 - Once the threshold is met the application sends a request to the maturing service **(8)**
 - Each time a request is sent to the aggregating service it returns as a response its warehouse state
 
-### Zuul proxy
-
-- Proxy over the "adapters" to external world to fetch ingredients
-- Routes all requests to the respective "ingredient adapter" **(4)**
-- For simplicity we have one ingredient adapter called "ingredients" that returns a stubbed quantity
-- Returns back the ingredients to the aggregating **(6)**
-
-### Ingredients service
+#### Ingredients
 
 - Returns a fixed value of ingredients **(5)**
 
-### Maturing service
+#### Maturing
 
 - It receives a request with ingredients needed to brew a beer
 - The brewing process starts thanks to the `Thread.sleep` method
@@ -55,32 +52,35 @@ And here additional tech related applications:
 - And a request to the bottling service is sent with number of worts **(10)**
 - Presenting service is called to update the current status of the beer brewing process
 
-### Bottling service
+#### Bottling
 
 - Waits some time to bottle the beer
 - Once it's done an event is emitted **(11)** 
 - Presenting service is called to update the current status of the beer brewing process **(12)**
 
-### Reporting service
+#### Reporting
 
 - Listens to events and stores them in the "database"
+
+### Zuul proxy
+
+- Proxy over the "adapters" to external world to fetch ingredients
+- Routes all requests to the respective "ingredient adapter" **(4)**
+- For simplicity we have one ingredient adapter called "ingredients" that returns a stubbed quantity
+- Returns back the ingredients to the aggregating **(6)**
 
 ## Project structure
 
 ```
 ├── acceptance-tests (code containing acceptace-tests of brewery)
-├── aggregating      (service that aggregates ingredients)
-├── bottling         (service that bottles the beer)
+├── brewing          (service that creates beer - consists of aggregating, maturing, bottling, reporting and ingredients functionalities)
 ├── common           (common code for the services)
 ├── config-server    (set up for the config server)
 ├── eureka           (Eureka server needed for Eureka tests)
 ├── git-props        (properties for config-server to pick)
 ├── gradle           (gradle related stuff)
 ├── img              (the fabulous diagram of the brewery)
-├── ingredients      (service that "connects" to ext. services for ingredients)
-├── maturing         (service that matures the beer)
 ├── presenting       (UI of the brewery)
-├── reporting        (the reporting service that listens to events)
 ├── zipkin-server    (Zipkin Server for Sleuth Stream tests)
 ├── zookeeper        (embedded zookeeper)
 └── zuul             (Zuul proxy that forwards requests to ingredients)
@@ -94,10 +94,10 @@ And here additional tech related applications:
 
 ## How to build one module?
 
-E.g. `aggregating` module
+E.g. `brewing` module
 
 ```
-./gradlew aggregating:clean aggregating:build
+./gradlew brewing:clean brewing:build
 ```
 
 ## How to run it?
