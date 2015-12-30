@@ -160,7 +160,7 @@ READY_FOR_TESTS="no"
 echo -e "\n\nChecking for the presence of all services in Service Discovery for [$(( WAIT_TIME * RETRIES ))] seconds"
 for i in $( seq 1 "${RETRIES}" ); do
     sleep "${WAIT_TIME}"
-    curl -m 5 http://localhost:9991/health | grep presenting | grep aggregating |
+    curl -m 5 http://${HEALTH_HOST}:9991/health | grep presenting | grep aggregating |
         grep maturing | grep bottling | grep ingredients | grep reporting && READY_FOR_TESTS="yes" && break
     echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
 done
