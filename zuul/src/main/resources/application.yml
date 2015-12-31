@@ -5,7 +5,7 @@ logging:
 logging.file: build/log/application.log
 
 server:
-  port: 9995
+  port: 9993
 
 spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 
@@ -13,8 +13,9 @@ spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 #zuul.route.ingredients: /
 
 zuul:
+  ignoredPatterns: /health
   ignoredServices: '*'
   routes:
-    ingredients: /**
+    brewing: /**
 
 hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000

@@ -2,6 +2,7 @@ package io.spring.cloud.samples.brewery.presenting.present
 import groovy.transform.TypeChecked
 import groovy.util.logging.Slf4j
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder
+import io.spring.cloud.samples.brewery.presenting.config.Collaborators
 import io.spring.cloud.samples.brewery.presenting.config.Versions
 import io.spring.cloud.samples.brewery.presenting.feed.FeedRepository
 import io.spring.cloud.samples.brewery.presenting.feed.ProcessState
@@ -9,11 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cloud.client.loadbalancer.LoadBalanced
 import org.springframework.cloud.sleuth.Trace
 import org.springframework.cloud.sleuth.TraceManager
+import org.springframework.cloud.sleuth.trace.TraceContextHolder
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.util.JdkIdGenerator
 import org.springframework.util.StringUtils
-import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.RestTemplate
@@ -33,12 +34,12 @@ class PresentController {
 
     private final FeedRepository feedRepository
     private final TraceManager traceManager
-    private final AggregationServiceClient aggregationServiceClient
+    private final BrewingServiceClient aggregationServiceClient
     private final RestTemplate restTemplate
 
     @Autowired
     public PresentController(FeedRepository feedRepository, TraceManager traceManager,
-                             AggregationServiceClient aggregationServiceClient, @LoadBalanced RestTemplate restTemplate) {
+                             BrewingServiceClient aggregationServiceClient, @LoadBalanced RestTemplate restTemplate) {
         this.feedRepository = feedRepository
         this.traceManager = traceManager
         this.aggregationServiceClient = aggregationServiceClient
@@ -53,8 +54,8 @@ class PresentController {
         String processId = StringUtils.hasText(body.headers.getFirst(PROCESS_ID_HEADER_NAME)) ?
                 processIdFromHeaders :
                 new JdkIdGenerator().generateId().toString()
-        log.info("Making new order with [$body.body] and processid [$processId]")
-        Trace trace = this.traceManager.startSpan("calling_aggregating")
+        log.info("Making new order with [$body.body] and processid [$processId]. Current Span is [${TraceContextHolder.currentSpan}]")
+        Trace trace = this.traceManager.startSpan("inside_presenting")
         String result;
         switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
@@ -69,8 +70,8 @@ class PresentController {
 
     private String useRestTemplateToCallAggregation(HttpEntity<String> body, String processId) {
         return restTemplate.exchange(requestEntity()
-                .contentTypeVersion(Versions.AGGREGATING_CONTENT_TYPE_V1)
-                .serviceName("aggregating")
+                .contentTypeVersion(Versions.BREWING_CONTENT_TYPE_V1)
+                .serviceName(Collaborators.BREWING)
                 .url("ingredients")
                 .httpMethod(HttpMethod.POST)
                 .processId(processId)
