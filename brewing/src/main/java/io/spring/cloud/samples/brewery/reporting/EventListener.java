@@ -1,8 +1,7 @@
 package io.spring.cloud.samples.brewery.reporting;
 
-import io.spring.cloud.samples.brewery.common.events.Event;
-import io.spring.cloud.samples.brewery.common.events.EventSink;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Trace;
@@ -12,7 +11,9 @@ import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.messaging.handler.annotation.Headers;
 
-import java.util.Map;
+import io.spring.cloud.samples.brewery.common.events.Event;
+import io.spring.cloud.samples.brewery.common.events.EventSink;
+import lombok.extern.slf4j.Slf4j;
 
 @MessageEndpoint
 @Slf4j
@@ -33,7 +34,7 @@ class EventListener {
 		log.info("Received the following message with headers [{}] and body [{}]. " +
 						"Current Span is [{}]", headers, event,
 				span != null ? span : "");
-		Trace trace = traceManager.startSpan("updating_reporting", span);
+		Trace trace = traceManager.startSpan("inside_reporting", span);
 		reportingRepository.createOrUpdate(event);
 		traceManager.close(trace);
 	}

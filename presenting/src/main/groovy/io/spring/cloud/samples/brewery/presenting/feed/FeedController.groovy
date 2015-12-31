@@ -2,6 +2,9 @@ package io.spring.cloud.samples.brewery.presenting.feed
 import groovy.transform.TypeChecked
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cloud.sleuth.Trace
+import org.springframework.cloud.sleuth.TraceManager
+import org.springframework.cloud.sleuth.trace.TraceContextHolder
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
@@ -19,11 +22,13 @@ import static io.spring.cloud.samples.brewery.presenting.config.Versions.PRESENT
 @TypeChecked
 class FeedController {
 
-    private FeedRepository feedRepository
+    private final FeedRepository feedRepository
+    private final TraceManager traceManager
 
     @Autowired
-    FeedController(FeedRepository feedRepository) {
+    FeedController(FeedRepository feedRepository, TraceManager traceManager) {
         this.feedRepository = feedRepository
+        this.traceManager = traceManager
     }
 
     @RequestMapping(
@@ -32,8 +37,13 @@ class FeedController {
             consumes = PRESENTING_JSON_VERSION_1,
             method = PUT)
     public String maturing(@RequestHeader("PROCESS-ID") String processId) {
-        log.info("new maturing with process [$processId]")
-        return feedRepository.addModifyProcess(processId, ProcessState.MATURING)
+        log.info("new maturing with process [$processId]. Current Span [${TraceContextHolder.currentSpan}]")
+        Trace trace = traceManager.startSpan("inside_presenting_maturing_feed")
+        try {
+            return feedRepository.addModifyProcess(processId, ProcessState.MATURING)
+        } finally {
+            traceManager.close(trace);
+        }
     }
 
     @RequestMapping(
@@ -42,8 +52,13 @@ class FeedController {
             consumes = PRESENTING_JSON_VERSION_1,
             method = PUT)
     public String bottling(@RequestHeader("PROCESS-ID") String processId) {
-        log.info("new bottling process [$processId]")
-        return feedRepository.addModifyProcess(processId, ProcessState.BOTTLING)
+        log.info("new bottling process [$processId]. Current Span [${TraceContextHolder.currentSpan}]")
+        Trace trace = traceManager.startSpan("inside_presenting_bottling_feed")
+        try {
+            return feedRepository.addModifyProcess(processId, ProcessState.BOTTLING)
+        } finally {
+            traceManager.close(trace)
+        }
     }
 
     @RequestMapping(

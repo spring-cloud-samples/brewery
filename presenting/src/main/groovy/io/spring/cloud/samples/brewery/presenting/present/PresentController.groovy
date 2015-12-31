@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cloud.client.loadbalancer.LoadBalanced
 import org.springframework.cloud.sleuth.Trace
 import org.springframework.cloud.sleuth.TraceManager
+import org.springframework.cloud.sleuth.trace.TraceContextHolder
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.util.JdkIdGenerator
@@ -53,8 +54,8 @@ class PresentController {
         String processId = StringUtils.hasText(body.headers.getFirst(PROCESS_ID_HEADER_NAME)) ?
                 processIdFromHeaders :
                 new JdkIdGenerator().generateId().toString()
-        log.info("Making new order with [$body.body] and processid [$processId]")
-        Trace trace = this.traceManager.startSpan("calling_aggregating")
+        log.info("Making new order with [$body.body] and processid [$processId]. Current Span is [${TraceContextHolder.currentSpan}]")
+        Trace trace = this.traceManager.startSpan("inside_presenting")
         String result;
         switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
