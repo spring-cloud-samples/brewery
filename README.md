@@ -22,6 +22,10 @@ And here additional tech related applications:
 
 ### Presenting service (point of entry to the system)
 
+Here is the UI
+
+![UI](img/Brewery_UI.png)
+
 - Go to the presenting service (http://localhost:9991) and order ingredients **(1)**
 - A request from the presenting service is sent to the aggregating service when order is placed **(2)**
 - A "PROCESS-ID" header is set and will be passed through each part of beer brewing

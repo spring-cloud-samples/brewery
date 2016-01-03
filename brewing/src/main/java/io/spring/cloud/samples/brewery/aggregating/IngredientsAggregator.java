@@ -1,13 +1,11 @@
 package io.spring.cloud.samples.brewery.aggregating;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
 import org.springframework.cloud.sleuth.TraceManager;
 import org.springframework.cloud.sleuth.instrument.executor.TraceableExecutorService;
 import org.springframework.cloud.sleuth.trace.TraceContextHolder;
-import org.springframework.scheduling.annotation.Async;
 
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.events.Event;
@@ -39,12 +37,7 @@ class IngredientsAggregator {
     }
 
     // TODO: Consider simplifying the case by removing the DB (always matches threshold)
-
-	/**
-     * [SLEUTH] Async
-     */
-    @Async
-    public Ingredients fetchIngredients(Order order, String processId, TestConfigurationHolder testConfigurationHolder) throws ExecutionException, InterruptedException {
+    public Ingredients fetchIngredients(Order order, String processId, TestConfigurationHolder testConfigurationHolder) throws Exception {
         TestConfigurationHolder.TEST_CONFIG.set(testConfigurationHolder);
         log.info("Fetching ingredients for order [{}] , processId [{}], span [{}]", order, processId, TraceContextHolder.isTracing() ?
                 TraceContextHolder.getCurrentSpan() : "");
