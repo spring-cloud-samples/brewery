@@ -135,7 +135,7 @@ cat gradle.properties
 echo -e "\n\n"
 
 # Build and run docker images
-./gradlew clean build docker --parallel --configure-on-demand
+./gradlew clean build docker --parallel --configure-on-demand --refresh-dependencies
 ./docker-compose-$WHAT_TO_TEST.sh
 
 # Wait for the apps to boot up
