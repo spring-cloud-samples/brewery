@@ -8,11 +8,11 @@ echo -e "\n\nBooting up RabbitMQ"
 docker-compose -f $dockerComposeFile up -d rabbitmq
 
 # First boot up Zipkin Web and all of it's dependencies
-docker-compose -f $dockerComposeFile up -d mysql web collector query
+docker-compose -f $dockerComposeFile up -d mysql web query
 
 # Wait for the Zipkin apps to boot up
 READY_FOR_TESTS="no"
-PORT_TO_CHECK=9410
+PORT_TO_CHECK=9411
 
 echo "Waiting for the Zipkin apps to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
 netcat_port $PORT_TO_CHECK && READY_FOR_TESTS="yes"

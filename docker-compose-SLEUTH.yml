@@ -2,7 +2,6 @@ brewing:
   build: brewing/build/docker
   links:
     - zookeeper:zk
-    - collector:ck
     - configserver
     - rabbitmq
   environment:
@@ -18,7 +17,6 @@ presenting:
   build: presenting/build/docker
   links:
     - zookeeper:zk
-    - collector:ck
     - configserver
     - rabbitmq
   environment:
@@ -34,7 +32,6 @@ zuul:
   build: zuul/build/docker
   links:
     - zookeeper:zk
-    - collector:ck
     - configserver
     - rabbitmq
   environment:
@@ -60,19 +57,6 @@ mysql:
   image: openzipkin/zipkin-mysql:1.25.0
   ports:
     - 3306:3306
-
-collector:
-  image: openzipkin/zipkin-collector:1.25.0
-  environment:
-    - TRANSPORT_TYPE=scribe
-    - STORAGE_TYPE=mysql
-  expose:
-    - 9410
-  ports:
-    - 9410:9410
-    - 9900:9900
-  links:
-    - mysql:storage
 
 query:
   image: openzipkin/zipkin-query:1.25.0
