@@ -4,9 +4,10 @@ brewing:
     - zookeeper:zk
     - configserver
     - rabbitmq
+    - query
   environment:
       RABBIT_HOST: rabbitmq
-      spring.zipkin.host: ck
+      spring.zipkin.host: query
       spring.cloud.config.uri: http://configserver:8888
   command: --spring.cloud.zookeeper.connectString=zk:2181
   ports:
@@ -19,9 +20,10 @@ presenting:
     - zookeeper:zk
     - configserver
     - rabbitmq
+    - query
   environment:
       RABBIT_HOST: rabbitmq
-      spring.zipkin.host: ck
+      spring.zipkin.host: query
       spring.cloud.config.uri: http://configserver:8888
   command: --spring.cloud.zookeeper.connectString=zk:2181
   ports:
@@ -34,9 +36,10 @@ zuul:
     - zookeeper:zk
     - configserver
     - rabbitmq
+    - query
   environment:
       RABBIT_HOST: rabbitmq
-      spring.zipkin.host: ck
+      spring.zipkin.host: query
       spring.cloud.config.uri: http://configserver:8888
   command: --spring.cloud.zookeeper.connectString=zk:2181
   ports:
@@ -64,8 +67,6 @@ query:
     # Remove TRANSPORT_TYPE to disable tracing
     - TRANSPORT_TYPE=http
     - STORAGE_TYPE=mysql
-  expose:
-    - 9411
   ports:
     - 9411:9411
     - 9901:9901
