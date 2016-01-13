@@ -18,6 +18,7 @@ before_script:
 script: |
   cd ..
   ln -s brewery/acceptance-tests/scripts/runDockerAcceptanceTests.sh .
+  bash -e runDockerAcceptanceTests.sh -n 1
   bash -e runDockerAcceptanceTests.sh -t SLEUTH
 
 env:
