@@ -66,7 +66,7 @@ zipkin:
     - rabbitmq
 
 web:
-  image: openzipkin/zipkin-web:1.25.0
+  image: openzipkin/zipkin-web:1.30.0
   environment:
     # Remove TRANSPORT_TYPE to disable tracing
     - TRANSPORT_TYPE=http
