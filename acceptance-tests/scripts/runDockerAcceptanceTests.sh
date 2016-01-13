@@ -67,12 +67,13 @@ function start_brewery_apps() {
 
 # Kills all started aps
 function kill_all_apps() {
-    kill -9 `cat brewing/build/libs/app.pid`
-    kill -9 `cat zuul/build/libs/app.pid`
-    kill -9 `cat presenting/build/libs/app.pid`
-    kill -9 `cat config-server/build/libs/app.pid`
-    kill -9 `cat eureka/build/libs/app.pid`
-    kill -9 `cat zipkin-server/build/libs/app.pid`
+    kill -9 `jps | grep "brewing" | cut -d " " -f 1` || echo "Can't find brewing in running processes"
+    kill -9 `jps | grep "zuul" | cut -d " " -f 1`  || echo "Can't find zuul in running processes"
+    kill -9 `jps | grep "presenting" | cut -d " " -f 1`  || echo "Can't find presenting in running processes"
+    kill -9 `jps | grep "config-server" | cut -d " " -f 1` || echo "Can't find config-server in running processes"
+    kill -9 `jps | grep "eureka" | cut -d " " -f 1` || echo "Can't find eureka in running processes"
+    kill -9 `jps | grep "zipkin-server" | cut -d " " -f 1` || echo "Can't find zipkin-server in running processes"
+    docker kill $(docker ps -q) || echo "No running docker containers are left"
     return 0
 }
 
@@ -94,7 +95,7 @@ LOCALHOST="127.0.0.1"
 BOM_VERSION_PROP_NAME="BOM_VERSION"
 
 # Parse the script arguments
-while getopts ":t:v:h:n:r:k" opt; do
+while getopts ":t:v:h:n:r:k:n:t" opt; do
     case $opt in
         t)
             WHAT_TO_TEST="${OPTARG}"
@@ -105,7 +106,7 @@ while getopts ":t:v:h:n:r:k" opt; do
         h)
             HEALTH_HOST="${OPTARG}"
             ;;
-        n)
+        l)
             NUMBER_OF_LINES_TO_LOG="${OPTARG}"
             ;;
         r)
@@ -113,6 +114,12 @@ while getopts ":t:v:h:n:r:k" opt; do
             ;;
         k)
             KILL=1
+            ;;
+        n)
+            KILL_NOW=1
+            ;;
+        x)
+            NO_TESTS=1
             ;;
         \?)
             echo "Invalid option: -$OPTARG" >&2
@@ -142,6 +149,8 @@ WHAT_TO_TEST=${WHAT_TO_TEST}
 VERSION=${VERSION}
 NUMBER_OF_LINES_TO_LOG=${NUMBER_OF_LINES_TO_LOG}
 KILL=${KILL}
+KILL_NOW=${KILL_NOW}
+NO_TESTS=${NO_TESTS}
 
 EOF
 
@@ -162,6 +171,13 @@ export -f curl_local_health_endpoint
 export -f java_jar
 export -f start_brewery_apps
 export -f kill_all_apps
+
+# Kill all apps and exit if switch set
+if [[ $KILL_NOW ]] ; then
+    echo -e "\nKilling all apps"
+    kill_all_apps
+    exit 0
+fi
 
 # Clone or update the brewery repository
 if [[ ! -e "${REPO_LOCAL}/.git" ]]; then
@@ -219,6 +235,10 @@ done
 if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
     echo "\n\nThe apps failed to register in Service Discovery!"
     print_docker_logs
+    if [[ $KILL ]]; then
+        echo -e "\n\nKilling all the apps"
+        kill_all_apps
+    fi
     exit 1
 fi
 
@@ -226,6 +246,11 @@ echo
 
 # Run acceptance tests
 TESTS_PASSED="no"
+
+if [[ $NO_TESTS ]] ; then
+    echo -e "\nSkipping end to end tests"
+    exit 0
+fi
 
 if [[ "${READY_FOR_TESTS}" == "yes" ]] ; then
     echo -e "\n\nSuccessfully booted up all the apps. Proceeding with the acceptance tests"
@@ -235,6 +260,10 @@ fi
 # Check the result of tests execution
 if [[ "${TESTS_PASSED}" == "yes" ]] ; then
     echo -e "\n\nTests passed successfully."
+    if [[ $KILL ]]; then
+        echo -e "\n\nKilling all the apps"
+        kill_all_apps
+    fi
     exit 0
 else
     echo -e "\n\nTests failed..."
@@ -242,7 +271,6 @@ else
     if [[ $KILL ]]; then
         echo -e "\n\nKilling all the apps"
         kill_all_apps
-        docker kill $(docker ps -q)
     fi
     exit 1
 fi
