@@ -60,6 +60,8 @@ zipkin:
   build: zipkin-server/build/docker
   environment:
     - RABBIT_HOST=rabbitmq
+    - zipkin.collector.sample-rate=1.0
+    - zipkin.query.lookback=86400000
   ports:
     - 9411:9411
   links:
