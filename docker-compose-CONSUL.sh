@@ -7,7 +7,7 @@ dockerComposeFile="docker-compose-${WHAT_TO_TEST}.yml"
 docker-compose -f $dockerComposeFile kill
 docker-compose -f $dockerComposeFile build
 
-echo -e "\n\nBooting up RabbitMQ and Zookeeper"
+echo -e "\n\nBooting up RabbitMQ and Consul"
 docker-compose -f $dockerComposeFile up -d rabbitmq discovery
 
 READY_FOR_TESTS="no"
