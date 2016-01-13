@@ -1,8 +1,8 @@
 logging:
   pattern:
-    level: '%clr([trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}]){yellow} %5p'
+    level: '[trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}] %5p'
 
-logging.file: application.log
+logging.file: zuul.log
 
 server:
   port: 9993

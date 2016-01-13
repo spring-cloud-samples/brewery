@@ -52,7 +52,7 @@ function java_jar() {
     echo $pid > $APP_JAVA_PATH/app.pid
     echo -e "\n[$1] process pid is [$pid]"
     echo -e "System props are [$2]"
-    echo -e "Logs are here from nohup $APP_JAVA_PATH/nohup.log\n\n"
+    echo -e "Logs are under [$1.log] or here from nohup $APP_JAVA_PATH/nohup.log\n\n"
     return 0
 }
 

@@ -2,14 +2,14 @@ spring.application.name: brewing
 
 logging:
   pattern:
-    level: '%clr([trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}]){yellow} %5p'
+    level: '[trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}] %5p'
 
 server:
   port: 9992
 
 spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 
-logging.file: application.log
+logging.file: brewing.log
 
 hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
 spring.cloud.stream.binder.rabbit.default.maxConcurrency: 5
