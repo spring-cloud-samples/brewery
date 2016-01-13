@@ -9,7 +9,7 @@ server:
 
 spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 
-logging.file: brewing.log
+logging.file: build/brewing.log
 
 hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
 spring.cloud.stream.binder.rabbit.default.maxConcurrency: 5

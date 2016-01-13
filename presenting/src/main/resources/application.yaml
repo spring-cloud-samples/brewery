@@ -10,6 +10,6 @@ server:
 spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 spring.sleuth.instrument.web.skipPattern: /api-docs.*|/autoconfig|/configprops|/dump|/info|/metrics.*|/mappings|/trace|/swagger.*|.*\.png|.*\.css|.*\.js|.*\.html|/favicon.ico|/hystrix.stream
 
-logging.file: presenting.log
+logging.file: build/presenting.log
 
 hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000

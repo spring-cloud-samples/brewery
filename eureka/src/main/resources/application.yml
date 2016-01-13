@@ -2,7 +2,7 @@ logging:
   pattern:
     level: '[trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}] %5p'
 
-logging.file: eureka.log
+logging.file: build/eureka.log
 
 server:
   port: 8761

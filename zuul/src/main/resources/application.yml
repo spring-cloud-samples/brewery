@@ -2,7 +2,7 @@ logging:
   pattern:
     level: '[trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}] %5p'
 
-logging.file: zuul.log
+logging.file: build/zuul.log
 
 server:
   port: 9993
