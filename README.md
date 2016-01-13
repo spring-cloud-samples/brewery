@@ -106,33 +106,22 @@ E.g. `brewing` module
 
 ## How to run it?
 
-### Using Docker
+### Using a Bash script
 
-Create the Dockerfiles. By default Zipkin integration is disabled.
+The easiest way is to:
 
-```
-./gradlew clean docker --parallel
-```
+* Create a symbolic link somewhere on your drive to the `acceptance-tests/scripts/runDockerAcceptanceTests.sh` file.
+* You can execute that script with such options
+    * `-t` what do you want to test (`SLEUTH`, `ZOOKEEPER` etc.)
+    * `-v` in which version of the BOM (defaults to `Brixton.BUILD-SNAPSHOT`)
+    * `-h` where is your docker host? (defaults to '127.0.0.1' - provide your docker-machine host here)
+    * `-r` is brewery repo already in place and needs to be reset? (defaults to `not` resetting of repo
+    * `-k` should the apps and all running docker containers be killed after the tests are executed? pass `-k 1` to turn on (defaults to `not` killing the apps)
+    * `-n` should the apps and all running docker containers be killed now and nothing else should happen? pass `-n 1` to turn on (defaults to `not` doing that)
+    * `-x` should the apps be booted no tests should be ran? pass `-x 1` to turn on (defaults to `not` doing that)
 
-And run docker compose
-
-```
-docker-compose up
-```
-
-This will build and run all the apps from jars. Also Zookeeper will be set up automatically.
-
-To kill containers just type
-
-```
-docker-compose kill -f
-```
-
-To remove the containers just type
-
-```
-docker-compose rm -f
-```
+Once you run the script, the brewery app will be cloned, built with proper lib versions and proper tests
+will be executed.
 
 ### Using Gradle with embedded Zookeeper
 
@@ -151,20 +140,6 @@ To run a single module just execute (e.g. `presenting` module):
 ```
 ./gradlew presenting:bootRun -Dspring.profiles.active=dev
 ```
-
-## How to test it?
-
-The easiest way is to:
-
-* Create a symbolic link somewhere on your drive to the `acceptance-tests/scripts/runDockerAcceptanceTests.sh` file.
-* You can execute that script with such options
-    * `-t` what do you want to test (`SLEUTH`, `ZOOKEEPER` etc.)
-    * `-v` in which version of the BOM (defaults to `Brixton.BUILD-SNAPSHOT`)
-    * `-h` where is your docker host? (defaults to '127.0.0.1' - provide your docker-machine host here)
-    * `-r` is brewery repo already in place and needs to be reset? (defaults to `not` resetting of repo)
-     
-Once you run the script, the brewery app will be cloned, built with proper lib versions and proper tests
-will be executed.
 
 ## Authors
 

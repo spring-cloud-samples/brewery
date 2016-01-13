@@ -113,7 +113,7 @@ while getopts ":t:v:h:n:r:k:n:t" opt; do
             RESET=1
             ;;
         k)
-            KILL=1
+            KILL_AT_THE_END=1
             ;;
         n)
             KILL_NOW=1
@@ -148,7 +148,7 @@ HEALTH_HOST=${HEALTH_HOST}
 WHAT_TO_TEST=${WHAT_TO_TEST}
 VERSION=${VERSION}
 NUMBER_OF_LINES_TO_LOG=${NUMBER_OF_LINES_TO_LOG}
-KILL=${KILL}
+KILL_AT_THE_END=${KILL_AT_THE_END}
 KILL_NOW=${KILL_NOW}
 NO_TESTS=${NO_TESTS}
 
@@ -161,7 +161,7 @@ export WAIT_TIME=$WAIT_TIME
 export RETRIES=$RETRIES
 export BOM_VERSION_PROP_NAME=$BOM_VERSION_PROP_NAME
 export NUMBER_OF_LINES_TO_LOG=$NUMBER_OF_LINES_TO_LOG
-export KILL=$KILL
+export KILL_AT_THE_END=$KILL_AT_THE_END
 export LOCALHOST=$LOCALHOST
 
 export -f print_docker_logs
@@ -235,7 +235,7 @@ done
 if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
     echo "\n\nThe apps failed to register in Service Discovery!"
     print_docker_logs
-    if [[ $KILL ]]; then
+    if [[ $KILL_AT_THE_END ]]; then
         echo -e "\n\nKilling all the apps"
         kill_all_apps
     fi
@@ -260,7 +260,7 @@ fi
 # Check the result of tests execution
 if [[ "${TESTS_PASSED}" == "yes" ]] ; then
     echo -e "\n\nTests passed successfully."
-    if [[ $KILL ]]; then
+    if [[ $KILL_AT_THE_END ]]; then
         echo -e "\n\nKilling all the apps"
         kill_all_apps
     fi
@@ -268,7 +268,7 @@ if [[ "${TESTS_PASSED}" == "yes" ]] ; then
 else
     echo -e "\n\nTests failed..."
     print_docker_logs
-    if [[ $KILL ]]; then
+    if [[ $KILL_AT_THE_END ]]; then
         echo -e "\n\nKilling all the apps"
         kill_all_apps
     fi

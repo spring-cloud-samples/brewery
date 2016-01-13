@@ -1,14 +1,22 @@
 #!/bin/bash
 
-SYSTEM_PROPS="-Dspring.zipkin.enabled=false -Dspring.profiles.active=deps -Dspring.cloud.zookeeper.connectString=${HEALTH_HOST}:2181"
+SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.zipkin.enabled=false -Dspring.profiles.active=deps -Dspring.cloud.zookeeper.connectString=${HEALTH_HOST}:2181"
 echo -e "\nSetting system props [$SYSTEM_PROPS]"
 
 dockerComposeFile="docker-compose-${WHAT_TO_TEST}.yml"
 docker-compose -f $dockerComposeFile kill
 docker-compose -f $dockerComposeFile build
 
-echo -e "\n\nBooting up RabbitMQ"
+echo -e "\n\nBooting up RabbitMQ and Zookeeper"
 docker-compose -f $dockerComposeFile up -d rabbitmq discovery
+
+PORT_TO_CHECK=5672
+echo "Waiting for RabbitMQ to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
+netcat_port $PORT_TO_CHECK && READY_FOR_TESTS="yes"
+
+PORT_TO_CHECK=2181
+echo "Waiting for Zookeeper to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
+netcat_port $PORT_TO_CHECK && READY_FOR_TESTS="yes"
 
 # Boot config-server
 READY_FOR_TESTS="no"
