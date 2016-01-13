@@ -57,7 +57,7 @@ zookeeper:
     - 2181
 
 mysql:
-  image: openzipkin/zipkin-mysql:1.25.0
+  image: openzipkin/zipkin-mysql:1.30.0
   ports:
     - 3306:3306
 

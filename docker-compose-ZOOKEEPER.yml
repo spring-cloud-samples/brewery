@@ -1,63 +1,10 @@
-brewing:
-  build: brewing/build/docker
-  links:
-    - zookeeper:zk
-    - rabbitmq
-    - configserver
-  environment:
-    RABBIT_HOST: rabbitmq
-    spring.zipkin.enabled: 'false'
-    spring.profiles.active: deps
-    spring.cloud.config.uri: http://configserver:8888
-  command: --spring.cloud.zookeeper.connectString=zk:2181
-  ports:
-    - 9992:9992
-    - 8992:8992
-
-presenting:
-  build: presenting/build/docker
-  links:
-    - zookeeper:zk
-    - rabbitmq
-    - configserver
-  environment:
-    RABBIT_HOST: rabbitmq
-    spring.zipkin.enabled: 'false'
-    spring.profiles.active: deps
-    spring.cloud.config.uri: http://configserver:8888
-  command: --spring.cloud.zookeeper.connectString=zk:2181
-  ports:
-    - 9991:9991
-    - 8991:8991
-
-zuul:
-  build: zuul/build/docker
-  links:
-    - zookeeper:zk
-    - rabbitmq
-    - configserver
-  environment:
-    RABBIT_HOST: rabbitmq
-    spring.zipkin.enabled: 'false'
-    spring.profiles.active: deps
-    spring.cloud.config.uri: http://configserver:8888
-  command: --spring.cloud.zookeeper.connectString=zk:2181
-  ports:
-    - 9993:9993
-    - 8993:8993
-
-configserver:
-  build: config-server/build/docker
-  ports:
-    - 8888:8888
-
-zookeeper:
+discovery:
   image: jplock/zookeeper
-  expose:
-    - 2181
+  ports:
+    - 2181:2181
 
 rabbitmq:
   image: rabbitmq:management
-  expose:
-    - 5672
-    - 15672
+  ports:
+    - 5672:5672
+    - 15672:15672

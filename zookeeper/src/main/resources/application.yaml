@@ -7,4 +7,4 @@ logging:
 server:
   port: 0
 
-logging.file: build/log/application.log
+logging.file: application.log

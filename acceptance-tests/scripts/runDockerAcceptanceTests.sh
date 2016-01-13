@@ -5,7 +5,7 @@ set -o errexit
 # Functions
 
 # Iterates over active containers and prints their logs to stdout
-function print_docker_logs {
+function print_docker_logs() {
     echo -e "\n\nSomething went wrong... Printing logs of active containers:\n"
     docker ps | sed -n '1!p' > /tmp/containers.txt
     while read field1 field2 field3; do
@@ -14,26 +14,66 @@ function print_docker_logs {
     done < /tmp/containers.txt
 }
 
-# ${RETRIES} number of times will try to netcat to passed port $1
-function netcat_port {
+# ${RETRIES} number of times will try to netcat to passed port $1 and host $2
+function netcat_port() {
+    local PASSED_HOST="${2:-$HEALTH_HOST}"
     local READY_FOR_TESTS=1
     for i in $( seq 1 "${RETRIES}" ); do
         sleep "${WAIT_TIME}"
-        nc -v -z -w 1 $HEALTH_HOST $1 && READY_FOR_TESTS=0 && break
+        nc -v -z -w 1 $PASSED_HOST $1 && READY_FOR_TESTS=0 && break
         echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
     done
     return $READY_FOR_TESTS
 }
 
-# ${RETRIES} number of times will try to curl to /health endpoint to passed port $1
-function curl_health_endpoint {
+# ${RETRIES} number of times will try to curl to /health endpoint to passed port $1 and host $2
+function curl_health_endpoint() {
+    local PASSED_HOST="${2:-$HEALTH_HOST}"
     local READY_FOR_TESTS=1
     for i in $( seq 1 "${RETRIES}" ); do
         sleep "${WAIT_TIME}"
-        curl -m 5 "${HEALTH_HOST}:$1/health" && READY_FOR_TESTS=0 && break
+        curl -m 5 "${PASSED_HOST}:$1/health" && READY_FOR_TESTS=0 && break
         echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
     done
     return $READY_FOR_TESTS
+}
+
+# ${RETRIES} number of times will try to curl to /health endpoint to passed port $1 and localhost
+function curl_local_health_endpoint() {
+    curl_health_endpoint $1 "127.0.0.1"
+}
+
+# Runs the `java -jar` for given application $1 and system properties $2
+function java_jar() {
+    local APP_JAVA_PATH=$1/build/libs
+    local EXPRESSION="nohup java $2 -jar $APP_JAVA_PATH/*.jar >$APP_JAVA_PATH/nohup.log &"
+    eval $EXPRESSION
+    pid=$!
+    echo $pid > $APP_JAVA_PATH/app.pid
+    echo -e "\n[$1] process pid is [$pid]"
+    echo -e "System props are [$2]"
+    echo -e "Logs are here from nohup $APP_JAVA_PATH/nohup.log\n\n"
+    return 0
+}
+
+# Starts the main brewery apps with given system props $1
+function start_brewery_apps() {
+    echo -e "\nStarting brewery apps with system props [$1]"
+    java_jar "brewing" "$1"
+    java_jar "zuul" "$1"
+    java_jar "presenting" "$1"
+    return 0
+}
+
+# Kills all started aps
+function kill_all_apps() {
+    kill -9 `cat brewing/build/libs/app.pid`
+    kill -9 `cat zuul/build/libs/app.pid`
+    kill -9 `cat presenting/build/libs/app.pid`
+    kill -9 `cat config-server/build/libs/app.pid`
+    kill -9 `cat eureka/build/libs/app.pid`
+    kill -9 `cat zipkin-server/build/libs/app.pid`
+    return 0
 }
 
 # Variables
@@ -49,11 +89,12 @@ RETRIES="${RETRIES:-70}"
 DEFAULT_VERSION="${DEFAULT_VERSION:-Brixton.BUILD-SNAPSHOT}"
 DEFAULT_HEALTH_HOST="${DEFAULT_HEALTH_HOST:-127.0.0.1}"
 DEFAULT_NUMBER_OF_LINES_TO_LOG="${DEFAULT_NUMBER_OF_LINES_TO_LOG:-1000}"
+LOCALHOST="127.0.0.1"
 
 BOM_VERSION_PROP_NAME="BOM_VERSION"
 
 # Parse the script arguments
-while getopts ":t:v:h:n:r" opt; do
+while getopts ":t:v:h:n:r:k" opt; do
     case $opt in
         t)
             WHAT_TO_TEST="${OPTARG}"
@@ -68,7 +109,10 @@ while getopts ":t:v:h:n:r" opt; do
             NUMBER_OF_LINES_TO_LOG="${OPTARG}"
             ;;
         r)
-            RESET=0
+            RESET=1
+            ;;
+        k)
+            KILL=1
             ;;
         \?)
             echo "Invalid option: -$OPTARG" >&2
@@ -87,7 +131,7 @@ done
 [[ -z "${NUMBER_OF_LINES_TO_LOG}" ]] && NUMBER_OF_LINES_TO_LOG="${DEFAULT_NUMBER_OF_LINES_TO_LOG}"
 
 HEALTH_PORTS=('9991' '9992' '9993')
-HEALTH_ENDPOINTS="$( printf "http://${HEALTH_HOST}:%s/health " "${HEALTH_PORTS[@]}" )"
+HEALTH_ENDPOINTS="$( printf "http://${LOCALHOST}:%s/health " "${HEALTH_PORTS[@]}" )"
 
 cat <<EOF
 
@@ -97,6 +141,7 @@ HEALTH_HOST=${HEALTH_HOST}
 WHAT_TO_TEST=${WHAT_TO_TEST}
 VERSION=${VERSION}
 NUMBER_OF_LINES_TO_LOG=${NUMBER_OF_LINES_TO_LOG}
+KILL=${KILL}
 
 EOF
 
@@ -107,10 +152,16 @@ export WAIT_TIME=$WAIT_TIME
 export RETRIES=$RETRIES
 export BOM_VERSION_PROP_NAME=$BOM_VERSION_PROP_NAME
 export NUMBER_OF_LINES_TO_LOG=$NUMBER_OF_LINES_TO_LOG
+export KILL=$KILL
+export LOCALHOST=$LOCALHOST
 
 export -f print_docker_logs
 export -f netcat_port
 export -f curl_health_endpoint
+export -f curl_local_health_endpoint
+export -f java_jar
+export -f start_brewery_apps
+export -f kill_all_apps
 
 # Clone or update the brewery repository
 if [[ ! -e "${REPO_LOCAL}/.git" ]]; then
@@ -134,8 +185,8 @@ cat gradle.properties
 
 echo -e "\n\n"
 
-# Build and run docker images
-./gradlew clean build docker --parallel --configure-on-demand
+# Build the apps
+./gradlew clean build --parallel
 ./docker-compose-$WHAT_TO_TEST.sh
 
 # Wait for the apps to boot up
@@ -160,7 +211,7 @@ READY_FOR_TESTS="no"
 echo -e "\n\nChecking for the presence of all services in Service Discovery for [$(( WAIT_TIME * RETRIES ))] seconds"
 for i in $( seq 1 "${RETRIES}" ); do
     sleep "${WAIT_TIME}"
-    curl -m 5 http://${HEALTH_HOST}:9991/health | grep presenting |
+    curl -m 5 http://${LOCALHOST}:9991/health | grep presenting |
         grep brewing && READY_FOR_TESTS="yes" && break
     echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
 done
@@ -188,5 +239,10 @@ if [[ "${TESTS_PASSED}" == "yes" ]] ; then
 else
     echo -e "\n\nTests failed..."
     print_docker_logs
+    if [[ $KILL ]]; then
+        echo -e "\n\nKilling all the apps"
+        kill_all_apps
+        docker kill $(docker ps -q)
+    fi
     exit 1
 fi

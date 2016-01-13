@@ -16,4 +16,4 @@ zipkin:
   store:
     type: mem
 
-logging.file: build/log/application.log
+logging.file: application.log
