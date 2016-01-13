@@ -119,6 +119,7 @@ The easiest way is to:
     * `-k` should the apps and all running docker containers be killed after the tests are executed? pass `-k 1` to turn on (defaults to `not` killing the apps)
     * `-n` should the apps and all running docker containers be killed now and nothing else should happen? pass `-n 1` to turn on (defaults to `not` doing that)
     * `-x` should the apps be booted no tests should be ran? pass `-x 1` to turn on (defaults to `not` doing that)
+    * `-s` should the building of apps be skipped? pass `-s 1` to turn on (defaults to `no` - the apps will be cleaned and built)
 
 Once you run the script, the brewery app will be cloned, built with proper lib versions and proper tests
 will be executed.

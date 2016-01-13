@@ -77,6 +77,15 @@ function kill_all_apps() {
     return 0
 }
 
+# Kills all started aps
+function kill_all_apps_if_switch_on() {
+    if [[ $KILL_AT_THE_END ]]; then
+        echo -e "\n\nKilling all the apps"
+        kill_all_apps
+    fi
+    return 0
+}
+
 # Variables
 REPO_URL="${REPO_URL:-https://github.com/spring-cloud-samples/brewery.git}"
 REPO_BRANCH="${REPO_BRANCH:-master}"
@@ -95,7 +104,7 @@ LOCALHOST="127.0.0.1"
 BOM_VERSION_PROP_NAME="BOM_VERSION"
 
 # Parse the script arguments
-while getopts ":t:v:h:n:r:k:n:t" opt; do
+while getopts ":t:v:h:n:r:k:n:x:s" opt; do
     case $opt in
         t)
             WHAT_TO_TEST="${OPTARG}"
@@ -120,6 +129,9 @@ while getopts ":t:v:h:n:r:k:n:t" opt; do
             ;;
         x)
             NO_TESTS=1
+            ;;
+        s)
+            SKIP_BUILDING=1
             ;;
         \?)
             echo "Invalid option: -$OPTARG" >&2
@@ -151,6 +163,7 @@ NUMBER_OF_LINES_TO_LOG=${NUMBER_OF_LINES_TO_LOG}
 KILL_AT_THE_END=${KILL_AT_THE_END}
 KILL_NOW=${KILL_NOW}
 NO_TESTS=${NO_TESTS}
+NO_BUILD=${NO_BUILD}
 
 EOF
 
@@ -202,8 +215,20 @@ cat gradle.properties
 echo -e "\n\n"
 
 # Build the apps
-./gradlew clean build --parallel
-./docker-compose-$WHAT_TO_TEST.sh
+if [[ -z "${SKIP_BUILDING}" ]] ; then
+    ./gradlew clean build --parallel
+fi
+
+# Run the initialization script
+INITIALIZATION_FAILED="yes"
+./docker-compose-$WHAT_TO_TEST.sh && INITIALIZATION_FAILED="no"
+
+if [[ "${INITIALIZATION_FAILED}" == "yes" ]] ; then
+    echo "\n\nFailed to initialize the apps!"
+    print_docker_logs
+    kill_all_apps_if_switch_on
+    exit 1
+fi
 
 # Wait for the apps to boot up
 APPS_ARE_RUNNING="no"
@@ -218,6 +243,7 @@ done
 if [[ "${APPS_ARE_RUNNING}" == "no" ]] ; then
     echo "\n\nFailed to boot the apps!"
     print_docker_logs
+    kill_all_apps_if_switch_on
     exit 1
 fi
 
@@ -235,10 +261,7 @@ done
 if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
     echo "\n\nThe apps failed to register in Service Discovery!"
     print_docker_logs
-    if [[ $KILL_AT_THE_END ]]; then
-        echo -e "\n\nKilling all the apps"
-        kill_all_apps
-    fi
+    kill_all_apps_if_switch_on
     exit 1
 fi
 
@@ -249,6 +272,7 @@ TESTS_PASSED="no"
 
 if [[ $NO_TESTS ]] ; then
     echo -e "\nSkipping end to end tests"
+    kill_all_apps_if_switch_on
     exit 0
 fi
 
@@ -260,17 +284,11 @@ fi
 # Check the result of tests execution
 if [[ "${TESTS_PASSED}" == "yes" ]] ; then
     echo -e "\n\nTests passed successfully."
-    if [[ $KILL_AT_THE_END ]]; then
-        echo -e "\n\nKilling all the apps"
-        kill_all_apps
-    fi
+    kill_all_apps_if_switch_on
     exit 0
 else
     echo -e "\n\nTests failed..."
     print_docker_logs
-    if [[ $KILL_AT_THE_END ]]; then
-        echo -e "\n\nKilling all the apps"
-        kill_all_apps
-    fi
+    kill_all_apps_if_switch_on
     exit 1
 fi
