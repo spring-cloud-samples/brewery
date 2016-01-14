@@ -14,17 +14,17 @@ function print_docker_logs() {
     done < /tmp/containers.txt
     echo -e "\n\nApps logs"
     echo -e "\n\nBrewing"
-    tail -n $NUMBER_OF_LINES_TO_LOG brewery/build/brewing.log || echo "Failed to open log"
+    tail -n $NUMBER_OF_LINES_TO_LOG build/brewing.log || echo "Failed to open log"
     echo -e "\n\nZuul"
-    tail -n $NUMBER_OF_LINES_TO_LOG brewery/build/zuul.log || echo "Failed to open log"
+    tail -n $NUMBER_OF_LINES_TO_LOG build/zuul.log || echo "Failed to open log"
     echo -e "\n\nZuul"
-    tail -n $NUMBER_OF_LINES_TO_LOG brewery/build/presenting.log || echo "Failed to open log"
+    tail -n $NUMBER_OF_LINES_TO_LOG build/presenting.log || echo "Failed to open log"
     echo -e "\n\nConfig Server"
-    tail -n $NUMBER_OF_LINES_TO_LOG brewery/build/config-server.log || echo "Failed to open log"
+    tail -n $NUMBER_OF_LINES_TO_LOG build/config-server.log || echo "Failed to open log"
     echo -e "\n\nConfig Server"
-    tail -n $NUMBER_OF_LINES_TO_LOG brewery/build/eureka.log || echo "Failed to open log"
+    tail -n $NUMBER_OF_LINES_TO_LOG build/eureka.log || echo "Failed to open log"
     echo -e "\n\nZipkin Server"
-    tail -n $NUMBER_OF_LINES_TO_LOG brewery/build/zipkin-server.log || echo "Failed to open log"
+    tail -n $NUMBER_OF_LINES_TO_LOG build/zipkin-server.log || echo "Failed to open log"
 }
 
 # ${RETRIES} number of times will try to netcat to passed port $1 and host $2
