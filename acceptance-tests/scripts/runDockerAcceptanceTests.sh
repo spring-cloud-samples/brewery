@@ -59,7 +59,7 @@ function curl_local_health_endpoint() {
 # Runs the `java -jar` for given application $1 and system properties $2
 function java_jar() {
     local APP_JAVA_PATH=$1/build/libs
-    local EXPRESSION="nohup java $2 $MEM_ARGS -jar $APP_JAVA_PATH/*.jar >$APP_JAVA_PATH/nohup.log &"
+    local EXPRESSION="nohup $JAVA_HOME/bin/java $2 $MEM_ARGS -jar $APP_JAVA_PATH/*.jar >$APP_JAVA_PATH/nohup.log &"
     eval $EXPRESSION
     pid=$!
     echo $pid > $APP_JAVA_PATH/app.pid
@@ -235,7 +235,7 @@ echo -e "\n\n"
 
 # Build the apps
 if [[ -z "${SKIP_BUILDING}" ]] ; then
-    ./gradlew clean build --parallel
+    ./gradlew clean build --parallel --no-daemon
 fi
 
 # Run the initialization script
