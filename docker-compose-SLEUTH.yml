@@ -9,7 +9,7 @@ mysql:
     - 3306:3306
 
 query:
-  image: openzipkin/zipkin-query:1.30.0
+  image: openzipkin/zipkin-java:0.4.1
   environment:
     # Remove TRANSPORT_TYPE to disable tracing
     - TRANSPORT_TYPE=http

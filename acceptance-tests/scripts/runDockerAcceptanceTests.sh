@@ -59,24 +59,24 @@ function curl_local_health_endpoint() {
 # Runs the `java -jar` for given application $1 and system properties $2
 function java_jar() {
     local APP_JAVA_PATH=$1/build/libs
-    local EXPRESSION="nohup java $2 -jar $APP_JAVA_PATH/*.jar >$APP_JAVA_PATH/nohup.log &"
+    local EXPRESSION="nohup java $2 $MEM_ARGS -jar $APP_JAVA_PATH/*.jar >$APP_JAVA_PATH/nohup.log &"
     eval $EXPRESSION
     pid=$!
     echo $pid > $APP_JAVA_PATH/app.pid
-    echo -e "\n[$1] process pid is [$pid]"
+    echo -e "\nJust started [$EXPRESSION]"
+    echo -e "[$1] process pid is [$pid]"
     echo -e "System props are [$2]"
-    echo -e "Logs are under [$1.log] or here from nohup $APP_JAVA_PATH/nohup.log\n\n"
+    echo -e "Logs are under [$1.log] or here from nohup $APP_JAVA_PATH/nohup.log\n"
     return 0
 }
 
 # Starts the main brewery apps with given system props $1
 function start_brewery_apps() {
     echo -e "\nStarting brewery apps with system props [$1]"
-    local MEM_ARGS="-Xmx64m -Xss1024k"
     local REMOTE_DEBUG="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address="
-    java_jar "presenting" "$1 $MEM_ARGS $REMOTE_DEBUG=8991"
-    java_jar "brewing" "$1 $MEM_ARGS $REMOTE_DEBUG=8992"
-    java_jar "zuul" "$1 $MEM_ARGS $REMOTE_DEBUG=8993"
+    java_jar "presenting" "$1 $REMOTE_DEBUG=8991"
+    java_jar "brewing" "$1 $REMOTE_DEBUG=8992"
+    java_jar "zuul" "$1 $REMOTE_DEBUG=8993"
     return 0
 }
 
@@ -92,7 +92,7 @@ function kill_all_apps() {
     return 0
 }
 
-# Kills all started aps
+# Kills all started aps if the switch is on
 function kill_all_apps_if_switch_on() {
     if [[ $KILL_AT_THE_END ]]; then
         echo -e "\n\nKilling all the apps"
@@ -115,6 +115,7 @@ DEFAULT_VERSION="${DEFAULT_VERSION:-Brixton.BUILD-SNAPSHOT}"
 DEFAULT_HEALTH_HOST="${DEFAULT_HEALTH_HOST:-127.0.0.1}"
 DEFAULT_NUMBER_OF_LINES_TO_LOG="${DEFAULT_NUMBER_OF_LINES_TO_LOG:-1000}"
 LOCALHOST="127.0.0.1"
+MEM_ARGS="-Xmx64m -Xss1024k"
 
 BOM_VERSION_PROP_NAME="BOM_VERSION"
 
@@ -191,6 +192,7 @@ export BOM_VERSION_PROP_NAME=$BOM_VERSION_PROP_NAME
 export NUMBER_OF_LINES_TO_LOG=$NUMBER_OF_LINES_TO_LOG
 export KILL_AT_THE_END=$KILL_AT_THE_END
 export LOCALHOST=$LOCALHOST
+export MEM_ARGS=$MEM_ARGS
 
 export -f print_docker_logs
 export -f netcat_port
