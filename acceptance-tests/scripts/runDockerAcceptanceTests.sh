@@ -73,7 +73,7 @@ function java_jar() {
 # Starts the main brewery apps with given system props $1
 function start_brewery_apps() {
     echo -e "\nStarting brewery apps with system props [$1]"
-    local REMOTE_DEBUG="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address="
+    local REMOTE_DEBUG="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address"
     java_jar "presenting" "$1 $REMOTE_DEBUG=8991"
     java_jar "brewing" "$1 $REMOTE_DEBUG=8992"
     java_jar "zuul" "$1 $REMOTE_DEBUG=8993"
