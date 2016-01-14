@@ -6,8 +6,10 @@ dockerComposeFile="docker-compose-${WHAT_TO_TEST}.yml"
 docker-compose -f $dockerComposeFile kill
 docker-compose -f $dockerComposeFile build
 
-echo -e "\n\nBooting up RabbitMQ"
-docker-compose -f $dockerComposeFile up -d rabbitmq
+if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
+    echo -e "\n\nBooting up RabbitMQ"
+    docker-compose -f $dockerComposeFile up -d rabbitmq
+fi
 
 READY_FOR_TESTS="no"
 PORT_TO_CHECK=5672

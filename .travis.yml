@@ -1,6 +1,7 @@
 sudo: required
 services:
   - docker
+  - rabbitmq
 
 language: groovy
 
@@ -22,3 +23,4 @@ script: |
 env:
   global:
   - TERM=dumb
+  - SHOULD_START_RABBIT=no
