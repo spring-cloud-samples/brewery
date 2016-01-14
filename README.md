@@ -122,6 +122,14 @@ The easiest way is to:
 Once you run the script, the brewery app will be cloned, built with proper lib versions and proper tests
 will be executed.
 
+You can run this script to have the setup done for you in no time (example for SLEUTH tests execution):
+
+```
+git clone https://github.com/spring-cloud-samples/brewery.git
+ln -s brewery/acceptance-tests/scripts/runDockerAcceptanceTests.sh  .
+bash runDockerAcceptanceTests.sh -t SLEUTH
+```
+
 ### Examples
 
 #### I want to just run all the apps and have fun
