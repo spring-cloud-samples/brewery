@@ -96,6 +96,9 @@ function kill_all_apps_if_switch_on() {
     if [[ $KILL_AT_THE_END ]]; then
         echo -e "\n\nKilling all the apps"
         kill_all_apps
+    else
+        echo -e "\n\nNo switch to kill the apps turned on"
+        return 0
     fi
     return 0
 }
