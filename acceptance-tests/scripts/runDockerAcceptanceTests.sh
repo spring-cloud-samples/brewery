@@ -81,12 +81,12 @@ function start_brewery_apps() {
 
 # Kills all started aps
 function kill_all_apps() {
-    kill -9 `jps | grep "brewing" | cut -d " " -f 1` || echo "Can't find brewing in running processes"
-    kill -9 `jps | grep "zuul" | cut -d " " -f 1`  || echo "Can't find zuul in running processes"
-    kill -9 `jps | grep "presenting" | cut -d " " -f 1`  || echo "Can't find presenting in running processes"
-    kill -9 `jps | grep "config-server" | cut -d " " -f 1` || echo "Can't find config-server in running processes"
-    kill -9 `jps | grep "eureka" | cut -d " " -f 1` || echo "Can't find eureka in running processes"
-    kill -9 `jps | grep "zipkin-server" | cut -d " " -f 1` || echo "Can't find zipkin-server in running processes"
+    pkill -9 -f "brewing" && echo "Killed brewing" || echo "Can't find brewing in running processes"
+    pkill -9 -f "zuul" && echo "Killed zuul" || echo "Can't find zuul in running processes"
+    pkill -9 -f "presenting" && echo "Killed presenting" || echo "Can't find presenting in running processes"
+    pkill -9 -f "config-server" && echo "Killed config-server" || echo "Can't find config-server in running processes"
+    pkill -9 -f "eureka" && echo "Killed eureka" || echo "Can't find eureka in running processes"
+    pkill -9 -f "zipkin-server" && echo "Killed zipkin-server" || echo "Can't find zipkin-server in running processes"
     docker kill $(docker ps -q) || echo "No running docker containers are left"
     return 0
 }
