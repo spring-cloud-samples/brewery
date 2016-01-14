@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 package io.spring.cloud.samples.brewery.acceptance.common
-
 import groovy.json.JsonSlurper
 import io.spring.cloud.samples.brewery.acceptance.common.sleuth.SleuthHashing
 import io.spring.cloud.samples.brewery.acceptance.common.tech.ExceptionLoggingRestTemplate
-import io.spring.cloud.samples.brewery.acceptance.common.tech.ServiceUrlFetcher
 import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConfiguration
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
 import io.spring.cloud.samples.brewery.acceptance.model.IngredientType
@@ -27,7 +25,6 @@ import io.spring.cloud.samples.brewery.acceptance.model.ProcessState
 import io.zipkin.Codec
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.cloud.sleuth.Span
@@ -49,6 +46,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	public static final String SPAN_ID_HEADER_NAME = 'X-SPAN-ID'
 	public static final Logger log = LoggerFactory.getLogger(AbstractBreweryAcceptanceSpec)
 
+	private static final String PRESENTING_SERVICE_URL = "http://localhost:9991"
 	private static final List<String> APP_NAMES = ['presenting', 'brewing', 'zuul']
 	private static final List<String> SPAN_NAMES = [
 													// TODO: Connection issues? 'inside_presenting_maturing_feed',
@@ -59,7 +57,6 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 													'inside_ingredients',
 													'inside_reporting']
 
-	@Autowired ServiceUrlFetcher serviceUrlFetcher
 	@Value('${presenting.poll.interval:1}') Integer pollInterval
 	@Value('${presenting.timeout:60}') Integer timeout
 	@Value('${zipkin.query.port:9411}') Integer zipkinQueryPort
@@ -124,7 +121,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	}
 
 	ResponseEntity<String> checkStateOfTheProcess(String processId) {
-		URI uri = URI.create("${serviceUrlFetcher.presentingServiceUrl()}/feed/process/$processId")
+		URI uri = URI.create("$PRESENTING_SERVICE_URL/feed/process/$processId")
 		log.info("Sending request to the presenting service [$uri] to check the beer brewing process. The process id is [$processId]")
 		return restTemplate().exchange(
 				new RequestEntity<>(new HttpHeaders(), HttpMethod.GET, uri), String
@@ -163,7 +160,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 		headers.add(TRACE_ID_HEADER_NAME, processId)
 		headers.add(SPAN_ID_HEADER_NAME, new JdkIdGenerator().generateId().toString())
 		headers.add("TEST-COMMUNICATION-TYPE", communicationType.name())
-		URI uri = URI.create("${serviceUrlFetcher.presentingServiceUrl()}/present/order")
+		URI uri = URI.create("$PRESENTING_SERVICE_URL/present/order")
 		Order allIngredients = allIngredients()
 		RequestEntity requestEntity = new RequestEntity<>(allIngredients, headers, HttpMethod.POST, uri)
 		log.info("Request with order for all ingredients to presenting service [$requestEntity] is ready")

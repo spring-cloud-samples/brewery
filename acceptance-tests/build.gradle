@@ -5,7 +5,7 @@ dependencies {
 
     testCompile 'com.jayway.awaitility:awaitility:1.6.5'
     testCompile "org.springframework.boot:spring-boot-starter-test"
-    testCompile "io.zipkin:zipkin-java-core:0.1.1"
+    testCompile "io.zipkin:zipkin-java-core:0.4.1"
     testCompile "com.jayway.restassured:rest-assured:$restAssuredVersion"
     testCompile "com.jayway.restassured:spring-mock-mvc:$restAssuredVersion"
     testCompile( 'com.athaydes:spock-reports:1.2.7' ) {

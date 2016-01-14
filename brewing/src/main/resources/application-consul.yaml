@@ -1,2 +1,1 @@
-spring.cloud.consul.host: discovery
 spring.cloud.consul.discovery.preferIpAddress: true
