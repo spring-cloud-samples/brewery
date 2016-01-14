@@ -1,7 +1,6 @@
 #!/bin/bash
 
 SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.zipkin.enabled=false -Dspring.profiles.active=consul -Dspring.cloud.consul.host=${HEALTH_HOST}"
-echo -e "\nSetting system props [$SYSTEM_PROPS]"
 
 dockerComposeFile="docker-compose-${WHAT_TO_TEST}.yml"
 docker-compose -f $dockerComposeFile kill
