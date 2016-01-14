@@ -1,7 +1,7 @@
 sudo: required
-dist: trusty
 services:
   - docker
+  - rabbitmq
 
 language: groovy
 
@@ -18,8 +18,9 @@ before_script:
 script: |
   cd ..
   ln -s brewery/acceptance-tests/scripts/runDockerAcceptanceTests.sh .
-  bash -e runDockerAcceptanceTests.sh -t SLEUTH
+  bash -e runDockerAcceptanceTests.sh -t ZOOKEEPER
 
 env:
   global:
   - TERM=dumb
+  - SHOULD_START_RABBIT=no

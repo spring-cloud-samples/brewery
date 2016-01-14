@@ -1,17 +1,13 @@
 logging:
   pattern:
-    level: '%clr([trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}]){yellow} %5p'
+    level: '[trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}] %5p'
 
-logging.file: build/log/application.log
+logging.file: build/eureka.log
 
 server:
   port: 8761
 
 eureka:
-  instance:
-    hostname: discovery
   client:
     registerWithEureka: false
     fetchRegistry: false
-    serviceUrl:
-      defaultZone: http://discovery:${server.port}/eureka/

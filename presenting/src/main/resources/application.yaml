@@ -2,7 +2,7 @@ spring.application.name: presenting
 
 logging:
   pattern:
-    level: '%clr([trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}]){yellow} %5p'
+    level: '[trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}] %5p'
 
 server:
   port: 9991
@@ -10,6 +10,6 @@ server:
 spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 spring.sleuth.instrument.web.skipPattern: /api-docs.*|/autoconfig|/configprops|/dump|/info|/metrics.*|/mappings|/trace|/swagger.*|.*\.png|.*\.css|.*\.js|.*\.html|/favicon.ico|/hystrix.stream
 
-logging.file: build/log/application.log
+logging.file: build/presenting.log
 
 hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000

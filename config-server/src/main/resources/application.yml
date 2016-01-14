@@ -2,7 +2,7 @@ logging:
   pattern:
     level: '%clr([trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}]){yellow} %5p'
 
-logging.file: build/log/application.log
+logging.file: build/config-server.log
 
 server.port: 8888
 
