@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.zipkin.host=${HEALTH_HOST} -Dspring.cloud.zookeeper.connectString=${HEALTH_HOST}:2181"
+SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.zipkin.host=${HEALTH_HOST}"
 
 dockerComposeFile="docker-compose-${WHAT_TO_TEST}.yml"
 docker-compose -f $dockerComposeFile kill
@@ -10,8 +10,6 @@ if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
     echo -e "\n\nBooting up RabbitMQ"
     docker-compose -f $dockerComposeFile up -d rabbitmq
 fi
-echo -e "\n\nBooting up Discovery"
-docker-compose -f $dockerComposeFile up -d discovery
 
 READY_FOR_TESTS="no"
 PORT_TO_CHECK=5672
@@ -26,7 +24,8 @@ fi
 READY_FOR_TESTS="no"
 PORT_TO_CHECK=2181
 echo "Waiting for Zookeeper to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
-netcat_port $PORT_TO_CHECK && READY_FOR_TESTS="yes"
+java_jar "zookeeper"
+netcat_local_port $PORT_TO_CHECK && READY_FOR_TESTS="yes"
 
 if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
     echo "Zookeeper failed to start..."

@@ -59,7 +59,7 @@ class PresentController {
         String result;
         switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
-                result = useFeignToCallAggregation(body, trace, processId);
+                result = useFeignToCallAggregation(body, processId);
                 break;
             default:
                 result = useRestTemplateToCallAggregation(body, processId)
@@ -79,9 +79,9 @@ class PresentController {
                 .build(), String.class).body;
     }
 
-    private String useFeignToCallAggregation(HttpEntity<String> body, Trace trace, String processId) {
+    private String useFeignToCallAggregation(HttpEntity<String> body, String processId) {
         return aggregationServiceClient.getIngredients(body.body,
-                processId != null ? processId : trace.getSpan().getTraceId(),
+                processId,
                 TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType().name())
     }
 

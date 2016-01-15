@@ -1,8 +1,28 @@
 #!/bin/bash
-
 set -o errexit
 
+cat <<EOF
+
+ _    _  ___  ______ _   _ _____ _   _ _____ _ _ _ _ _
+| |  | |/ _ \ | ___ \ \ | |_   _| \ | |  __ \ | | | | |
+| |  | / /_\ \| |_/ /  \| | | | |  \| | |  \/ | | | | |
+| |/\| |  _  ||    /| . ` | | | | . ` | | __| | | | | |
+\  /\  / | | || |\ \| |\  |_| |_| |\  | |_\ \_|_|_|_|_|
+ \/  \/\_| |_/\_| \_\_| \_/\___/\_| \_/\____(_|_|_|_|_)
+
+
+THIS SCRIPT IS DEPRECATED!! IT'S LEFT FOR BACKWARDS COMPATIBILITY ONLY
+
+PLEASE USE THE runAcceptanceTests.sh in the root folder of this repository.
+
+EOF
+
 # Functions
+# Tails the log
+function tail_log() {
+    echo -e "\n\nLogs of [$1] jar app"
+    tail -n $NUMBER_OF_LINES_TO_LOG build/"$1".log || echo "Failed to open log"
+}
 
 # Iterates over active containers and prints their logs to stdout
 function print_docker_logs() {
@@ -12,19 +32,13 @@ function print_docker_logs() {
       echo -e "\n\nContainer name [$field2] with id [$field1] logs: \n\n"
       docker logs --tail=$NUMBER_OF_LINES_TO_LOG -t $field1
     done < /tmp/containers.txt
-    echo -e "\n\nApps logs"
-    echo -e "\n\nBrewing"
-    tail -n $NUMBER_OF_LINES_TO_LOG build/brewing.log || echo "Failed to open log"
-    echo -e "\n\nZuul"
-    tail -n $NUMBER_OF_LINES_TO_LOG build/zuul.log || echo "Failed to open log"
-    echo -e "\n\Presenting"
-    tail -n $NUMBER_OF_LINES_TO_LOG build/presenting.log || echo "Failed to open log"
-    echo -e "\n\nConfig Server"
-    tail -n $NUMBER_OF_LINES_TO_LOG build/config-server.log || echo "Failed to open log"
-    echo -e "\n\nEureka"
-    tail -n $NUMBER_OF_LINES_TO_LOG build/eureka.log || echo "Failed to open log"
-    echo -e "\n\nZipkin Server"
-    tail -n $NUMBER_OF_LINES_TO_LOG build/zipkin-server.log || echo "Failed to open log"
+    tail_log "brewing"
+    tail_log "zuul"
+    tail_log "presenting"
+    tail_log "config-server"
+    tail_log "eureka"
+    tail_log "zookeeper"
+    tail_log "zipkin-server"
 }
 
 # ${RETRIES} number of times will try to netcat to passed port $1 and host $2
@@ -37,6 +51,11 @@ function netcat_port() {
         echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
     done
     return $READY_FOR_TESTS
+}
+
+# ${RETRIES} number of times will try to netcat to passed port $1 and localhost
+function netcat_local_port() {
+    netcat_port $1 "127.0.0.1"
 }
 
 # ${RETRIES} number of times will try to curl to /health endpoint to passed port $1 and host $2
@@ -66,7 +85,7 @@ function java_jar() {
     echo -e "\nJust started [$EXPRESSION]"
     echo -e "[$1] process pid is [$pid]"
     echo -e "System props are [$2]"
-    echo -e "Logs are under [$1.log] or here from nohup $APP_JAVA_PATH/nohup.log\n"
+    echo -e "Logs are under [build/$1.log] or from nohup $APP_JAVA_PATH/nohup.log\n"
     return 0
 }
 
@@ -79,14 +98,19 @@ function start_brewery_apps() {
     return 0
 }
 
+function kill_and_log() {
+    kill -9 $(cat "$1"/build/libs/app.pid) && echo "Killed $1" || echo "Can't find $1 in running processes"
+}
 # Kills all started aps
 function kill_all_apps() {
-    pkill -9 -f "brewing" && echo "Killed brewing" || echo "Can't find brewing in running processes"
-    pkill -9 -f "zuul" && echo "Killed zuul" || echo "Can't find zuul in running processes"
-    pkill -9 -f "presenting" && echo "Killed presenting" || echo "Can't find presenting in running processes"
-    pkill -9 -f "config-server" && echo "Killed config-server" || echo "Can't find config-server in running processes"
-    pkill -9 -f "eureka" && echo "Killed eureka" || echo "Can't find eureka in running processes"
-    pkill -9 -f "zipkin-server" && echo "Killed zipkin-server" || echo "Can't find zipkin-server in running processes"
+    echo `PWD`
+    kill_and_log "brewing"
+    kill_and_log "zuul"
+    kill_and_log "presenting"
+    kill_and_log "config-server"
+    kill_and_log "eureka"
+    kill_and_log "zookeeper"
+    kill_and_log "zipkin-server"
     docker kill $(docker ps -q) || echo "No running docker containers are left"
     return 0
 }
@@ -104,6 +128,7 @@ function kill_all_apps_if_switch_on() {
 }
 
 # Variables
+CURRENT_DIR=`pwd`
 REPO_URL="${REPO_URL:-https://github.com/spring-cloud-samples/brewery.git}"
 REPO_BRANCH="${REPO_BRANCH:-master}"
 if [[ -d acceptance-tests ]]; then
@@ -199,13 +224,16 @@ export LOCALHOST=$LOCALHOST
 export MEM_ARGS=$MEM_ARGS
 export SHOULD_START_RABBIT=$SHOULD_START_RABBIT
 
+export -f tail_log
 export -f print_docker_logs
 export -f netcat_port
+export -f netcat_local_port
 export -f curl_health_endpoint
 export -f curl_local_health_endpoint
 export -f java_jar
 export -f start_brewery_apps
 export -f kill_all_apps
+export -f kill_and_log
 
 # Kill all apps and exit if switch set
 if [[ $KILL_NOW ]] ; then
@@ -300,7 +328,8 @@ fi
 
 if [[ "${READY_FOR_TESTS}" == "yes" ]] ; then
     echo -e "\n\nSuccessfully booted up all the apps. Proceeding with the acceptance tests"
-    bash -e runAcceptanceTests.sh && TESTS_PASSED="yes"
+    echo -e "\n\nRunning acceptance tests with the following parameters [-DWHAT_TO_TEST=${WHAT_TO_TEST} -DLOCAL_URL=http://${HEALTH_HOST}]"
+    ./gradlew :acceptance-tests:acceptanceTests "-DWHAT_TO_TEST=${WHAT_TO_TEST}" "-DLOCAL_URL=http://${HEALTH_HOST}" --stacktrace --no-daemon --configure-on-demand && TESTS_PASSED="yes"
 fi
 
 # Check the result of tests execution

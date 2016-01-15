@@ -1,5 +1,5 @@
-moduleEnabled(project.gradle.startParameter.systemPropertiesArgs.get('spring.profiles.active')?.split(',')?.contains('dev') ?: false)
+moduleEnabled(!(whatToTest('EUREKA') || whatToTest('CONSUL')))
 
 dependencies {
-    compile "org.apache.curator:curator-test:2.8.0"
+    compile 'org.apache.zookeeper:zookeeper:3.4.6'
 }

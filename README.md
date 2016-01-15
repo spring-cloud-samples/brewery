@@ -108,7 +108,8 @@ E.g. `brewing` module
 
 The easiest way is to:
 
-* Create a symbolic link somewhere on your drive to the `acceptance-tests/scripts/runDockerAcceptanceTests.sh` file.
+* GO to the cloned `brewery` where you have the `runAcceptanceTests.sh` script (which in fact is already a symbolic link to `acceptance-tests/scripts/runDockerAcceptanceTests.sh`
+ for your convenience)
 * You can execute that script with such options
     * `-t` what do you want to test (`SLEUTH`, `ZOOKEEPER`, `CONSUL`, `SLEUTH`, `SLEUTH_STREAM`)
     * `-v` in which version of the BOM (defaults to `Brixton.BUILD-SNAPSHOT`)
@@ -126,8 +127,8 @@ You can run this script to have the setup done for you in no time (example for S
 
 ```
 git clone https://github.com/spring-cloud-samples/brewery.git
-ln -s brewery/acceptance-tests/scripts/runDockerAcceptanceTests.sh  .
-bash runDockerAcceptanceTests.sh -t SLEUTH
+cd brewery
+bash runAcceptanceTests.sh -t SLEUTH
 ```
 
 ### Examples
@@ -137,7 +138,7 @@ bash runDockerAcceptanceTests.sh -t SLEUTH
 Execute:
 
 ```
-bash runDockerAcceptanceTests.sh -x 1
+bash runAcceptanceTests.sh -x 1
 ```
 
 #### I want to just run all the apps with Eureka and have fun
@@ -145,7 +146,7 @@ bash runDockerAcceptanceTests.sh -x 1
 Execute:
 
 ```
-bash runDockerAcceptanceTests.sh -x 1 -t EUREKA
+bash runAcceptanceTests.sh -x 1 -t EUREKA
 ```
 
 #### I want to run end to end tests of Consul and kill all the apps on error
@@ -153,7 +154,7 @@ bash runDockerAcceptanceTests.sh -x 1 -t EUREKA
 Execute:
 
 ```
-bash runDockerAcceptanceTests.sh -t CONSUL -k 1
+bash runAcceptanceTests.sh -t CONSUL -k 1
 ```
 
 #### I want to run end to end tests of Consul on my docker-machine (ip. 1.2.3.4) and kill all the apps on error
@@ -161,7 +162,7 @@ bash runDockerAcceptanceTests.sh -t CONSUL -k 1
 Execute:
 
 ```
-bash runDockerAcceptanceTests.sh -t CONSUL -k 1 -h 1.2.3.4
+bash runAcceptanceTests.sh -t CONSUL -k 1 -h 1.2.3.4
 ```
 
 #### I want to run end to end tests of Consul, kill all the apps on error and skip build
@@ -169,7 +170,7 @@ bash runDockerAcceptanceTests.sh -t CONSUL -k 1 -h 1.2.3.4
 Execute:
 
 ```
-bash runDockerAcceptanceTests.sh -t CONSUL -k 1 -s 1
+bash runAcceptanceTests.sh -t CONSUL -k 1 -s 1
 ```
 
 #### I just want to kill all the brewery related apps
@@ -177,7 +178,7 @@ bash runDockerAcceptanceTests.sh -t CONSUL -k 1 -s 1
 Execute:
 
 ```
-bash runDockerAcceptanceTests.sh -n 1
+bash runAcceptanceTests.sh -n 1
 ```
 
 
