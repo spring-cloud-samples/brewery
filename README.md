@@ -149,7 +149,7 @@ Execute:
 bash runAcceptanceTests.sh -x 1 -t EUREKA
 ```
 
-#### I want to run end to end tests of Consul and kill all the apps on error
+#### I want to run end to end tests of Consul and kill all the apps after the tests finish
 
 Execute:
 
@@ -157,7 +157,7 @@ Execute:
 bash runAcceptanceTests.sh -t CONSUL -k 1
 ```
 
-#### I want to run end to end tests of Consul on my docker-machine (ip. 1.2.3.4) and kill all the apps on error
+#### I want to run end to end tests of Consul on my docker-machine (ip. 1.2.3.4) and kill all the apps after the tests finish
 
 Execute:
 
@@ -165,7 +165,7 @@ Execute:
 bash runAcceptanceTests.sh -t CONSUL -k 1 -h 1.2.3.4
 ```
 
-#### I want to run end to end tests of Consul, kill all the apps on error and skip build
+#### I want to run end to end tests of Consul, kill all the apps after the tests finish and skip build
 
 Execute:
 
