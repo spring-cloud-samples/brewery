@@ -88,7 +88,7 @@ function kill_and_log() {
 }
 # Kills all started aps
 function kill_all_apps() {
-    echo `PWD`
+    echo `pwd`
     kill_and_log "brewing"
     kill_and_log "zuul"
     kill_and_log "presenting"
