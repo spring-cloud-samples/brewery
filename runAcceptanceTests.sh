@@ -70,7 +70,7 @@ function java_jar() {
     echo -e "\nJust started [$EXPRESSION]"
     echo -e "[$1] process pid is [$pid]"
     echo -e "System props are [$2]"
-    echo -e "Logs are under [build/$1.log] or from nohup $APP_JAVA_PATH/nohup.log\n"
+    echo -e "Logs are under [build/$1.log] or from nohup [$APP_JAVA_PATH/nohup.log]\n"
     return 0
 }
 

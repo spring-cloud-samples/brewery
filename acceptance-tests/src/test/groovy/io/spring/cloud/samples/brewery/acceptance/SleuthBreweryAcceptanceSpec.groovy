@@ -17,8 +17,8 @@ package io.spring.cloud.samples.brewery.acceptance
 import io.spring.cloud.samples.brewery.acceptance.common.AbstractBreweryAcceptanceSpec
 import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConditions
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
+import org.springframework.cloud.sleuth.Span
 import org.springframework.http.RequestEntity
-import org.springframework.util.JdkIdGenerator
 import spock.lang.Requires
 import spock.lang.Unroll
 
@@ -37,7 +37,7 @@ class SleuthBreweryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 			entry_for_trace_id_is_present_in_Zipkin(referenceProcessId)
 		where:
 			communicationType << [CommunicationType.REST_TEMPLATE, CommunicationType.FEIGN]
-			referenceProcessId = new JdkIdGenerator().generateId().toString()
+			referenceProcessId = Span.IdConverter.toHex(new Random().nextLong())
 	}
 
 }

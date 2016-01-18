@@ -2,7 +2,8 @@ spring.application.name: brewing
 
 logging:
   pattern:
-    level: '[trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}] %5p'
+    console: '%clr([trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}]){yellow} %5p'
+    file: '%clr([trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}]){yellow} %5p'
 
 server:
   port: 9992

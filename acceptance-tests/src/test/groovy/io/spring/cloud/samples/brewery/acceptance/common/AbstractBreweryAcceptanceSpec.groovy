@@ -30,7 +30,6 @@ import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.cloud.sleuth.Span
 import org.springframework.http.*
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.util.JdkIdGenerator
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 
@@ -129,10 +128,9 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	}
 
 	ResponseEntity<String> checkStateOfTheTraceId(String traceId) {
-		String hexTraceId = convertToTraceIdZipkinRequest(traceId)
-		URI uri = URI.create("${wrapQueryWithProtocolIfPresent() ?: zipkinQueryUrl}:${zipkinQueryPort}/api/v1/trace/$hexTraceId")
+		URI uri = URI.create("${wrapQueryWithProtocolIfPresent() ?: zipkinQueryUrl}:${zipkinQueryPort}/api/v1/trace/$traceId")
 		HttpHeaders headers = new HttpHeaders()
-		log.info("Sending request to the Zipkin query service [$uri]. Checking presence of trace id [$traceId] and its hex version [$hexTraceId]")
+		log.info("Sending request to the Zipkin query service [$uri]. Checking presence of trace id [$traceId]")
 		return new ExceptionLoggingRestTemplate().exchange(
 				new RequestEntity<>(headers, HttpMethod.GET, uri), String
 		)
@@ -158,7 +156,6 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 		HttpHeaders headers = new HttpHeaders()
 		headers.add("PROCESS-ID", processId)
 		headers.add(TRACE_ID_HEADER_NAME, processId)
-		headers.add(SPAN_ID_HEADER_NAME, new JdkIdGenerator().generateId().toString())
 		headers.add("TEST-COMMUNICATION-TYPE", communicationType.name())
 		URI uri = URI.create("$PRESENTING_SERVICE_URL/present/order")
 		Order allIngredients = allIngredients()

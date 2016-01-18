@@ -18,8 +18,8 @@ import io.spring.cloud.samples.brewery.acceptance.common.AbstractBreweryAcceptan
 import io.spring.cloud.samples.brewery.acceptance.common.WhatToTest
 import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConditions
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
+import org.springframework.cloud.sleuth.Span
 import org.springframework.http.RequestEntity
-import org.springframework.util.JdkIdGenerator
 import spock.lang.Requires
 import spock.lang.Unroll
 
@@ -36,7 +36,7 @@ class ServiceDiscoveryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 			beer_has_been_brewed_for_process_id(referenceProcessId)
 		where:
 			communicationType << [CommunicationType.REST_TEMPLATE, CommunicationType.FEIGN]
-			referenceProcessId = new JdkIdGenerator().generateId().toString()
+			referenceProcessId = Span.IdConverter.toHex(new Random().nextLong())
 			serviceDiscovery = System.getProperty(WhatToTest.WHAT_TO_TEST)
 	}
 

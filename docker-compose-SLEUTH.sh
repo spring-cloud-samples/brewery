@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.zipkin.host=${HEALTH_HOST}"
+SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.zipkin.baseUrl=http://${HEALTH_HOST}:9411"
 
 dockerComposeFile="docker-compose-${WHAT_TO_TEST}.yml"
 docker-compose -f $dockerComposeFile kill

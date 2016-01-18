@@ -27,6 +27,10 @@ def nonZipkinProjects = techProjects - zipkinServerProject
 def nonDockerProjects = [commonProject, acceptanceTestsProject]
 def zipkinRelatedProjects = subprojects - nonZipkinProjects
 
+allprojects {
+    apply plugin: 'java'
+}
+
 configure(subprojects) {
 
     apply plugin: 'java'
