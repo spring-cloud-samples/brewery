@@ -15,12 +15,11 @@ before_script:
  - "echo $JAVA_OPTS"
  - "export JAVA_OPTS=-Xmx256m"
 
-script: |
-  cd ..
-  ln -s brewery/acceptance-tests/scripts/runDockerAcceptanceTests.sh .
-  bash -e runDockerAcceptanceTests.sh -t ZOOKEEPER
+script:
+- "bash -e runAcceptanceTests.sh -t ZOOKEEPER"
 
 env:
   global:
   - TERM=dumb
   - SHOULD_START_RABBIT=no
+  - RETRIES=200
