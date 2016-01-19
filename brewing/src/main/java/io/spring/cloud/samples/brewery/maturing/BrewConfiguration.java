@@ -4,7 +4,7 @@ import io.spring.cloud.samples.brewery.common.BottlingService;
 import io.spring.cloud.samples.brewery.common.TestConfiguration;
 import io.spring.cloud.samples.brewery.common.events.EventGateway;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.cloud.sleuth.TraceManager;
+import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 class BrewConfiguration {
 
     @Bean
-    BottlingServiceUpdater bottlingServiceUpdater(TraceManager trace, PresentingServiceClient presentingServiceClient,
+    BottlingServiceUpdater bottlingServiceUpdater(Tracer trace, PresentingServiceClient presentingServiceClient,
                                                   BottlingService bottlingService,
                                                   @LoadBalanced RestTemplate restTemplate,
                                                   EventGateway eventGateway) {

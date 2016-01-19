@@ -1,12 +1,5 @@
 package io.spring.cloud.samples.brewery.aggregating;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
-
-import org.springframework.cloud.sleuth.TraceManager;
-import org.springframework.cloud.sleuth.instrument.executor.TraceableExecutorService;
-import org.springframework.cloud.sleuth.trace.TraceContextHolder;
-
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.events.Event;
 import io.spring.cloud.samples.brewery.common.events.EventGateway;
@@ -15,6 +8,12 @@ import io.spring.cloud.samples.brewery.common.model.Ingredient;
 import io.spring.cloud.samples.brewery.common.model.Ingredients;
 import io.spring.cloud.samples.brewery.common.model.Order;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.sleuth.Tracer;
+import org.springframework.cloud.sleuth.instrument.executor.TraceableExecutorService;
+import org.springframework.cloud.sleuth.trace.TraceContextHolder;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 @Slf4j
 class IngredientsAggregator {
@@ -22,17 +21,17 @@ class IngredientsAggregator {
     private final MaturingServiceUpdater maturingUpdater;
     private final IngredientWarehouse ingredientWarehouse;
     private final IngredientsCollector ingredientsCollector;
-    private final TraceManager traceManager;
+    private final Tracer tracer;
     private final EventGateway eventGateway;
 
     IngredientsAggregator(IngredientWarehouse ingredientWarehouse,
                           MaturingServiceUpdater maturingServiceUpdater,
                           IngredientsCollector ingredientsCollector,
-                          TraceManager traceManager, EventGateway eventGateway) {
+                          Tracer tracer, EventGateway eventGateway) {
         this.ingredientWarehouse = ingredientWarehouse;
         this.ingredientsCollector = ingredientsCollector;
         this.maturingUpdater = maturingServiceUpdater;
-        this.traceManager = traceManager;
+        this.tracer = tracer;
         this.eventGateway = eventGateway;
     }
 
@@ -57,7 +56,7 @@ class IngredientsAggregator {
                                 ingredientWarehouse.addIngredient(ingredient);
                             });
                     return null;
-                }, new TraceableExecutorService(Executors.newFixedThreadPool(5), traceManager));
+                }, new TraceableExecutorService(Executors.newFixedThreadPool(5), tracer));
         // block to perform the request (as I said the example is stupid)
         completableFuture.get();
         eventGateway.emitEvent(Event.builder().eventType(EventType.INGREDIENTS_ORDERED).processId(processId).build());

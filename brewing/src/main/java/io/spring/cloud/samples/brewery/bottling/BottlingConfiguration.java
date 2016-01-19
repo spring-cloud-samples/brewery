@@ -1,7 +1,7 @@
 package io.spring.cloud.samples.brewery.bottling;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.cloud.sleuth.TraceManager;
+import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -21,8 +21,8 @@ class BottlingConfiguration {
                                    PresentingClient presentingClient,
                                    @LoadBalanced RestTemplate restTemplate,
                                    AsyncRestTemplate asyncRestTemplate,
-                                   TraceManager traceManager) {
-        return new BottlerService(bottlingWorker, presentingClient, restTemplate, asyncRestTemplate, traceManager);
+                                   Tracer tracer) {
+        return new BottlerService(bottlingWorker, presentingClient, restTemplate, asyncRestTemplate, tracer);
     }
 
 

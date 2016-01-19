@@ -1,31 +1,30 @@
 package io.spring.cloud.samples.brewery.reporting;
 
-import java.util.Map;
-
+import io.spring.cloud.samples.brewery.common.events.Event;
+import io.spring.cloud.samples.brewery.common.events.EventSink;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Trace;
-import org.springframework.cloud.sleuth.TraceManager;
+import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.cloud.sleuth.trace.TraceContextHolder;
 import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.messaging.handler.annotation.Headers;
 
-import io.spring.cloud.samples.brewery.common.events.Event;
-import io.spring.cloud.samples.brewery.common.events.EventSink;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Map;
 
 @MessageEndpoint
 @Slf4j
 class EventListener {
 
 	private final ReportingRepository reportingRepository;
-	private final TraceManager traceManager;
+	private final Tracer tracer;
 
 	@Autowired
-	public EventListener(ReportingRepository reportingRepository, TraceManager traceManager) {
+	public EventListener(ReportingRepository reportingRepository, Tracer tracer) {
 		this.reportingRepository = reportingRepository;
-		this.traceManager = traceManager;
+		this.tracer = tracer;
 	}
 
 	@ServiceActivator(inputChannel = EventSink.INPUT)
@@ -34,8 +33,8 @@ class EventListener {
 		log.info("Received the following message with headers [{}] and body [{}]. " +
 						"Current Span is [{}]", headers, event,
 				span != null ? span : "");
-		Trace trace = traceManager.startSpan("inside_reporting", span);
+		Trace trace = tracer.joinTrace("inside_reporting", span);
 		reportingRepository.createOrUpdate(event);
-		traceManager.close(trace);
+		tracer.close(trace);
 	}
 }

@@ -1,23 +1,18 @@
 package io.spring.cloud.samples.brewery.aggregating;
 
-import java.util.concurrent.Callable;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.sleuth.Trace;
-import org.springframework.cloud.sleuth.TraceManager;
-import org.springframework.cloud.sleuth.trace.TraceContextHolder;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.model.Ingredients;
 import io.spring.cloud.samples.brewery.common.model.Order;
 import io.spring.cloud.samples.brewery.common.model.Version;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.sleuth.Trace;
+import org.springframework.cloud.sleuth.Tracer;
+import org.springframework.cloud.sleuth.trace.TraceContextHolder;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.concurrent.Callable;
 
 @RestController
 @RequestMapping(value = "/ingredients", consumes = Version.BREWING_V1, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -25,12 +20,12 @@ import lombok.extern.slf4j.Slf4j;
 class IngredientsController {
 
     private final IngredientsAggregator ingredientsAggregator;
-    private final TraceManager traceManager;
+    private final Tracer tracer;
 
     @Autowired
-    public IngredientsController(IngredientsAggregator ingredientsAggregator, TraceManager traceManager) {
+    public IngredientsController(IngredientsAggregator ingredientsAggregator, Tracer tracer) {
         this.ingredientsAggregator = ingredientsAggregator;
-        this.traceManager = traceManager;
+        this.tracer = tracer;
     }
 
 	/**
@@ -44,12 +39,12 @@ class IngredientsController {
                                              TestConfigurationHolder.TestCommunicationType testCommunicationType) {
         log.info("Starting beer brewing process for process id [{}] and span [{}]", processId, TraceContextHolder.isTracing() ?
                 TraceContextHolder.getCurrentSpan() : "");
-        Trace trace = traceManager.startSpan("inside_aggregating");
+        Trace trace = tracer.startTrace("inside_aggregating");
         try {
             TestConfigurationHolder testConfigurationHolder = TestConfigurationHolder.TEST_CONFIG.get();
             return () -> ingredientsAggregator.fetchIngredients(order, processId, testConfigurationHolder);
         } finally {
-            traceManager.close(trace);
+            tracer.close(trace);
         }
     }
 

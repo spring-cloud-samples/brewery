@@ -8,7 +8,7 @@ import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.model.Wort;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.sleuth.TraceManager;
+import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.cloud.sleuth.instrument.hystrix.TraceCommand;
 import org.springframework.cloud.sleuth.trace.TraceContextHolder;
 import org.springframework.stereotype.Service;
@@ -18,12 +18,12 @@ import org.springframework.stereotype.Service;
 class Bottler implements BottlingService {
 
     private final BottlerService bottlerService;
-    private final TraceManager traceManager;
+    private final Tracer tracer;
 
     @Autowired
-    public Bottler(BottlerService bottlerService, TraceManager traceManager) {
+    public Bottler(BottlerService bottlerService, Tracer tracer) {
         this.bottlerService = bottlerService;
-        this.traceManager = traceManager;
+        this.tracer = tracer;
     }
 
 	/**
@@ -39,7 +39,7 @@ class Bottler implements BottlingService {
                 .withGroupKey(HystrixCommandGroupKey.Factory.asKey(groupKey))
                 .andCommandKey(HystrixCommandKey.Factory.asKey(commandKey));
         TestConfigurationHolder testConfigurationHolder = TestConfigurationHolder.TEST_CONFIG.get();
-        new TraceCommand<Void>(traceManager, setter) {
+        new TraceCommand<Void>(tracer, setter) {
             @Override
             public Void doRun() throws Exception {
                 TestConfigurationHolder.TEST_CONFIG.set(testConfigurationHolder);

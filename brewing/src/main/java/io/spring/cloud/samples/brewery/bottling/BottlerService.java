@@ -7,7 +7,7 @@ import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.re
 import java.net.URI;
 
 import org.springframework.cloud.sleuth.Trace;
-import org.springframework.cloud.sleuth.TraceManager;
+import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.cloud.sleuth.trace.TraceContextHolder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
@@ -26,15 +26,15 @@ class BottlerService {
     private final PresentingClient presentingClient;
     private final RestTemplate restTemplate;
     private final AsyncRestTemplate asyncRestTemplate;
-    private final TraceManager traceManager;
+    private final Tracer tracer;
 
     public BottlerService(BottlingWorker bottlingWorker, PresentingClient presentingClient,
-                          RestTemplate restTemplate, AsyncRestTemplate asyncRestTemplate, TraceManager traceManager) {
+                          RestTemplate restTemplate, AsyncRestTemplate asyncRestTemplate, Tracer tracer) {
         this.bottlingWorker = bottlingWorker;
         this.presentingClient = presentingClient;
         this.restTemplate = restTemplate;
         this.asyncRestTemplate = asyncRestTemplate;
-        this.traceManager = traceManager;
+        this.tracer = tracer;
     }
 
     /**
@@ -42,12 +42,12 @@ class BottlerService {
      */
     @HystrixCommand
     void bottle(Wort wort, String processId) {
-        Trace trace = traceManager.startSpan("inside_bottling");
+        Trace trace = tracer.startTrace("inside_bottling");
         try {
             notifyPresenting(processId);
             bottlingWorker.bottleBeer(wort.getWort(), processId, TEST_CONFIG.get());
         } finally {
-            traceManager.close(trace);
+            tracer.close(trace);
         }
     }
 

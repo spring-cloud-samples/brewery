@@ -9,7 +9,7 @@ import io.spring.cloud.samples.brewery.presenting.feed.ProcessState
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cloud.client.loadbalancer.LoadBalanced
 import org.springframework.cloud.sleuth.Trace
-import org.springframework.cloud.sleuth.TraceManager
+import org.springframework.cloud.sleuth.Tracer
 import org.springframework.cloud.sleuth.trace.TraceContextHolder
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -33,15 +33,15 @@ class PresentController {
     public static final String PROCESS_ID_HEADER_NAME = 'PROCESS-ID'
 
     private final FeedRepository feedRepository
-    private final TraceManager traceManager
+    private final Tracer tracer
     private final BrewingServiceClient aggregationServiceClient
     private final RestTemplate restTemplate
 
     @Autowired
-    public PresentController(FeedRepository feedRepository, TraceManager traceManager,
+    public PresentController(FeedRepository feedRepository, Tracer tracer,
                              BrewingServiceClient aggregationServiceClient, @LoadBalanced RestTemplate restTemplate) {
         this.feedRepository = feedRepository
-        this.traceManager = traceManager
+        this.tracer = tracer
         this.aggregationServiceClient = aggregationServiceClient
         this.restTemplate = restTemplate
     }
@@ -55,7 +55,7 @@ class PresentController {
                 processIdFromHeaders :
                 new JdkIdGenerator().generateId().toString()
         log.info("Making new order with [$body.body] and processid [$processId]. Current Span is [${TraceContextHolder.currentSpan}]")
-        Trace trace = this.traceManager.startSpan("inside_presenting")
+        Trace trace = this.tracer.startTrace("inside_presenting")
         String result;
         switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
@@ -64,7 +64,7 @@ class PresentController {
             default:
                 result = useRestTemplateToCallAggregation(body, processId)
         }
-        traceManager.close(trace)
+        tracer.close(trace)
         return result
     }
 

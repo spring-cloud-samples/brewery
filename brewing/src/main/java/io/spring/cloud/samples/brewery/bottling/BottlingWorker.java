@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.sleuth.Trace;
-import org.springframework.cloud.sleuth.TraceManager;
+import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.cloud.sleuth.trace.TraceContextHolder;
 import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
@@ -29,16 +29,16 @@ class BottlingWorker {
 
 
     private Map<String, State> PROCESS_STATE = new ConcurrentHashMap<>();
-    private final TraceManager traceManager;
+    private final Tracer tracer;
     private final PresentingClient presentingClient;
     private final RestTemplate restTemplate;
     private final EventGateway eventGateway;
 
     @Autowired
-    public BottlingWorker(TraceManager traceManager,
+    public BottlingWorker(Tracer tracer,
                           PresentingClient presentingClient,
                           @LoadBalanced RestTemplate restTemplate, EventGateway eventGateway) {
-        this.traceManager = traceManager;
+        this.tracer = tracer;
         this.presentingClient = presentingClient;
         this.restTemplate = restTemplate;
         this.eventGateway = eventGateway;
@@ -53,7 +53,7 @@ class BottlingWorker {
     }
 
     private void notifyPresentingService(String processId) {
-        Trace scope = this.traceManager.startSpan("calling_presenting", TraceContextHolder.getCurrentSpan());
+        Trace scope = this.tracer.joinTrace("calling_presenting", TraceContextHolder.getCurrentSpan());
         switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
                 callPresentingViaFeign(processId);
@@ -61,7 +61,7 @@ class BottlingWorker {
             default:
                 useRestTemplateToCallPresenting(processId);
         }
-        traceManager.close(scope);
+        tracer.close(scope);
     }
 
     private void increaseBottles(Integer wortAmount, String processId) {

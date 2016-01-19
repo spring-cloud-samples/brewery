@@ -3,7 +3,7 @@ package io.spring.cloud.samples.brewery.aggregating;
 import io.spring.cloud.samples.brewery.common.MaturingService;
 import io.spring.cloud.samples.brewery.common.events.EventGateway;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.cloud.sleuth.TraceManager;
+import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -27,13 +27,13 @@ class AggregationConfiguration {
 	}
 
 	@Bean
-	IngredientsAggregator ingredientsAggregator(TraceManager traceManager,
+	IngredientsAggregator ingredientsAggregator(Tracer tracer,
 												IngredientWarehouse ingredientWarehouse,
 												MaturingServiceUpdater maturingServiceUpdater,
 												IngredientsCollector ingredientsCollector,
 												EventGateway eventGateway) {
 		return new IngredientsAggregator(ingredientWarehouse,
-				maturingServiceUpdater, ingredientsCollector, traceManager, eventGateway);
+				maturingServiceUpdater, ingredientsCollector, tracer, eventGateway);
 	}
 
 	@Bean

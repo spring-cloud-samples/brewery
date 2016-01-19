@@ -2,7 +2,7 @@ package io.spring.cloud.samples.brewery.ingredients;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Trace;
-import org.springframework.cloud.sleuth.TraceManager;
+import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.cloud.sleuth.trace.TraceContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -20,12 +20,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 class IngredientsFetchController {
 	private final StubbedIngredientsProperties stubbedIngredientsProperties;
-	private final TraceManager traceManager;
+	private final Tracer tracer;
 
 	@Autowired
-	IngredientsFetchController(StubbedIngredientsProperties stubbedIngredientsProperties, TraceManager traceManager) {
+	IngredientsFetchController(StubbedIngredientsProperties stubbedIngredientsProperties, Tracer tracer) {
 		this.stubbedIngredientsProperties = stubbedIngredientsProperties;
-		this.traceManager = traceManager;
+		this.tracer = tracer;
 	}
 
 	/**
@@ -39,11 +39,11 @@ class IngredientsFetchController {
 				processId, testCommunicationType, TraceContextHolder.isTracing() ?
 						TraceContextHolder.getCurrentSpan().getTraceId() : "");
 		return new WebAsyncTask<>(() -> {
-			Trace trace = traceManager.startSpan("inside_ingredients");
+			Trace trace = tracer.startTrace("inside_ingredients");
 			Ingredient ingredient = new Ingredient(ingredientType, stubbedIngredientsProperties.getReturnedIngredientsQuantity());
 			log.info("Returning [{}] as fetched ingredient from an external service. Span [{}]", ingredient, TraceContextHolder.isTracing() ?
 					TraceContextHolder.getCurrentSpan() : "");
-			traceManager.close(trace);
+			tracer.close(trace);
 			return ingredient;
 		});
 	}
