@@ -37,7 +37,7 @@ class SleuthBreweryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 			entry_for_trace_id_is_present_in_Zipkin(referenceProcessId)
 		where:
 			communicationType << [CommunicationType.REST_TEMPLATE, CommunicationType.FEIGN]
-			referenceProcessId = Span.IdConverter.toHex(new Random().nextLong())
+			referenceProcessId = Span.toHex(new Random().nextLong())
 	}
 
 }

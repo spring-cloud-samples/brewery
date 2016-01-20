@@ -2,9 +2,9 @@ package io.spring.cloud.samples.brewery.presenting.feed
 import groovy.transform.TypeChecked
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cloud.sleuth.Trace
+import org.springframework.cloud.sleuth.Span
 import org.springframework.cloud.sleuth.Tracer
-import org.springframework.cloud.sleuth.trace.TraceContextHolder
+import org.springframework.cloud.sleuth.trace.SpanContextHolder
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
@@ -37,12 +37,12 @@ class FeedController {
             consumes = PRESENTING_JSON_VERSION_1,
             method = PUT)
     public String maturing(@RequestHeader("PROCESS-ID") String processId) {
-        log.info("new maturing with process [$processId]. Current Span [${TraceContextHolder.currentSpan}]")
-        Trace trace = tracer.startTrace("inside_presenting_maturing_feed")
+        log.info("new maturing with process [$processId]. Current Span [${SpanContextHolder.currentSpan}]")
+        Span span = tracer.startTrace("inside_presenting_maturing_feed")
         try {
             return feedRepository.addModifyProcess(processId, ProcessState.MATURING)
         } finally {
-            tracer.close(trace);
+            tracer.close(span);
         }
     }
 
@@ -52,12 +52,12 @@ class FeedController {
             consumes = PRESENTING_JSON_VERSION_1,
             method = PUT)
     public String bottling(@RequestHeader("PROCESS-ID") String processId) {
-        log.info("new bottling process [$processId]. Current Span [${TraceContextHolder.currentSpan}]")
-        Trace trace = tracer.startTrace("inside_presenting_bottling_feed")
+        log.info("new bottling process [$processId]. Current Span [${SpanContextHolder.currentSpan}]")
+        Span span = tracer.startTrace("inside_presenting_bottling_feed")
         try {
             return feedRepository.addModifyProcess(processId, ProcessState.BOTTLING)
         } finally {
-            tracer.close(trace)
+            tracer.close(span)
         }
     }
 

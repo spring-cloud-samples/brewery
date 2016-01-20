@@ -36,7 +36,7 @@ class ServiceDiscoveryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 			beer_has_been_brewed_for_process_id(referenceProcessId)
 		where:
 			communicationType << [CommunicationType.REST_TEMPLATE, CommunicationType.FEIGN]
-			referenceProcessId = Span.IdConverter.toHex(new Random().nextLong())
+			referenceProcessId = Span.toHex(new Random().nextLong())
 			serviceDiscovery = System.getProperty(WhatToTest.WHAT_TO_TEST)
 	}
 

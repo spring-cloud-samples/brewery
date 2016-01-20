@@ -8,9 +8,9 @@ import io.spring.cloud.samples.brewery.presenting.feed.FeedRepository
 import io.spring.cloud.samples.brewery.presenting.feed.ProcessState
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cloud.client.loadbalancer.LoadBalanced
-import org.springframework.cloud.sleuth.Trace
+import org.springframework.cloud.sleuth.Span
 import org.springframework.cloud.sleuth.Tracer
-import org.springframework.cloud.sleuth.trace.TraceContextHolder
+import org.springframework.cloud.sleuth.trace.SpanContextHolder
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.util.JdkIdGenerator
@@ -54,8 +54,8 @@ class PresentController {
         String processId = StringUtils.hasText(body.headers.getFirst(PROCESS_ID_HEADER_NAME)) ?
                 processIdFromHeaders :
                 new JdkIdGenerator().generateId().toString()
-        log.info("Making new order with [$body.body] and processid [$processId]. Current Span is [${TraceContextHolder.currentSpan}]")
-        Trace trace = this.tracer.startTrace("inside_presenting")
+        log.info("Making new order with [$body.body] and processid [$processId]. Current Span is [${SpanContextHolder.currentSpan}]")
+        Span span = this.tracer.startTrace("inside_presenting")
         String result;
         switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
@@ -64,7 +64,7 @@ class PresentController {
             default:
                 result = useRestTemplateToCallAggregation(body, processId)
         }
-        tracer.close(trace)
+        tracer.close(span)
         return result
     }
 

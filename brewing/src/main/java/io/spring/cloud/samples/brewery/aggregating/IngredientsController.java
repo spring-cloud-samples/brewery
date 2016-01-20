@@ -6,9 +6,9 @@ import io.spring.cloud.samples.brewery.common.model.Order;
 import io.spring.cloud.samples.brewery.common.model.Version;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.sleuth.Trace;
+import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
-import org.springframework.cloud.sleuth.trace.TraceContextHolder;
+import org.springframework.cloud.sleuth.trace.SpanContextHolder;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,14 +37,14 @@ class IngredientsController {
                                                        @RequestHeader(value = TestConfigurationHolder.TEST_COMMUNICATION_TYPE_HEADER_NAME,
                                                      defaultValue = "REST_TEMPLATE", required = false)
                                              TestConfigurationHolder.TestCommunicationType testCommunicationType) {
-        log.info("Starting beer brewing process for process id [{}] and span [{}]", processId, TraceContextHolder.isTracing() ?
-                TraceContextHolder.getCurrentSpan() : "");
-        Trace trace = tracer.startTrace("inside_aggregating");
+        log.info("Starting beer brewing process for process id [{}] and span [{}]", processId, SpanContextHolder.isTracing() ?
+                SpanContextHolder.getCurrentSpan() : "");
+        Span span = tracer.startTrace("inside_aggregating");
         try {
             TestConfigurationHolder testConfigurationHolder = TestConfigurationHolder.TEST_CONFIG.get();
             return () -> ingredientsAggregator.fetchIngredients(order, processId, testConfigurationHolder);
         } finally {
-            tracer.close(trace);
+            tracer.close(span);
         }
     }
 

@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.cloud.sleuth.instrument.hystrix.TraceCommand;
-import org.springframework.cloud.sleuth.trace.TraceContextHolder;
+import org.springframework.cloud.sleuth.trace.SpanContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,7 +31,7 @@ class Bottler implements BottlingService {
      */
     @Override
     public void bottle(Wort wort, String processId, String testCommunicationType) {
-        log.info("Current span is [{}]", TraceContextHolder.isTracing() ? TraceContextHolder.getCurrentSpan() : "");
+        log.info("Current span is [{}]", SpanContextHolder.isTracing() ? SpanContextHolder.getCurrentSpan() : "");
         log.info("Process ID from headers {}", processId);
         String groupKey = "bottling";
         String commandKey = "bottle";

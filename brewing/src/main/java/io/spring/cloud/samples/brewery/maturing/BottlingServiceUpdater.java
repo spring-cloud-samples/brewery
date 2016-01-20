@@ -10,9 +10,9 @@ import io.spring.cloud.samples.brewery.common.model.Ingredients;
 import io.spring.cloud.samples.brewery.common.model.Version;
 import io.spring.cloud.samples.brewery.common.model.Wort;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.sleuth.Trace;
+import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
-import org.springframework.cloud.sleuth.trace.TraceContextHolder;
+import org.springframework.cloud.sleuth.trace.SpanContextHolder;
 import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.Assert;
@@ -46,11 +46,11 @@ class BottlingServiceUpdater {
 
     @Async
     public void updateBottlingServiceAboutBrewedBeer(final Ingredients ingredients, String processId, TestConfigurationHolder configurationHolder) {
-        Trace trace = tracer.startTrace("inside_maturing");
+        Span trace = tracer.startTrace("inside_maturing");
         try {
             TestConfigurationHolder.TEST_CONFIG.set(configurationHolder);
-            log.info("Current process id is equal [{}]. Span is [{}]", processId, TraceContextHolder.isTracing() ?
-                    TraceContextHolder.getCurrentSpan() : "");
+            log.info("Current process id is equal [{}]. Span is [{}]", processId, SpanContextHolder.isTracing() ?
+                    SpanContextHolder.getCurrentSpan() : "");
             notifyPresentingService(processId);
             brewBeer();
             eventGateway.emitEvent(Event.builder().eventType(EventType.BEER_MATURED).processId(processId).build());
@@ -71,7 +71,7 @@ class BottlingServiceUpdater {
     }
 
     private void notifyPresentingService(String correlationId) {
-        Trace scope = this.tracer.joinTrace("calling_presenting_from_maturing", TraceContextHolder.getCurrentSpan());
+        Span scope = this.tracer.joinTrace("calling_presenting_from_maturing", SpanContextHolder.getCurrentSpan());
         switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
                 callPresentingViaFeign(correlationId);
@@ -91,7 +91,7 @@ class BottlingServiceUpdater {
      */
     @HystrixCommand
     public void notifyBottlingService(Ingredients ingredients, String correlationId) {
-        Trace scope = this.tracer.joinTrace("calling_bottling_from_maturing", TraceContextHolder.getCurrentSpan());
+        Span scope = this.tracer.joinTrace("calling_bottling_from_maturing", SpanContextHolder.getCurrentSpan());
         bottlingService.bottle(new Wort(getQuantity(ingredients)), correlationId, FEIGN.name());
         tracer.close(scope);
     }
