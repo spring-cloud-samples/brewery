@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.zipkin.baseUrl=http://${HEALTH_HOST}:9411"
+SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.rabbitmq.port=9672 -Dspring.zipkin.baseUrl=http://${HEALTH_HOST}:9411"
 
 dockerComposeFile="docker-compose-${WHAT_TO_TEST}.yml"
 docker-compose -f $dockerComposeFile kill
@@ -12,7 +12,7 @@ if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
 fi
 
 READY_FOR_TESTS="no"
-PORT_TO_CHECK=5672
+PORT_TO_CHECK=9672
 echo "Waiting for RabbitMQ to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
 netcat_port $PORT_TO_CHECK && READY_FOR_TESTS="yes"
 
