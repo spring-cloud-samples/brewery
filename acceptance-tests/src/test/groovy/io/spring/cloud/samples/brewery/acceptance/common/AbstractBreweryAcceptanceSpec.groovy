@@ -48,8 +48,9 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	private static final String PRESENTING_SERVICE_URL = "http://localhost:9991"
 	private static final List<String> APP_NAMES = ['presenting', 'brewing', 'zuul']
 	private static final List<String> SPAN_NAMES = [
-													// TODO: Connection issues? 'inside_presenting_maturing_feed',
-													// TODO: Connection issues? 'inside_presenting_bottling_feed',
+													'inside_presenting_maturing_feed',
+													'inside_presenting_bottling_feed',
+													'message/events',
 													'inside_aggregating',
 													'inside_maturing',
 													'inside_bottling',

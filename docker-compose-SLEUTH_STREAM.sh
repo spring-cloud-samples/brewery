@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.zipkin.host=${HEALTH_HOST}"
+SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.zipkin.host=localhost"
 
 dockerComposeFile="docker-compose-${WHAT_TO_TEST}.yml"
 docker-compose -f $dockerComposeFile kill
@@ -62,3 +62,5 @@ fi
 echo -e "\n\nStarting brewery apps..."
 start_brewery_apps "$SYSTEM_PROPS"
 
+echo -e "\n\nSetting test opts for sleuth stream to call localhost"
+ACCEPTANCE_TEST_OPTS="-DLOCAL_URL=http://localhost"

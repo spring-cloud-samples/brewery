@@ -180,6 +180,7 @@ done
 
 HEALTH_PORTS=('9991' '9992' '9993')
 HEALTH_ENDPOINTS="$( printf "http://${LOCALHOST}:%s/health " "${HEALTH_PORTS[@]}" )"
+ACCEPTANCE_TEST_OPTS="${ACCEPTANCE_TEST_OPTS:--DLOCAL_URL=http://${HEALTH_HOST}}"
 
 cat <<EOF
 
@@ -194,6 +195,7 @@ KILL_NOW=${KILL_NOW}
 NO_TESTS=${NO_TESTS}
 NO_BUILD=${NO_BUILD}
 SHOULD_START_RABBIT=${SHOULD_START_RABBIT}
+ACCEPTANCE_TEST_OPTS=${ACCEPTANCE_TEST_OPTS}
 
 EOF
 
@@ -208,6 +210,7 @@ export KILL_AT_THE_END=$KILL_AT_THE_END
 export LOCALHOST=$LOCALHOST
 export MEM_ARGS=$MEM_ARGS
 export SHOULD_START_RABBIT=$SHOULD_START_RABBIT
+export ACCEPTANCE_TEST_OPTS=$ACCEPTANCE_TEST_OPTS
 
 export -f tail_log
 export -f print_docker_logs
@@ -256,7 +259,7 @@ fi
 
 # Run the initialization script
 INITIALIZATION_FAILED="yes"
-./docker-compose-$WHAT_TO_TEST.sh && INITIALIZATION_FAILED="no"
+. ./docker-compose-$WHAT_TO_TEST.sh && INITIALIZATION_FAILED="no"
 
 if [[ "${INITIALIZATION_FAILED}" == "yes" ]] ; then
     echo "\n\nFailed to initialize the apps!"
@@ -313,8 +316,8 @@ fi
 
 if [[ "${READY_FOR_TESTS}" == "yes" ]] ; then
     echo -e "\n\nSuccessfully booted up all the apps. Proceeding with the acceptance tests"
-    echo -e "\n\nRunning acceptance tests with the following parameters [-DWHAT_TO_TEST=${WHAT_TO_TEST} -DLOCAL_URL=http://${HEALTH_HOST}]"
-    ./gradlew :acceptance-tests:acceptanceTests "-DWHAT_TO_TEST=${WHAT_TO_TEST}" "-DLOCAL_URL=http://${HEALTH_HOST}" --stacktrace --no-daemon --configure-on-demand && TESTS_PASSED="yes"
+    echo -e "\n\nRunning acceptance tests with the following parameters [-DWHAT_TO_TEST=${WHAT_TO_TEST} ${ACCEPTANCE_TEST_OPTS}]"
+    ./gradlew :acceptance-tests:acceptanceTests "-DWHAT_TO_TEST=${WHAT_TO_TEST}" ${ACCEPTANCE_TEST_OPTS} --stacktrace --no-daemon --configure-on-demand && TESTS_PASSED="yes"
 fi
 
 # Check the result of tests execution
