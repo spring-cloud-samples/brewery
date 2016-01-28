@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -o errexit
-source ${BUILD_DIRECTORY:-.}/scripts/cf-common.sh
 
 # Functions
 # Tails the log
@@ -314,6 +313,8 @@ else
         git pull "${REPO_URL}" "${REPO_BRANCH}"
     fi
 fi
+
+source ${BUILD_DIRECTORY:-.}/scripts/cf-common.sh
 
 echo -e "\nAppending if not present the following entry to gradle.properties\n"
 
