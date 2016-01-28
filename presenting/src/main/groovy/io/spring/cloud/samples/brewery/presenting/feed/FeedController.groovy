@@ -83,8 +83,8 @@ class FeedController {
             value = "/process",
             produces = MediaType.APPLICATION_JSON_VALUE,
             method = GET)
-    public Set<Process> allProcesses() {
-        return feedRepository.processes
+    public ResponseEntity<Set<Process>> allProcesses() {
+        return ResponseEntity.ok(feedRepository.processes)
     }
 
     @RequestMapping(

@@ -1,0 +1,8 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${vcap.services.brewery-discovery.credentials.uri:http://127.0.0.1:8761}/eureka/
+  instance:
+    hostname: ${APPLICATION_DOMAIN}
+    nonSecurePort: 80
+

@@ -22,13 +22,13 @@ if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
 fi
 
 READY_FOR_TESTS="no"
-PORT_TO_CHECK=2181
-echo "Waiting for Zookeeper to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
-java_jar "zookeeper"
+PORT_TO_CHECK=8761
+echo "Waiting for Eureka to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
+java_jar "eureka"
 netcat_local_port $PORT_TO_CHECK && READY_FOR_TESTS="yes"
 
 if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
-    echo "Zookeeper failed to start..."
+    echo "Eureka failed to start..."
     exit 1
 fi
 

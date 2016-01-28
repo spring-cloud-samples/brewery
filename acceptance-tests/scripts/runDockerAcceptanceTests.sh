@@ -25,8 +25,9 @@ function tail_log() {
 }
 
 # Iterates over active containers and prints their logs to stdout
-function print_docker_logs() {
-    echo -e "\n\nSomething went wrong... Printing logs of active containers:\n"
+function print_logs() {
+    echo -e "\n\nSomething went wrong... Printing logs:\n"
+
     docker ps | sed -n '1!p' > /tmp/containers.txt
     while read field1 field2 field3; do
       echo -e "\n\nContainer name [$field2] with id [$field1] logs: \n\n"
@@ -225,7 +226,7 @@ export MEM_ARGS=$MEM_ARGS
 export SHOULD_START_RABBIT=$SHOULD_START_RABBIT
 
 export -f tail_log
-export -f print_docker_logs
+export -f print_logs
 export -f netcat_port
 export -f netcat_local_port
 export -f curl_health_endpoint
@@ -275,7 +276,7 @@ INITIALIZATION_FAILED="yes"
 
 if [[ "${INITIALIZATION_FAILED}" == "yes" ]] ; then
     echo "\n\nFailed to initialize the apps!"
-    print_docker_logs
+    print_logs
     kill_all_apps_if_switch_on
     exit 1
 fi
@@ -292,7 +293,7 @@ done
 
 if [[ "${APPS_ARE_RUNNING}" == "no" ]] ; then
     echo "\n\nFailed to boot the apps!"
-    print_docker_logs
+    print_logs
     kill_all_apps_if_switch_on
     exit 1
 fi
@@ -310,7 +311,7 @@ done
 
 if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
     echo "\n\nThe apps failed to register in Service Discovery!"
-    print_docker_logs
+    print_logs
     kill_all_apps_if_switch_on
     exit 1
 fi
@@ -339,7 +340,7 @@ if [[ "${TESTS_PASSED}" == "yes" ]] ; then
     exit 0
 else
     echo -e "\n\nTests failed..."
-    print_docker_logs
+    print_logs
     kill_all_apps_if_switch_on
     exit 1
 fi

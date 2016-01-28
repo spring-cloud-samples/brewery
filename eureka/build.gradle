@@ -1,4 +1,4 @@
-moduleEnabled(whatToTest('EUREKA'))
+moduleEnabled(whatToTest('EUREKA') || whatToTest('SLEUTH_STREAM'))
 
 dependencies {
     compile "org.springframework.cloud:spring-cloud-starter-eureka-server"

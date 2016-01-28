@@ -31,7 +31,7 @@ class Bottler implements BottlingService {
      */
     @Override
     public void bottle(Wort wort, String processId, String testCommunicationType) {
-        log.info("Current span is [{}]", SpanContextHolder.isTracing() ? SpanContextHolder.getCurrentSpan() : "");
+        log.info("I'm in the bottling service. Current traceid is [{}]", SpanContextHolder.isTracing() ? SpanContextHolder.getCurrentSpan().getTraceId() : "");
         log.info("Process ID from headers {}", processId);
         String groupKey = "bottling";
         String commandKey = "bottle";
@@ -43,7 +43,8 @@ class Bottler implements BottlingService {
             @Override
             public Void doRun() throws Exception {
                 TestConfigurationHolder.TEST_CONFIG.set(testConfigurationHolder);
-                log.info("Sending info to bottling service about process id [{}]", processId);
+                log.info("Sending info to bottling service about process id [{}] and Span [{}]",
+                        processId, SpanContextHolder.getCurrentSpan().getTraceId());
                 bottlerService.bottle(wort, processId);
                 return null;
             }

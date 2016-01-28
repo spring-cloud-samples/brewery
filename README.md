@@ -115,10 +115,11 @@ The easiest way is to:
     * `-v` in which version of the BOM (defaults to `Brixton.BUILD-SNAPSHOT`)
     * `-h` where is your docker host? (defaults to '127.0.0.1' - provide your docker-machine host here)
     * `-r` is brewery repo already in place and needs to be reset? (defaults to `not` resetting of repo)
-    * `-k` should the apps and all running docker containers be killed after the tests are executed? pass `-k 1` to turn on (defaults to `not` killing the apps)
-    * `-n` should the apps and all running docker containers be killed now and nothing else should happen? pass `-n 1` to turn on (defaults to `not` doing that)
-    * `-x` should the apps be booted no tests should be ran? pass `-x 1` to turn on (defaults to `not` doing that)
-    * `-s` should the building of apps be skipped? pass `-s 1` to turn on (defaults to `no` - the apps will be cleaned and built)
+    * `-k` should the apps and all running docker containers be killed after the tests are executed? pass `-k` to turn on (defaults to `not` killing the apps)
+    * `-n` should the apps and all running docker containers be killed now and nothing else should happen? pass `-n` to turn on (defaults to `not` doing that)
+    * `-x` should the apps be booted no tests should be ran? pass `-x` to turn on (defaults to `not` doing that)
+    * `-s` should the building of apps be skipped? pass `-s` to turn on (defaults to `no` - the apps will be cleaned and built)
+* For more options just run `runAcceptanceTests.sh` without any options or with `--help` switch
 
 Once you run the script, the brewery app will be cloned, built with proper lib versions and proper tests
 will be executed.
@@ -138,7 +139,7 @@ bash runAcceptanceTests.sh -t SLEUTH
 Execute:
 
 ```
-bash runAcceptanceTests.sh -x 1
+bash runAcceptanceTests.sh -x
 ```
 
 #### I want to just run all the apps with Eureka and have fun
@@ -146,7 +147,7 @@ bash runAcceptanceTests.sh -x 1
 Execute:
 
 ```
-bash runAcceptanceTests.sh -x 1 -t EUREKA
+bash runAcceptanceTests.sh -x -t EUREKA
 ```
 
 #### I want to run end to end tests of Consul and kill all the apps after the tests finish
@@ -154,7 +155,7 @@ bash runAcceptanceTests.sh -x 1 -t EUREKA
 Execute:
 
 ```
-bash runAcceptanceTests.sh -t CONSUL -k 1
+bash runAcceptanceTests.sh -t CONSUL -k
 ```
 
 #### I want to run end to end tests of Consul on my docker-machine (ip. 1.2.3.4) and kill all the apps after the tests finish
@@ -162,7 +163,7 @@ bash runAcceptanceTests.sh -t CONSUL -k 1
 Execute:
 
 ```
-bash runAcceptanceTests.sh -t CONSUL -k 1 -h 1.2.3.4
+bash runAcceptanceTests.sh -t CONSUL -k -h 1.2.3.4
 ```
 
 #### I want to run end to end tests of Consul, kill all the apps after the tests finish and skip build
@@ -170,7 +171,7 @@ bash runAcceptanceTests.sh -t CONSUL -k 1 -h 1.2.3.4
 Execute:
 
 ```
-bash runAcceptanceTests.sh -t CONSUL -k 1 -s 1
+bash runAcceptanceTests.sh -t CONSUL -k -s
 ```
 
 #### I just want to kill all the brewery related apps
@@ -178,7 +179,7 @@ bash runAcceptanceTests.sh -t CONSUL -k 1 -s 1
 Execute:
 
 ```
-bash runAcceptanceTests.sh -n 1
+bash runAcceptanceTests.sh -n
 ```
 
 

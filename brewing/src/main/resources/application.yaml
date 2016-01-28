@@ -5,8 +5,7 @@ logging:
     console: '%clr([trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}]){yellow} %5p'
     file: '%clr([trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}]){yellow} %5p'
 
-server:
-  port: 9992
+server.port: ${PORT:9992}
 
 spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 

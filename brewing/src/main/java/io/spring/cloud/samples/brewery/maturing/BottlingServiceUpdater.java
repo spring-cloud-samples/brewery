@@ -49,8 +49,8 @@ class BottlingServiceUpdater {
         Span trace = tracer.startTrace("inside_maturing");
         try {
             TestConfigurationHolder.TEST_CONFIG.set(configurationHolder);
-            log.info("Current process id is equal [{}]. Span is [{}]", processId, SpanContextHolder.isTracing() ?
-                    SpanContextHolder.getCurrentSpan() : "");
+            log.info("Updating bottling service. Current process id is equal [{}]. Span is [{}]", processId, SpanContextHolder.isTracing() ?
+                    SpanContextHolder.getCurrentSpan().getTraceId() : "");
             notifyPresentingService(processId);
             brewBeer();
             eventGateway.emitEvent(Event.builder().eventType(EventType.BEER_MATURED).processId(processId).build());
@@ -71,6 +71,8 @@ class BottlingServiceUpdater {
     }
 
     private void notifyPresentingService(String correlationId) {
+        log.info("Calling presenting from maturing. Current traceid [{}]",
+                SpanContextHolder.getCurrentSpan().getTraceId());
         Span scope = this.tracer.joinTrace("calling_presenting_from_maturing", SpanContextHolder.getCurrentSpan());
         switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
@@ -91,13 +93,16 @@ class BottlingServiceUpdater {
      */
     @HystrixCommand
     public void notifyBottlingService(Ingredients ingredients, String correlationId) {
+        log.info("Calling bottling from maturing. Current traceid [{}]",
+                SpanContextHolder.getCurrentSpan().getTraceId());
         Span scope = this.tracer.joinTrace("calling_bottling_from_maturing", SpanContextHolder.getCurrentSpan());
         bottlingService.bottle(new Wort(getQuantity(ingredients)), correlationId, FEIGN.name());
         tracer.close(scope);
     }
 
     private void useRestTemplateToCallPresenting(String processId) {
-        log.info("Calling presenting - process id [{}]", processId);
+        log.info("Calling presenting - process id [{}]. Current traceid [{}]", processId,
+                SpanContextHolder.getCurrentSpan().getTraceId());
         restTemplate.exchange(requestEntity()
                 .processId(processId)
                 .contentTypeVersion(Version.PRESENTING_V1)

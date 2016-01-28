@@ -42,7 +42,7 @@ class IngredientsFetchController {
 			Span span = tracer.startTrace("inside_ingredients");
 			Ingredient ingredient = new Ingredient(ingredientType, stubbedIngredientsProperties.getReturnedIngredientsQuantity());
 			log.info("Returning [{}] as fetched ingredient from an external service. Span [{}]", ingredient, SpanContextHolder.isTracing() ?
-					SpanContextHolder.getCurrentSpan() : "");
+					SpanContextHolder.getCurrentSpan().getTraceId() : "");
 			tracer.close(span);
 			return ingredient;
 		});

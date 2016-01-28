@@ -1,5 +1,7 @@
-moduleEnabled(!(whatToTest('EUREKA') || whatToTest('CONSUL')))
+moduleEnabled(!(whatToTest('EUREKA') || whatToTest('SLEUTH_STREAM') || whatToTest('CONSUL')))
 
 dependencies {
-    compile 'org.apache.zookeeper:zookeeper:3.4.6'
+    compile "org.apache.curator:curator-test:2.8.0"
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-actuator")
 }

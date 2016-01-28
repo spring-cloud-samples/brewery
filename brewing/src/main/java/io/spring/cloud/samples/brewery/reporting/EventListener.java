@@ -30,10 +30,12 @@ class EventListener {
 	public void handleEvents(Event event, @Headers Map<String, Object> headers) {
 		Span span = SpanContextHolder.getCurrentSpan();
 		log.info("Received the following message with headers [{}] and body [{}]. " +
-						"Current Span is [{}]", headers, event,
-				span != null ? span : "");
+						"Current traceid is [{}]", headers, event,
+				span != null ? span.getTraceId() : "");
 		Span newSpan = tracer.joinTrace("inside_reporting", span);
 		reportingRepository.createOrUpdate(event);
+		log.info("Saved event to the db. Current traceid is [{}]", headers, event,
+				span != null ? span.getTraceId() : "");
 		tracer.close(newSpan);
 	}
 }

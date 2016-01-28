@@ -42,10 +42,8 @@ import static java.util.concurrent.TimeUnit.SECONDS
 abstract class AbstractBreweryAcceptanceSpec extends Specification implements SleuthHashing {
 
 	public static final String TRACE_ID_HEADER_NAME = 'X-TRACE-ID'
-	public static final String SPAN_ID_HEADER_NAME = 'X-SPAN-ID'
 	public static final Logger log = LoggerFactory.getLogger(AbstractBreweryAcceptanceSpec)
 
-	private static final String PRESENTING_SERVICE_URL = "http://localhost:9991"
 	private static final List<String> APP_NAMES = ['presenting', 'brewing', 'zuul']
 	private static final List<String> SPAN_NAMES = [
 													'inside_presenting_maturing_feed',
@@ -59,6 +57,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 
 	@Value('${presenting.poll.interval:1}') Integer pollInterval
 	@Value('${presenting.timeout:60}') Integer timeout
+	@Value('${presenting.url:http://localhost:9991}') String presentingUrl
 	@Value('${zipkin.query.port:9411}') Integer zipkinQueryPort
 	@Value('${LOCAL_URL:http://localhost}') String zipkinQueryUrl
 
@@ -121,7 +120,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	}
 
 	ResponseEntity<String> checkStateOfTheProcess(String processId) {
-		URI uri = URI.create("$PRESENTING_SERVICE_URL/feed/process/$processId")
+		URI uri = URI.create("$presentingUrl/feed/process/$processId")
 		log.info("Sending request to the presenting service [$uri] to check the beer brewing process. The process id is [$processId]")
 		return restTemplate().exchange(
 				new RequestEntity<>(new HttpHeaders(), HttpMethod.GET, uri), String
@@ -158,7 +157,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 		headers.add("PROCESS-ID", processId)
 		headers.add(TRACE_ID_HEADER_NAME, processId)
 		headers.add("TEST-COMMUNICATION-TYPE", communicationType.name())
-		URI uri = URI.create("$PRESENTING_SERVICE_URL/present/order")
+		URI uri = URI.create("$presentingUrl/present/order")
 		Order allIngredients = allIngredients()
 		RequestEntity requestEntity = new RequestEntity<>(allIngredients, headers, HttpMethod.POST, uri)
 		log.info("Request with order for all ingredients to presenting service [$requestEntity] is ready")

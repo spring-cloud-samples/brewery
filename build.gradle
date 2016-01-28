@@ -22,7 +22,7 @@ def zipkinServerProject = project(':zipkin-server')
 def eurekaProject = project(':eureka')
 def configServerProject = project(':config-server')
 def zookeeperServerProject = project(':zookeeper')
-def techProjects = [commonProject, eurekaProject, zipkinServerProject, configServerProject, zookeeperServerProject]
+def techProjects = [commonProject, acceptanceTestsProject, eurekaProject, zipkinServerProject, configServerProject, zookeeperServerProject]
 def nonZipkinProjects = techProjects - zipkinServerProject
 def nonDockerProjects = [commonProject, acceptanceTestsProject]
 def zipkinRelatedProjects = subprojects - nonZipkinProjects
@@ -70,7 +70,7 @@ configure(subprojects) {
     }
 
     ext {
-        buildNrLoc = project.hasProperty('buildNr') ? "${buildNr}" : "CD-000"
+        buildNrLoc = project.hasProperty('buildNr') ? "${buildNr}" : "1.0.0"
     }
 
     group = 'io.spring.cloud.samples.brewery'
@@ -110,7 +110,7 @@ configure(subprojects) {
     }
 }
 
-configure(subprojects - zipkinServerProject - acceptanceTestsProject - zookeeperServerProject) {
+configure(subprojects - zipkinServerProject - acceptanceTestsProject - zookeeperServerProject - configServerProject) {
 
     dependencies {
         compile 'org.projectlombok:lombok:1.16.6'
@@ -161,11 +161,11 @@ configure(subprojects - techProjects) {
         compile "org.springframework.boot:spring-boot-starter-actuator"
         compile "org.springframework:spring-context-support"
         compile 'com.fasterxml.jackson.core:jackson-databind'
-        if (!whatToTest('CONSUL') && !whatToTest('EUREKA')) {
+        if (!whatToTest('CONSUL') && !whatToTest('EUREKA') && !whatToTest('SLEUTH_STREAM')) {
             compile "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery"
         }
         if (whatToTest('CONSUL')) { compile "org.springframework.cloud:spring-cloud-starter-consul-discovery" }
-        if (whatToTest('EUREKA')) { compile "org.springframework.cloud:spring-cloud-starter-eureka" }
+        if (whatToTest('EUREKA') || whatToTest('SLEUTH_STREAM')) { compile "org.springframework.cloud:spring-cloud-starter-eureka" }
         compile "org.springframework.cloud:spring-cloud-starter-feign"
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonMapper"
         compile "org.codehaus.jackson:jackson-core-asl:$jacksonMapper"

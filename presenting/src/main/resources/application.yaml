@@ -5,8 +5,7 @@ logging:
     console: '%clr([trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}]){yellow} %5p'
     file: '%clr([trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}]){yellow} %5p'
 
-server:
-  port: 9991
+server.port: ${PORT:9991}
 
 spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 spring.sleuth.instrument.web.skipPattern: /api-docs.*|/autoconfig|/configprops|/dump|/info|/metrics.*|/mappings|/trace|/swagger.*|.*\.png|.*\.css|.*\.js|.*\.html|/favicon.ico|/hystrix.stream

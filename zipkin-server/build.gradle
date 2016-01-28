@@ -2,6 +2,7 @@ moduleEnabled(whatToTest('SLEUTH_STREAM'))
 
 dependencies {
     compile "org.springframework.integration:spring-integration-jmx"
+    compile "org.springframework:spring-jdbc"
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.springframework.boot:spring-boot-starter-actuator"
     compile "org.springframework.cloud:spring-cloud-sleuth-zipkin-stream"
