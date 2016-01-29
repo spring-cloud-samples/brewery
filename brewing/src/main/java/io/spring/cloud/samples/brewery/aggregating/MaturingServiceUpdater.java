@@ -38,6 +38,10 @@ class MaturingServiceUpdater {
             eventGateway.emitEvent(Event.builder().eventType(EventType.BREWING_STARTED).processId(processId).build());
             notifyMaturingService(ingredients, processId);
             ingredientWarehouse.useIngredients(ingredientsProperties.getThreshold());
+        } else {
+            log.warn("Ingredients DO NOT match the threshold [{}]. If you're clicking manually then "
+                    + "everything is fine. If you're running the tests then most likely Config Server is not available "
+                    + "and threshold value is wrong.", ingredientsProperties.getThreshold());
         }
         Ingredients currentState = ingredientWarehouse.getCurrentState();
         log.info("Current state of ingredients is [{}]. Current traceid [{}]", currentState, SpanContextHolder.getCurrentSpan().getTraceId());
