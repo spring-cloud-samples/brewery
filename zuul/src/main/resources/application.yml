@@ -1,6 +1,7 @@
 logging:
   pattern:
     level: '%clr([trace=%X{X-Trace-Id:-},span=%X{X-Span-Id:-}]){yellow} %5p'
+  level.org.springframework.cloud: DEBUG
 
 logging.file: build/zuul.log
 

@@ -121,7 +121,7 @@ configure(subprojects - zipkinServerProject - acceptanceTestsProject - zookeeper
         compile "org.springframework.cloud:spring-cloud-starter-config"
         compile "org.springframework.cloud:spring-cloud-starter-hystrix"
         compile "org.springframework.cloud:spring-cloud-starter-stream-rabbit"
-        compile "org.springframework.cloud:spring-cloud-sleuth-stream"
+        if (!whatToTest('SLEUTH')) { compile "org.springframework.cloud:spring-cloud-sleuth-stream" }
         compile "org.springframework.amqp:spring-amqp:${amqpVersion}"
     }
 }
