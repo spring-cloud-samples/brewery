@@ -44,7 +44,7 @@ class MaturingServiceUpdater {
                     + "and threshold value is wrong.", ingredientsProperties.getThreshold());
         }
         Ingredients currentState = ingredientWarehouse.getCurrentState();
-        log.info("Current state of ingredients is [{}]. Current traceid [{}]", currentState, SpanContextHolder.getCurrentSpan().getTraceId());
+        log.info("Current state of ingredients is [{}]", currentState);
         return currentState;
     }
 

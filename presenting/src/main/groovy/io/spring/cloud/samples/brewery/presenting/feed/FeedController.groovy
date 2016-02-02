@@ -4,7 +4,6 @@ import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cloud.sleuth.Span
 import org.springframework.cloud.sleuth.Tracer
-import org.springframework.cloud.sleuth.trace.SpanContextHolder
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
@@ -12,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+import static io.spring.cloud.samples.brewery.presenting.config.Versions.PRESENTING_JSON_VERSION_1
 import static org.springframework.web.bind.annotation.RequestMethod.GET
 import static org.springframework.web.bind.annotation.RequestMethod.PUT
-import static io.spring.cloud.samples.brewery.presenting.config.Versions.PRESENTING_JSON_VERSION_1
 
 @Slf4j
 @RestController
@@ -37,7 +36,7 @@ class FeedController {
             consumes = PRESENTING_JSON_VERSION_1,
             method = PUT)
     public String maturing(@RequestHeader("PROCESS-ID") String processId) {
-        log.info("new maturing with process [$processId]. Current Span [${SpanContextHolder.currentSpan}]")
+        log.info("new maturing with process [$processId]")
         Span span = tracer.startTrace("inside_presenting_maturing_feed")
         try {
             return feedRepository.addModifyProcess(processId, ProcessState.MATURING)
@@ -52,7 +51,7 @@ class FeedController {
             consumes = PRESENTING_JSON_VERSION_1,
             method = PUT)
     public String bottling(@RequestHeader("PROCESS-ID") String processId) {
-        log.info("new bottling process [$processId]. Current Span [${SpanContextHolder.currentSpan}]")
+        log.info("new bottling process [$processId]")
         Span span = tracer.startTrace("inside_presenting_bottling_feed")
         try {
             return feedRepository.addModifyProcess(processId, ProcessState.BOTTLING)

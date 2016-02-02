@@ -31,7 +31,7 @@ class Bottler implements BottlingService {
      */
     @Override
     public void bottle(Wort wort, String processId, String testCommunicationType) {
-        log.info("I'm in the bottling service. Current traceid is [{}]", SpanContextHolder.isTracing() ? SpanContextHolder.getCurrentSpan().getTraceId() : "");
+        log.info("I'm in the bottling service");
         log.info("Process ID from headers {}", processId);
         String groupKey = "bottling";
         String commandKey = "bottle";
