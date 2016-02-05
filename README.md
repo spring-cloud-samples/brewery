@@ -79,6 +79,7 @@ Brewing service contains the following functionalities:
 ├── acceptance-tests (code containing acceptace-tests of brewery)
 ├── brewing          (service that creates beer - consists of aggregating, maturing, bottling, reporting and ingredients functionalities)
 ├── common           (common code for the services)
+├── docker           (docker scripts for additional apps - e.g. graphite)
 ├── config-server    (set up for the config server)
 ├── eureka           (Eureka server needed for Eureka tests)
 ├── git-props        (properties for config-server to pick)

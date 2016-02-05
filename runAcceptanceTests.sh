@@ -169,7 +169,9 @@ function kill_all_apps() {
             kill_and_log "eureka"
             kill_and_log "zookeeper"
             kill_and_log "zipkin-server"
-            docker kill $(docker ps -q) || echo "No running docker containers are left"
+            if [[ -z "${KILL_NOW_APPS}" ]] ; then
+                docker kill $(docker ps -q) || echo "No running docker containers are left"
+            fi
         else
             reset "brewery-brewing" || echo "Failed to kill the app"
             reset "brewery-zuul" || echo "Failed to kill the app"
@@ -281,6 +283,10 @@ case $key in
     -n|--killnow)
     KILL_NOW="yes"
     ;;
+    -na|--killnowapps)
+    KILL_NOW="yes"
+    KILL_NOW_APPS="yes"
+    ;;
     -x|--skiptests)
     NO_TESTS="yes"
     ;;
@@ -329,6 +335,7 @@ VERSION=${VERSION}
 NUMBER_OF_LINES_TO_LOG=${NUMBER_OF_LINES_TO_LOG}
 KILL_AT_THE_END=${KILL_AT_THE_END}
 KILL_NOW=${KILL_NOW}
+KILL_NOW_APPS=${KILL_NOW_APPS}
 NO_TESTS=${NO_TESTS}
 SKIP_BUILDING=${SKIP_BUILDING}
 SHOULD_START_RABBIT=${SHOULD_START_RABBIT}
@@ -350,6 +357,7 @@ export RETRIES=$RETRIES
 export BOM_VERSION_PROP_NAME=$BOM_VERSION_PROP_NAME
 export NUMBER_OF_LINES_TO_LOG=$NUMBER_OF_LINES_TO_LOG
 export KILL_AT_THE_END=$KILL_AT_THE_END
+export KILL_NOW_APPS=$KILL_NOW_APPS
 export LOCALHOST=$LOCALHOST
 export MEM_ARGS=$MEM_ARGS
 export SHOULD_START_RABBIT=$SHOULD_START_RABBIT

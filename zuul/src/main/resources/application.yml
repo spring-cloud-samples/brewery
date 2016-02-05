@@ -13,6 +13,7 @@ spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 zuul:
   ignoredPatterns: /health
   ignoredServices: '*'
+  retryable: true
   routes:
     brewing: /**
 
