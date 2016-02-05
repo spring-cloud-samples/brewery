@@ -2,7 +2,72 @@
 
 set -o errexit
 
-# Functions
+# ======================================= FUNCTIONS START =======================================
+
+# CLOUD FOUNDRY -- START
+
+CLOUD_DOMAIN=${DOMAIN:-run.pivotal.io}
+CLOUD_TARGET=api.${DOMAIN}
+
+function login(){
+    cf api | grep ${CLOUD_TARGET} || cf api ${CLOUD_TARGET} --skip-ssl-validation
+    cf apps | grep OK || cf login
+}
+
+function app_domain(){
+    D=`cf apps | grep $1 | tr -s ' ' | cut -d' ' -f 6 | cut -d, -f1`
+    echo $D
+}
+
+function deploy_app(){
+    deploy_app_with_name $1 $1
+}
+
+function deploy_zookeeper_app(){
+    APP_DIR=$1
+    APP_NAME=$1
+    cd $APP_DIR
+    cf push $APP_NAME --no-start
+    APPLICATION_DOMAIN=`app_domain $APP_NAME`
+    echo determined that application_domain for $APP_NAME is $APPLICATION_DOMAIN.
+    cf env $APP_NAME | grep APPLICATION_DOMAIN || cf set-env $APP_NAME APPLICATION_DOMAIN $APPLICATION_DOMAIN
+    cf env $APP_NAME | grep arguments || cf set-env $APP_NAME "spring.cloud.zookeeper.connectString" "$2:2181"
+    cf restart $APP_NAME
+    cd ..
+}
+
+function deploy_app_with_name(){
+    APP_DIR=$1
+    APP_NAME=$2
+    cd $APP_DIR
+    cf push $APP_NAME --no-start
+    APPLICATION_DOMAIN=`app_domain $APP_NAME`
+    echo determined that application_domain for $APP_NAME is $APPLICATION_DOMAIN.
+    cf env $APP_NAME | grep APPLICATION_DOMAIN || cf set-env $APP_NAME APPLICATION_DOMAIN $APPLICATION_DOMAIN
+    cf restart $APP_NAME
+    cd ..
+}
+
+function deploy_app_with_name_parallel(){
+    xargs -n 2 -P 4 bash -c 'deploy_app_with_name "$@"'
+}
+
+function deploy_service(){
+    N=$1
+    D=`app_domain $N`
+    JSON='{"uri":"http://'$D'"}'
+    cf create-user-provided-service $N -p $JSON
+}
+
+function reset(){
+    app_name=$1
+    echo "going to remove ${app_name} if it exists"
+    cf apps | grep $app_name && cf d -f $app_name
+    echo "deleted ${app_name}"
+}
+# CLOUD FOUNDRY -- FINISH
+
+
 # Tails the log
 function tail_log() {
     echo -e "\n\nLogs of [$1] jar app"
@@ -155,8 +220,10 @@ You can use the following options:
 EOF
 }
 
+# ======================================= FUNCTIONS END =======================================
 
-# Variables
+
+# ======================================= VARIABLES START =======================================
 CURRENT_DIR=`pwd`
 REPO_URL="${REPO_URL:-https://github.com/spring-cloud-samples/brewery.git}"
 REPO_BRANCH="${REPO_BRANCH:-master}"
@@ -176,6 +243,10 @@ MEM_ARGS="-Xmx64m -Xss1024k"
 
 BOM_VERSION_PROP_NAME="BOM_VERSION"
 
+# ======================================= VARIABLES END =======================================
+
+
+# ======================================= PARSING ARGS START =======================================
 if [[ $# == 0 ]] ; then
     print_usage
     exit 0
@@ -268,6 +339,9 @@ SKIP_DEPLOYMENT=${SKIP_DEPLOYMENT}
 
 EOF
 
+# ======================================= PARSING ARGS END =======================================
+
+# ======================================= EXPORTING VARS START =======================================
 export WHAT_TO_TEST=$WHAT_TO_TEST
 export VERSION=$VERSION
 export HEALTH_HOST=$HEALTH_HOST
@@ -284,6 +358,14 @@ export CLOUD_FOUNDRY=$CLOUD_FOUNDRY
 export DEPLOY_ONLY_APPS=$DEPLOY_ONLY_APPS
 export SKIP_DEPLOYMENT=$SKIP_DEPLOYMENT
 
+export -f login
+export -f app_domain
+export -f deploy_app
+export -f deploy_zookeeper_app
+export -f deploy_app_with_name
+export -f deploy_app_with_name_parallel
+export -f deploy_service
+export -f reset
 export -f tail_log
 export -f print_logs
 export -f netcat_port
@@ -295,14 +377,16 @@ export -f start_brewery_apps
 export -f kill_all_apps
 export -f kill_and_log
 
-# Kill all apps and exit if switch set
+# ======================================= EXPORTING VARS END =======================================
+
+# ======================================= Kill all apps and exit if switch set =======================================
 if [[ $KILL_NOW ]] ; then
     echo -e "\nKilling all apps"
     kill_all_apps
     exit 0
 fi
 
-# Clone or update the brewery repository
+# ======================================= Clone or update the brewery repository =======================================
 if [[ ! -e "${REPO_LOCAL}/.git" ]]; then
     git clone "${REPO_URL}" "${REPO_LOCAL}"
     cd "${REPO_LOCAL}"
@@ -314,8 +398,8 @@ else
     fi
 fi
 
-source ${BUILD_DIRECTORY:-.}/scripts/cf-common.sh
 
+# ======================================= Building the apps =======================================
 echo -e "\nAppending if not present the following entry to gradle.properties\n"
 
 # Update the desired BOM version
@@ -332,7 +416,7 @@ if [[ -z "${SKIP_BUILDING}" ]] ; then
 fi
 
 
-# Deploy apps
+# ======================================= Deploying apps locally or to cloud foundry =======================================
 INITIALIZATION_FAILED="yes"
 if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
         . ./docker-compose-$WHAT_TO_TEST.sh && INITIALIZATION_FAILED="no"
@@ -347,7 +431,7 @@ if [[ "${INITIALIZATION_FAILED}" == "yes" ]] ; then
     exit 1
 fi
 
-
+# ======================================= Checking if apps are booted =======================================
 if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
 
         # Wait for the apps to boot up
@@ -390,7 +474,7 @@ else
     READY_FOR_TESTS="yes"
 fi
 
-# Run acceptance tests
+# ======================================= Running acceptance tests =======================================
 TESTS_PASSED="no"
 
 if [[ $NO_TESTS ]] ; then

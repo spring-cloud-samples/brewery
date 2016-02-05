@@ -2,7 +2,6 @@
 
 set -e
 
-source ${BUILD_DIRECTORY:-.}/scripts/cf-common.sh
 root=`pwd`
 
 if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
