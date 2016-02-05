@@ -1,0 +1,151 @@
+# Taken from https://github.com/Banno/graphite-setup
+
+haproxy:
+  image: banno/graphite-haproxy
+  net: host
+
+web:
+  image: banno/graphite-web
+  environment:
+    CLUSTER_SERVERS: weba:80,webb:80
+  ports:
+    - "8085:80"
+  links:
+    - weba
+    - webb
+
+relay:
+  image: banno/carbon-relay
+  ports:
+    - "3003:2003"
+    - "3004:2004"
+  environment:
+    RELAY_METHOD: consistent-hashing
+    DESTINATIONS: relaya:2104, relayb:2204
+  links:
+    - relaya
+    - relayb
+
+weba:
+  image: banno/graphite-web
+  volumes_from:
+    - whisper
+  environment:
+    CARBONLINK_HOSTS: cachea1:7012,cachea2:7022
+    WHISPER_DIR: /opt/graphite/storage/whispera
+  ports:
+    - "8180:80"
+  links:
+    - cachea1
+    - cachea2
+
+relaya:
+  image: banno/carbon-relay
+  ports:
+    - "2103:2103"
+    - "2104:2104"
+  environment:
+    LINE_RECEIVER_PORT: 2103
+    PICKLE_RECEIVER_PORT: 2104
+    RELAY_METHOD: consistent-hashing
+    DESTINATIONS: cachea1:2014:a1, cachea2:2024:a2
+  links:
+    - cachea1
+    - cachea2
+
+cachea1:
+  image: banno/carbon-cache
+  volumes_from:
+    - whisper
+  ports:
+    - "7012:7012"
+    - "2013:2013"
+    - "2014:2014"
+  environment:
+    NODE_NAME: cache:a1
+    LINE_RECEIVER_PORT: 2013
+    PICKLE_RECEIVER_PORT: 2014
+    CACHE_QUERY_PORT: 7012
+    LOCAL_DATA_DIR: /opt/graphite/storage/whispera
+  command: --instance=a1
+
+cachea2:
+  image: banno/carbon-cache
+  volumes_from:
+    - whisper
+  ports:
+    - "7022:7022"
+    - "2023:2023"
+    - "2024:2024"
+  environment:
+    NODE_NAME: cache:a2
+    LINE_RECEIVER_PORT: 2023
+    PICKLE_RECEIVER_PORT: 2024
+    CACHE_QUERY_PORT: 7022
+    LOCAL_DATA_DIR: /opt/graphite/storage/whispera
+  command: --instance=a2
+
+webb:
+  image: banno/graphite-web
+  volumes_from:
+    - whisper
+  environment:
+    CARBONLINK_HOSTS: cacheb1:7112,cacheb2:7122
+    WHISPER_DIR: /opt/graphite/storage/whisperb
+  ports:
+    - "8280:80"
+  links:
+    - cacheb1
+    - cacheb2
+
+relayb:
+  image: banno/carbon-relay
+  ports:
+    - "2203:2203"
+    - "2204:2204"
+  environment:
+    LINE_RECEIVER_PORT: 2203
+    PICKLE_RECEIVER_PORT: 2204
+    RELAY_METHOD: consistent-hashing
+    DESTINATIONS: cacheb1:2114:b1, cacheb2:2124:b2
+  links:
+    - cacheb1
+    - cacheb2
+
+cacheb1:
+  image: banno/carbon-cache
+  volumes_from:
+    - whisper
+  ports:
+    - "7112:7112"
+    - "2113:2113"
+    - "2114:2114"
+  environment:
+    NODE_NAME: cache:b1
+    LINE_RECEIVER_PORT: 2113
+    PICKLE_RECEIVER_PORT: 2114
+    CACHE_QUERY_PORT: 7112
+    LOCAL_DATA_DIR: /opt/graphite/storage/whisperb
+  command: --instance=b1
+
+cacheb2:
+  image: banno/carbon-cache
+  volumes_from:
+    - whisper
+  ports:
+    - "7122:7122"
+    - "2123:2123"
+    - "2124:2124"
+  environment:
+    NODE_NAME: cache:b2
+    LINE_RECEIVER_PORT: 2123
+    PICKLE_RECEIVER_PORT: 2124
+    CACHE_QUERY_PORT: 7122
+    LOCAL_DATA_DIR: /opt/graphite/storage/whisperb
+  command: --instance=b2
+
+whisper:
+  image: busybox
+  volumes:
+    - /tmp/whispera:/opt/graphite/storage/whispera
+    - /tmp/whisperb:/opt/graphite/storage/whisperb

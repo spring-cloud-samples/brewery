@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
-import org.springframework.cloud.sleuth.trace.SpanContextHolder;
 import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.messaging.handler.annotation.Headers;
@@ -28,9 +27,8 @@ class EventListener {
 
 	@ServiceActivator(inputChannel = EventSink.INPUT)
 	public void handleEvents(Event event, @Headers Map<String, Object> headers) {
-		Span span = SpanContextHolder.getCurrentSpan();
 		log.info("Received the following message with headers [{}] and body [{}]", headers, event);
-		Span newSpan = tracer.joinTrace("inside_reporting", span);
+		Span newSpan = tracer.startTrace("inside_reporting");
 		reportingRepository.createOrUpdate(event);
 		log.info("Saved event to the db", headers, event);
 		tracer.close(newSpan);

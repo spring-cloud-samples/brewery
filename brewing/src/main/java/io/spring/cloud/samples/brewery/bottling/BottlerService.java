@@ -6,7 +6,6 @@ import io.spring.cloud.samples.brewery.common.model.Wort;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
-import org.springframework.cloud.sleuth.trace.SpanContextHolder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.web.client.AsyncRestTemplate;
@@ -70,8 +69,7 @@ class BottlerService {
      * [SLEUTH] AsyncRestTemplate with sync @LoadBalanced RestTemplate
      */
     private void useRestTemplateToCallPresenting(String processId) {
-        log.info("Notifying presenting about beer. Process id [{}]. Trace id [{}]", processId,
-                SpanContextHolder.isTracing() ? SpanContextHolder.getCurrentSpan().getTraceId() : "");
+        log.info("Notifying presenting about beer. Process id [{}]", processId);
         RequestEntity requestEntity = requestEntity()
                 .processId(processId)
                 .contentTypeVersion(Version.PRESENTING_V1)

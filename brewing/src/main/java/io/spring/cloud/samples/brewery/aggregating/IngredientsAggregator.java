@@ -10,7 +10,6 @@ import io.spring.cloud.samples.brewery.common.model.Order;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.cloud.sleuth.instrument.executor.TraceableExecutorService;
-import org.springframework.cloud.sleuth.trace.SpanContextHolder;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -38,8 +37,7 @@ class IngredientsAggregator {
     // TODO: Consider simplifying the case by removing the DB (always matches threshold)
     public Ingredients fetchIngredients(Order order, String processId, TestConfigurationHolder testConfigurationHolder) throws Exception {
         TestConfigurationHolder.TEST_CONFIG.set(testConfigurationHolder);
-        log.info("Fetching ingredients for order [{}] , processId [{}], span [{}]", order, processId, SpanContextHolder.isTracing() ?
-                SpanContextHolder.getCurrentSpan().getTraceId() : "");
+        log.info("Fetching ingredients for order [{}] , processId [{}], span [{}]", order, processId);
         /**
          * [SLEUTH] ParallelStreams won't work out of the box
          * - example of a completable future with our TraceableExecutorService
@@ -50,9 +48,7 @@ class IngredientsAggregator {
                     ingredientsCollector.collectIngredients(order, processId).stream()
                             .filter(ingredient -> ingredient != null)
                             .forEach((Ingredient ingredient) -> {
-                                log.info("Adding an ingredient [{}] for order [{}] , processId [{}], traceid [{}]", ingredient,
-                                        order, processId, SpanContextHolder.isTracing() ?
-                                        SpanContextHolder.getCurrentSpan().getTraceId() : "");
+                                log.info("Adding an ingredient [{}] for order [{}] , processId [{}]", ingredient);
                                 ingredientWarehouse.addIngredient(ingredient);
                             });
                     return null;

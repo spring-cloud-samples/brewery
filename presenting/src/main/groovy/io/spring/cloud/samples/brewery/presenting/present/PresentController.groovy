@@ -1,4 +1,5 @@
 package io.spring.cloud.samples.brewery.presenting.present
+
 import groovy.transform.TypeChecked
 import groovy.util.logging.Slf4j
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cloud.client.loadbalancer.LoadBalanced
 import org.springframework.cloud.sleuth.Span
 import org.springframework.cloud.sleuth.Tracer
-import org.springframework.cloud.sleuth.trace.SpanContextHolder
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.util.JdkIdGenerator
@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.RestTemplate
 
-import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity
 import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN
+import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity
 import static org.springframework.web.bind.annotation.RequestMethod.GET
 import static org.springframework.web.bind.annotation.RequestMethod.POST
 
@@ -54,7 +54,7 @@ class PresentController {
         String processId = StringUtils.hasText(body.headers.getFirst(PROCESS_ID_HEADER_NAME)) ?
                 processIdFromHeaders :
                 new JdkIdGenerator().generateId().toString()
-        log.info("Making new order with [$body.body] and processid [$processId]. Current Span is [${SpanContextHolder.currentSpan}]")
+        log.info("Making new order with [$body.body] and processid [$processId].")
         Span span = this.tracer.startTrace("inside_presenting")
         String result;
         switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {

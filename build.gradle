@@ -57,6 +57,9 @@ configure(subprojects) {
         systemPropsFromGradle = {
             project.gradle.startParameter.systemPropertiesArgs.entrySet().collect{"-D${it.key}=${it.value}"}
         }
+        systemPropsFromGradleContains = { String key ->
+            project.gradle.startParameter.systemPropertiesArgs.containsKey(key)
+        }
         whatToTest = { String propName ->
             String whatToTestProp = "WHAT_TO_TEST"
             return propName.equalsIgnoreCase(project.gradle.startParameter.systemPropertiesArgs.get(whatToTestProp)) ?:
@@ -123,6 +126,8 @@ configure(subprojects - zipkinServerProject - acceptanceTestsProject - zookeeper
         compile "org.springframework.cloud:spring-cloud-starter-stream-rabbit"
         if (!whatToTest('SLEUTH')) { compile "org.springframework.cloud:spring-cloud-sleuth-stream" }
         compile "org.springframework.amqp:spring-amqp:${amqpVersion}"
+        compile "io.dropwizard.metrics:metrics-core"
+        compile "io.dropwizard.metrics:metrics-graphite"
     }
 }
 

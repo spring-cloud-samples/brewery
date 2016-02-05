@@ -12,7 +12,6 @@ import io.spring.cloud.samples.brewery.common.model.Wort;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
-import org.springframework.cloud.sleuth.trace.SpanContextHolder;
 import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.Assert;
@@ -49,8 +48,7 @@ class BottlingServiceUpdater {
         Span trace = tracer.startTrace("inside_maturing");
         try {
             TestConfigurationHolder.TEST_CONFIG.set(configurationHolder);
-            log.info("Updating bottling service. Current process id is equal [{}]. Span is [{}]", processId, SpanContextHolder.isTracing() ?
-                    SpanContextHolder.getCurrentSpan().getTraceId() : "");
+            log.info("Updating bottling service. Current process id is equal [{}]", processId);
             notifyPresentingService(processId);
             brewBeer();
             eventGateway.emitEvent(Event.builder().eventType(EventType.BEER_MATURED).processId(processId).build());
@@ -72,7 +70,7 @@ class BottlingServiceUpdater {
 
     private void notifyPresentingService(String correlationId) {
         log.info("Calling presenting from maturing");
-        Span scope = this.tracer.joinTrace("calling_presenting_from_maturing", SpanContextHolder.getCurrentSpan());
+        Span scope = this.tracer.startTrace("calling_presenting_from_maturing");
         switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
                 callPresentingViaFeign(correlationId);
@@ -93,7 +91,7 @@ class BottlingServiceUpdater {
     @HystrixCommand
     public void notifyBottlingService(Ingredients ingredients, String correlationId) {
         log.info("Calling bottling from maturing");
-        Span scope = this.tracer.joinTrace("calling_bottling_from_maturing", SpanContextHolder.getCurrentSpan());
+        Span scope = this.tracer.startTrace("calling_bottling_from_maturing");
         bottlingService.bottle(new Wort(getQuantity(ingredients)), correlationId, FEIGN.name());
         tracer.close(scope);
     }

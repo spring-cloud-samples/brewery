@@ -7,7 +7,6 @@ import io.spring.cloud.samples.brewery.common.events.Event;
 import io.spring.cloud.samples.brewery.common.events.EventGateway;
 import io.spring.cloud.samples.brewery.common.events.EventType;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.sleuth.trace.SpanContextHolder;
 import org.springframework.web.client.RestTemplate;
 
 import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
@@ -33,8 +32,8 @@ class MaturingServiceUpdater {
 
     public Ingredients updateIfLimitReached(Ingredients ingredients, String processId) {
         if (ingredientsMatchTheThreshold(ingredients)) {
-            log.info("Ingredients match the threshold [{}] - time to notify the maturing service! Span info [{}]",
-                    ingredientsProperties.getThreshold(), SpanContextHolder.getCurrentSpan().getTraceId());
+            log.info("Ingredients match the threshold [{}] - time to notify the maturing service!",
+                    ingredientsProperties.getThreshold());
             eventGateway.emitEvent(Event.builder().eventType(EventType.BREWING_STARTED).processId(processId).build());
             notifyMaturingService(ingredients, processId);
             ingredientWarehouse.useIngredients(ingredientsProperties.getThreshold());
