@@ -1,10 +1,10 @@
 package io.spring.cloud.samples.brewery.common;
 
+import java.net.URI;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
-
-import java.net.URI;
 
 public class TestRequestEntityBuilder {
 	private static final String PROCESS_ID_HEADER = "PROCESS-ID";
@@ -69,6 +69,8 @@ public class TestRequestEntityBuilder {
 	private String getCommunicationTypeHeader() {
 		if (testCommunicationType != null) {
 			return testCommunicationType.name();
+		} else if (TestConfigurationHolder.TEST_CONFIG.get() == null) {
+			return TestConfigurationHolder.TestCommunicationType.REST_TEMPLATE.name();
 		} else if (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType() != null) {
 			return TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType().name();
 		}
