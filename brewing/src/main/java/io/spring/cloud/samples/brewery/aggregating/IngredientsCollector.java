@@ -1,14 +1,13 @@
 package io.spring.cloud.samples.brewery.aggregating;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.http.HttpMethod;
-import org.springframework.web.client.RestTemplate;
-
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.model.Ingredient;
 import io.spring.cloud.samples.brewery.common.model.Order;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
 import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
@@ -34,14 +33,14 @@ class IngredientsCollector {
 
 	private List<Ingredient> callViaFeign(Order order, String processId) {
 		return order.getItems()
-				.parallelStream()
+				.stream()
 				.map(item -> ingredientsProxy.ingredients(item, processId, FEIGN.name()))
 				.collect(Collectors.toList());
 	}
 
 	private List<Ingredient> callViaRestTemplate(Order order, String processId) {
 		return order.getItems()
-				.parallelStream()
+				.stream()
 				.map(item ->
 						restTemplate.exchange(requestEntity()
 								.processId(processId)
