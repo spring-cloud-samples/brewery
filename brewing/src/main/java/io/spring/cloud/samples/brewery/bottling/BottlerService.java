@@ -1,17 +1,20 @@
 package io.spring.cloud.samples.brewery.bottling;
 
+import java.net.URI;
+
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import io.spring.cloud.samples.brewery.common.model.Version;
-import io.spring.cloud.samples.brewery.common.model.Wort;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.cloud.sleuth.Span;
+import org.springframework.cloud.sleuth.SpanName;
 import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
+import io.spring.cloud.samples.brewery.common.model.Version;
+import io.spring.cloud.samples.brewery.common.model.Wort;
+import lombok.extern.slf4j.Slf4j;
 
 import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TEST_CONFIG;
 import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
@@ -41,7 +44,7 @@ class BottlerService {
     @HystrixCommand
     void bottle(Wort wort, String processId) {
         log.info("I'm inside bottling");
-        Span span = tracer.startTrace("inside_bottling");
+        Span span = tracer.startTrace(new SpanName("local", "inside_bottling"));
         try {
             notifyPresenting(processId);
             bottlingWorker.bottleBeer(wort.getWort(), processId, TEST_CONFIG.get());
