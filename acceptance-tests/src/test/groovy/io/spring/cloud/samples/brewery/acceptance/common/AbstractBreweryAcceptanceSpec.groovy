@@ -48,7 +48,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	private static final List<String> SPAN_NAMES = [
 													'local:inside_presenting_maturing_feed',
 													'local:inside_presenting_bottling_feed',
-													'message:/events',
+													'message:events',
 													'local:inside_aggregating',
 													'local:inside_maturing',
 													'local:inside_bottling',
