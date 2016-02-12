@@ -1,5 +1,5 @@
 web:
-  image: openzipkin/zipkin-web:1.30.0
+  image: openzipkin/zipkin-web:1.33.0
   environment:
     # Remove TRANSPORT_TYPE to disable tracing
     - TRANSPORT_TYPE=http
