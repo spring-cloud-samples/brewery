@@ -17,14 +17,17 @@ buildscript {
 }
 
 def commonProject = project(':common')
+def commonZipkinProject = project(':common-zipkin')
 def acceptanceTestsProject = project(':acceptance-tests')
 def zipkinServerProject = project(':zipkin-server')
 def eurekaProject = project(':eureka')
 def configServerProject = project(':config-server')
 def zookeeperServerProject = project(':zookeeper')
-def techProjects = [commonProject, acceptanceTestsProject, eurekaProject, zipkinServerProject, configServerProject, zookeeperServerProject]
+def techProjects = [commonProject, commonZipkinProject, acceptanceTestsProject,
+                    eurekaProject, zipkinServerProject, configServerProject,
+                    zookeeperServerProject]
 def nonZipkinProjects = techProjects - zipkinServerProject
-def nonDockerProjects = [commonProject, acceptanceTestsProject]
+def nonDockerProjects = [commonProject, commonZipkinProject, acceptanceTestsProject]
 def zipkinRelatedProjects = subprojects - nonZipkinProjects
 
 allprojects {
@@ -158,10 +161,11 @@ configure(subprojects - nonDockerProjects) {
     }
 }
 
-configure(subprojects - techProjects) {
+configure(subprojects - techProjects - commonZipkinProject) {
 
     dependencies {
         compile(commonProject)
+        if (whatToTest('SLEUTH')) { compile commonZipkinProject }
 
         compile "org.springframework.boot:spring-boot-starter-web"
         compile "org.springframework.boot:spring-boot-starter-actuator"
@@ -187,7 +191,7 @@ configure(subprojects - techProjects) {
     }
 
     wrapper {
-        gradleVersion '2.10'
+        gradleVersion '2.11'
     }
 
     bootRun {
