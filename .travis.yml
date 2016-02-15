@@ -16,10 +16,15 @@ before_script:
  - "export JAVA_OPTS=-Xmx256m"
 
 script:
-- "bash -e runAcceptanceTests.sh -t ZOOKEEPER"
+- ./gradlew clean build --parallel $SWITCH
 
 env:
   global:
   - TERM=dumb
   - SHOULD_START_RABBIT=no
   - RETRIES=200
+  - SWITCH='-DWHAT_TO_TEST=SLEUTH'
+  - SWITCH='-DWHAT_TO_TEST=SLEUTH_STREAM'
+  - SWITCH='-DWHAT_TO_TEST=ZOOKEEPER'
+  - SWITCH='-DWHAT_TO_TEST=EUREKA'
+  - SWITCH='-DWHAT_TO_TEST=CONSUL'
