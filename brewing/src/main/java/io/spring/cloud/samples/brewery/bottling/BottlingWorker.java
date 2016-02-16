@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.sleuth.Span;
-import org.springframework.cloud.sleuth.SpanName;
 import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
@@ -54,7 +53,7 @@ class BottlingWorker {
     }
 
     private void notifyPresentingService(String processId) {
-        Span scope = this.tracer.startTrace(new SpanName("local", "calling_presenting"));
+        Span scope = this.tracer.startTrace("local:calling_presenting");
         switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
                 callPresentingViaFeign(processId);
@@ -67,7 +66,7 @@ class BottlingWorker {
 
     private void increaseBottles(Integer wortAmount, String processId) {
         log.info("Bottling beer...");
-        Span scope = tracer.startTrace(new SpanName("local", "waiting_for_beer_bottling"));
+        Span scope = tracer.startTrace("local:waiting_for_beer_bottling");
         try {
             State stateForProcess = PROCESS_STATE.getOrDefault(processId, new State());
             Integer bottled = stateForProcess.bottled;

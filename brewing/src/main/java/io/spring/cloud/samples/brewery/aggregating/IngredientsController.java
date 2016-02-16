@@ -4,7 +4,6 @@ import java.util.concurrent.Callable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
-import org.springframework.cloud.sleuth.SpanName;
 import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,7 +42,7 @@ class IngredientsController {
                                                      defaultValue = "REST_TEMPLATE", required = false)
                                              TestConfigurationHolder.TestCommunicationType testCommunicationType) {
         log.info("Starting beer brewing process for process id [{}]", processId);
-        Span span = tracer.startTrace(new SpanName("local", "inside_aggregating"));
+        Span span = tracer.startTrace("local:inside_aggregating");
         try {
             TestConfigurationHolder testConfigurationHolder = TestConfigurationHolder.TEST_CONFIG.get();
             return () -> ingredientsAggregator.fetchIngredients(order, processId, testConfigurationHolder);

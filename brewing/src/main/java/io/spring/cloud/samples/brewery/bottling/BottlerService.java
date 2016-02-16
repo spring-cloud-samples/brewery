@@ -5,7 +5,6 @@ import java.net.URI;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 import org.springframework.cloud.sleuth.Span;
-import org.springframework.cloud.sleuth.SpanName;
 import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
@@ -44,7 +43,7 @@ class BottlerService {
     @HystrixCommand
     void bottle(Wort wort, String processId) {
         log.info("I'm inside bottling");
-        Span span = tracer.startTrace(new SpanName("local", "inside_bottling"));
+        Span span = tracer.startTrace("local:inside_bottling");
         try {
             notifyPresenting(processId);
             bottlingWorker.bottleBeer(wort.getWort(), processId, TEST_CONFIG.get());

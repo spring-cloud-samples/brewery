@@ -3,7 +3,6 @@ package io.spring.cloud.samples.brewery.maturing;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 import org.springframework.cloud.sleuth.Span;
-import org.springframework.cloud.sleuth.SpanName;
 import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
@@ -48,7 +47,7 @@ class BottlingServiceUpdater {
 
     @Async
     public void updateBottlingServiceAboutBrewedBeer(final Ingredients ingredients, String processId, TestConfigurationHolder configurationHolder) {
-        Span trace = tracer.startTrace(new SpanName("local", "inside_maturing"));
+        Span trace = tracer.startTrace("local:inside_maturing");
         try {
             TestConfigurationHolder.TEST_CONFIG.set(configurationHolder);
             log.info("Updating bottling service. Current process id is equal [{}]", processId);
@@ -73,7 +72,7 @@ class BottlingServiceUpdater {
 
     private void notifyPresentingService(String correlationId) {
         log.info("Calling presenting from maturing");
-        Span scope = this.tracer.startTrace(new SpanName("local", "calling_presenting_from_maturing"));
+        Span scope = this.tracer.startTrace("local:calling_presenting_from_maturing");
         switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
                 callPresentingViaFeign(correlationId);
@@ -94,7 +93,7 @@ class BottlingServiceUpdater {
     @HystrixCommand
     public void notifyBottlingService(Ingredients ingredients, String correlationId) {
         log.info("Calling bottling from maturing");
-        Span scope = this.tracer.startTrace(new SpanName("local", "calling_bottling_from_maturing"));
+        Span scope = this.tracer.startTrace("local:calling_bottling_from_maturing");
         bottlingService.bottle(new Wort(getQuantity(ingredients)), correlationId, FEIGN.name());
         tracer.close(scope);
     }

@@ -1,5 +1,11 @@
 package io.spring.cloud.samples.brewery.aggregating;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+
+import org.springframework.cloud.sleuth.Tracer;
+import org.springframework.cloud.sleuth.instrument.async.TraceableExecutorService;
+
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.events.Event;
 import io.spring.cloud.samples.brewery.common.events.EventGateway;
@@ -8,12 +14,6 @@ import io.spring.cloud.samples.brewery.common.model.Ingredient;
 import io.spring.cloud.samples.brewery.common.model.Ingredients;
 import io.spring.cloud.samples.brewery.common.model.Order;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.sleuth.SpanName;
-import org.springframework.cloud.sleuth.Tracer;
-import org.springframework.cloud.sleuth.instrument.async.TraceableExecutorService;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 
 @Slf4j
 class IngredientsAggregator {
@@ -55,7 +55,7 @@ class IngredientsAggregator {
                     return null;
                 }, new TraceableExecutorService(Executors.newFixedThreadPool(5),
                 tracer,
-                new SpanName("async", getClass().getSimpleName(), "method=fetchIngredients")));
+                "async:"+getClass().getSimpleName()+"#method=fetchIngredients"));
         // block to perform the request (as I said the example is stupid)
         completableFuture.get();
         eventGateway.emitEvent(Event.builder().eventType(EventType.INGREDIENTS_ORDERED).processId(processId).build());

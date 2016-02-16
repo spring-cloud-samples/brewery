@@ -16,6 +16,7 @@
 package io.spring.cloud.samples.brewery.acceptance.common
 import groovy.json.JsonSlurper
 import io.spring.cloud.samples.brewery.acceptance.common.sleuth.SleuthHashing
+import io.spring.cloud.samples.brewery.acceptance.common.tech.ExceptionLoggingAsyncRestTemplate
 import io.spring.cloud.samples.brewery.acceptance.common.tech.ExceptionLoggingRestTemplate
 import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConfiguration
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
@@ -35,6 +36,7 @@ import spock.lang.Specification
 
 import static com.jayway.awaitility.Awaitility.await
 import static java.util.concurrent.TimeUnit.SECONDS
+
 /**
  *  TODO: Split responsibilities
  */
@@ -60,6 +62,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 	@Value('${presenting.url:http://localhost:9991}') String presentingUrl
 	@Value('${zipkin.query.port:9411}') Integer zipkinQueryPort
 	@Value('${LOCAL_URL:http://localhost}') String zipkinQueryUrl
+	private final ExceptionLoggingAsyncRestTemplate asyncRestTemplate = new ExceptionLoggingAsyncRestTemplate();
 
 	def setup() {
 		log.info("Starting test")

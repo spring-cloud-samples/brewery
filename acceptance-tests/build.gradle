@@ -8,7 +8,7 @@ dependencies {
     testCompile "org.springframework:spring-web"
     testCompile "org.springframework.boot:spring-boot-starter-web"
     testCompile "org.springframework.cloud:spring-cloud-starter-sleuth"
-    testCompile "io.zipkin:zipkin-java-core:0.4.1"
+    testCompile "io.zipkin:zipkin-java-core:0.4.2"
     testCompile "com.jayway.restassured:rest-assured:$restAssuredVersion"
     testCompile "com.jayway.restassured:spring-mock-mvc:$restAssuredVersion"
     testCompile( 'com.athaydes:spock-reports:1.2.7' ) {

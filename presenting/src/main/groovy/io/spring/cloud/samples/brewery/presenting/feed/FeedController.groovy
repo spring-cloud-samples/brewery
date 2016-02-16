@@ -1,9 +1,9 @@
 package io.spring.cloud.samples.brewery.presenting.feed
+
 import groovy.transform.TypeChecked
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cloud.sleuth.Span
-import org.springframework.cloud.sleuth.SpanName
 import org.springframework.cloud.sleuth.Tracer
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -38,7 +38,7 @@ class FeedController {
             method = PUT)
     public String maturing(@RequestHeader("PROCESS-ID") String processId) {
         log.info("new maturing with process [$processId]")
-        Span span = tracer.startTrace(new SpanName("local", "inside_presenting_maturing_feed"))
+        Span span = tracer.startTrace("local:inside_presenting_maturing_feed")
         try {
             return feedRepository.addModifyProcess(processId, ProcessState.MATURING)
         } finally {
@@ -53,7 +53,7 @@ class FeedController {
             method = PUT)
     public String bottling(@RequestHeader("PROCESS-ID") String processId) {
         log.info("new bottling process [$processId]")
-        Span span = tracer.startTrace(new SpanName("local", "inside_presenting_bottling_feed"))
+        Span span = tracer.startTrace("local:inside_presenting_bottling_feed")
         try {
             return feedRepository.addModifyProcess(processId, ProcessState.BOTTLING)
         } finally {

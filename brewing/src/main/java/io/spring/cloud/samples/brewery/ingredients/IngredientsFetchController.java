@@ -2,7 +2,6 @@ package io.spring.cloud.samples.brewery.ingredients;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
-import org.springframework.cloud.sleuth.SpanName;
 import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -38,7 +37,7 @@ class IngredientsFetchController {
 		log.info("Received a request to [/{}] with process id [{}] and communication type [{}]", ingredientType,
 				processId, testCommunicationType);
 		return new WebAsyncTask<>(() -> {
-			Span span = tracer.startTrace(new SpanName("local", "inside_ingredients"));
+			Span span = tracer.startTrace("local:inside_ingredients");
 			Ingredient ingredient = new Ingredient(ingredientType, stubbedIngredientsProperties.getReturnedIngredientsQuantity());
 			log.info("Returning [{}] as fetched ingredient from an external service", ingredient);
 			tracer.close(span);
