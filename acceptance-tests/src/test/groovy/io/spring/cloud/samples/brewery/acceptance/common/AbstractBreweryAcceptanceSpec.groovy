@@ -48,14 +48,14 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 
 	private static final List<String> APP_NAMES = ['presenting', 'brewing', 'zuul']
 	private static final List<String> SPAN_NAMES = [
-													'local:inside_presenting_maturing_feed',
-													'local:inside_presenting_bottling_feed',
+													'inside_presenting_maturing_feed',
+													'inside_presenting_bottling_feed',
 													'message:events',
-													'local:inside_aggregating',
-													'local:inside_maturing',
-													'local:inside_bottling',
-													'local:inside_ingredients',
-													'local:inside_reporting']
+													'inside_aggregating',
+													'inside_maturing',
+													'inside_bottling',
+													'inside_ingredients',
+													'inside_reporting']
 
 	@Value('${presenting.poll.interval:1}') Integer pollInterval
 	@Value('${presenting.timeout:60}') Integer timeout

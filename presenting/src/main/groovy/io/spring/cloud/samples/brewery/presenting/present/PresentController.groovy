@@ -55,7 +55,7 @@ class PresentController {
                 processIdFromHeaders :
                 new JdkIdGenerator().generateId().toString()
         log.info("Making new order with [$body.body] and processid [$processId].")
-        Span span = this.tracer.startTrace("local:inside_presenting")
+        Span span = this.tracer.startTrace("inside_presenting")
         String result;
         switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:

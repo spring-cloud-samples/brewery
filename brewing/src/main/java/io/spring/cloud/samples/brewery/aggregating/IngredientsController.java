@@ -42,7 +42,7 @@ class IngredientsController {
                                                      defaultValue = "REST_TEMPLATE", required = false)
                                              TestConfigurationHolder.TestCommunicationType testCommunicationType) {
         log.info("Starting beer brewing process for process id [{}]", processId);
-        Span span = tracer.startTrace("local:inside_aggregating");
+        Span span = tracer.startTrace("inside_aggregating");
         try {
             TestConfigurationHolder testConfigurationHolder = TestConfigurationHolder.TEST_CONFIG.get();
             return () -> ingredientsAggregator.fetchIngredients(order, processId, testConfigurationHolder);

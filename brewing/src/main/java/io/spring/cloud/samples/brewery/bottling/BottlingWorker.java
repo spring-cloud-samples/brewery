@@ -53,7 +53,7 @@ class BottlingWorker {
     }
 
     private void notifyPresentingService(String processId) {
-        Span scope = this.tracer.startTrace("local:calling_presenting");
+        Span scope = this.tracer.startTrace("calling_presenting");
         switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
                 callPresentingViaFeign(processId);
@@ -66,7 +66,7 @@ class BottlingWorker {
 
     private void increaseBottles(Integer wortAmount, String processId) {
         log.info("Bottling beer...");
-        Span scope = tracer.startTrace("local:waiting_for_beer_bottling");
+        Span scope = tracer.startTrace("waiting_for_beer_bottling");
         try {
             State stateForProcess = PROCESS_STATE.getOrDefault(processId, new State());
             Integer bottled = stateForProcess.bottled;

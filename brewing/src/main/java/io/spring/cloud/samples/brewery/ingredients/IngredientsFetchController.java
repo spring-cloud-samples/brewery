@@ -37,7 +37,7 @@ class IngredientsFetchController {
 		log.info("Received a request to [/{}] with process id [{}] and communication type [{}]", ingredientType,
 				processId, testCommunicationType);
 		return new WebAsyncTask<>(() -> {
-			Span span = tracer.startTrace("local:inside_ingredients");
+			Span span = tracer.startTrace("inside_ingredients");
 			Ingredient ingredient = new Ingredient(ingredientType, stubbedIngredientsProperties.getReturnedIngredientsQuantity());
 			log.info("Returning [{}] as fetched ingredient from an external service", ingredient);
 			tracer.close(span);
