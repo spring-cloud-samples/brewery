@@ -3,14 +3,17 @@ package io.spring.cloud.samples.brewery.bottling;
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.sleuth.Tracer;
+import org.springframework.cloud.sleuth.instrument.TraceKeys;
+import org.springframework.cloud.sleuth.instrument.hystrix.TraceCommand;
+import org.springframework.stereotype.Service;
+
 import io.spring.cloud.samples.brewery.common.BottlingService;
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.model.Wort;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.sleuth.Tracer;
-import org.springframework.cloud.sleuth.instrument.hystrix.TraceCommand;
-import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
@@ -18,11 +21,13 @@ class Bottler implements BottlingService {
 
     private final BottlerService bottlerService;
     private final Tracer tracer;
+    private final TraceKeys traceKeys;
 
     @Autowired
-    public Bottler(BottlerService bottlerService, Tracer tracer) {
+    public Bottler(BottlerService bottlerService, Tracer tracer, TraceKeys traceKeys) {
         this.bottlerService = bottlerService;
         this.tracer = tracer;
+        this.traceKeys = traceKeys;
     }
 
 	/**
@@ -38,7 +43,7 @@ class Bottler implements BottlingService {
                 .withGroupKey(HystrixCommandGroupKey.Factory.asKey(groupKey))
                 .andCommandKey(HystrixCommandKey.Factory.asKey(commandKey));
         TestConfigurationHolder testConfigurationHolder = TestConfigurationHolder.TEST_CONFIG.get();
-        new TraceCommand<Void>(tracer, setter) {
+        new TraceCommand<Void>(tracer, traceKeys, setter) {
             @Override
             public Void doRun() throws Exception {
                 TestConfigurationHolder.TEST_CONFIG.set(testConfigurationHolder);
