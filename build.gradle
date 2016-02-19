@@ -165,7 +165,7 @@ configure(subprojects - techProjects - commonZipkinProject) {
 
     dependencies {
         compile(commonProject)
-        if (whatToTest('SLEUTH')) { compile commonZipkinProject }
+        if (whatToTest('SLEUTH') || whatToTest('SLEUTH_STREAM')) { compile commonZipkinProject }
 
         compile "org.springframework.boot:spring-boot-starter-web"
         compile "org.springframework.boot:spring-boot-starter-actuator"
