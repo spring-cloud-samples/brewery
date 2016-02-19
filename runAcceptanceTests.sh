@@ -440,7 +440,7 @@ if [[ "${INITIALIZATION_FAILED}" == "yes" ]] ; then
 fi
 
 # ======================================= Checking if apps are booted =======================================
-if [[ -z "${CLOUD_FOUNDRY}" ]] || [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
+if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
 
         # Wait for the apps to boot up
         APPS_ARE_RUNNING="no"
@@ -480,6 +480,7 @@ if [[ -z "${CLOUD_FOUNDRY}" ]] || [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
         echo
 else
     READY_FOR_TESTS="yes"
+    echo "\n\nSkipping the check if apps are booted"
 fi
 
 # ======================================= Running acceptance tests =======================================
