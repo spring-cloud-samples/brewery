@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.SpanNamer;
 import org.springframework.cloud.sleuth.Tracer;
-import org.springframework.cloud.sleuth.instrument.TraceKeys;
+import org.springframework.cloud.sleuth.TraceKeys;
 import org.springframework.cloud.sleuth.instrument.async.TraceableExecutorService;
 import org.springframework.stereotype.Component;
 
