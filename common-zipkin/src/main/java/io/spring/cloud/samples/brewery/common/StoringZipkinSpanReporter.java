@@ -41,7 +41,7 @@ public class StoringZipkinSpanReporter implements ZipkinSpanReporter {
 	@RequestMapping("/spans/{traceId}")
 	public ResponseEntity<Collection<Span>> spans(@PathVariable String traceId) {
 		Collection<Span> spansForTrace = sentSpans
-				.get(org.springframework.cloud.sleuth.Span.fromHex(traceId));
+				.get(org.springframework.cloud.sleuth.Span.hexToId(traceId));
 		return ResponseEntity.ok(spansForTrace);
 	}
 

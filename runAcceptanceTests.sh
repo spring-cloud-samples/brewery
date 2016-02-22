@@ -427,7 +427,9 @@ fi
 # ======================================= Deploying apps locally or to cloud foundry =======================================
 INITIALIZATION_FAILED="yes"
 if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
-        . ./docker-compose-$WHAT_TO_TEST.sh && INITIALIZATION_FAILED="no"
+        if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
+            . ./docker-compose-$WHAT_TO_TEST.sh && INITIALIZATION_FAILED="no"
+        fi
     else
         . ./cloud-foundry-$WHAT_TO_TEST.sh && INITIALIZATION_FAILED="no"
 fi
@@ -442,42 +444,46 @@ fi
 # ======================================= Checking if apps are booted =======================================
 if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
 
-        # Wait for the apps to boot up
-        APPS_ARE_RUNNING="no"
+        if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
+            # Wait for the apps to boot up
+            APPS_ARE_RUNNING="no"
 
-        echo -e "\n\nWaiting for the apps to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
-        for i in $( seq 1 "${RETRIES}" ); do
-            sleep "${WAIT_TIME}"
-            curl -m 5 ${HEALTH_ENDPOINTS} && APPS_ARE_RUNNING="yes" && break
-            echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
-        done
+            echo -e "\n\nWaiting for the apps to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
+            for i in $( seq 1 "${RETRIES}" ); do
+                sleep "${WAIT_TIME}"
+                curl -m 5 ${HEALTH_ENDPOINTS} && APPS_ARE_RUNNING="yes" && break
+                echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
+            done
 
-        if [[ "${APPS_ARE_RUNNING}" == "no" ]] ; then
-            echo "\n\nFailed to boot the apps!"
-            print_logs
-            kill_all_apps_if_switch_on
-            exit 1
+            if [[ "${APPS_ARE_RUNNING}" == "no" ]] ; then
+                echo "\n\nFailed to boot the apps!"
+                print_logs
+                kill_all_apps_if_switch_on
+                exit 1
+            fi
+
+            # Wait for the apps to register in Service Discovery
+            READY_FOR_TESTS="no"
+
+            echo -e "\n\nChecking for the presence of all services in Service Discovery for [$(( WAIT_TIME * RETRIES ))] seconds"
+            for i in $( seq 1 "${RETRIES}" ); do
+                sleep "${WAIT_TIME}"
+                curl -m 5 http://${LOCALHOST}:9991/health | grep presenting |
+                    grep brewing && READY_FOR_TESTS="yes" && break
+                echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
+            done
+
+            if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
+                echo "\n\nThe apps failed to register in Service Discovery!"
+                print_logs
+                kill_all_apps_if_switch_on
+                exit 1
+            fi
+
+            echo
+        else
+            echo "Skipping deployment"
         fi
-
-        # Wait for the apps to register in Service Discovery
-        READY_FOR_TESTS="no"
-
-        echo -e "\n\nChecking for the presence of all services in Service Discovery for [$(( WAIT_TIME * RETRIES ))] seconds"
-        for i in $( seq 1 "${RETRIES}" ); do
-            sleep "${WAIT_TIME}"
-            curl -m 5 http://${LOCALHOST}:9991/health | grep presenting |
-                grep brewing && READY_FOR_TESTS="yes" && break
-            echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
-        done
-
-        if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
-            echo "\n\nThe apps failed to register in Service Discovery!"
-            print_logs
-            kill_all_apps_if_switch_on
-            exit 1
-        fi
-
-        echo
 else
     READY_FOR_TESTS="yes"
     echo "\n\nSkipping the check if apps are booted"
