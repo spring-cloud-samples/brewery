@@ -1,8 +1,12 @@
 package io.spring.cloud.samples.brewery.bottling;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
+import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
+import io.spring.cloud.samples.brewery.common.events.Event;
+import io.spring.cloud.samples.brewery.common.events.EventGateway;
+import io.spring.cloud.samples.brewery.common.events.EventType;
+import io.spring.cloud.samples.brewery.common.model.Version;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.sleuth.Span;
@@ -12,13 +16,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
-import io.spring.cloud.samples.brewery.common.events.Event;
-import io.spring.cloud.samples.brewery.common.events.EventGateway;
-import io.spring.cloud.samples.brewery.common.events.EventType;
-import io.spring.cloud.samples.brewery.common.model.Version;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
 import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
@@ -53,7 +52,7 @@ class BottlingWorker {
     }
 
     private void notifyPresentingService(String processId) {
-        Span scope = this.tracer.startTrace("calling_presenting");
+        Span scope = this.tracer.createSpan("calling_presenting");
         switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
                 callPresentingViaFeign(processId);
@@ -66,7 +65,7 @@ class BottlingWorker {
 
     private void increaseBottles(Integer wortAmount, String processId) {
         log.info("Bottling beer...");
-        Span scope = tracer.startTrace("waiting_for_beer_bottling");
+        Span scope = tracer.createSpan("waiting_for_beer_bottling");
         try {
             State stateForProcess = PROCESS_STATE.getOrDefault(processId, new State());
             Integer bottled = stateForProcess.bottled;

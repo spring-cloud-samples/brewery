@@ -28,7 +28,7 @@ class EventListener {
 	@ServiceActivator(inputChannel = EventSink.INPUT)
 	public void handleEvents(Event event, @Headers Map<String, Object> headers) {
 		log.info("Received the following message with headers [{}] and body [{}]", headers, event);
-		Span newSpan = tracer.startTrace("inside_reporting");
+		Span newSpan = tracer.createSpan("inside_reporting");
 		reportingRepository.createOrUpdate(event);
 		log.info("Saved event to the db", headers, event);
 		tracer.close(newSpan);

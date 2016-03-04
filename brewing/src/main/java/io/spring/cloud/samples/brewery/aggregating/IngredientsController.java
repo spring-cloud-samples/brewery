@@ -1,7 +1,10 @@
 package io.spring.cloud.samples.brewery.aggregating;
 
-import java.util.concurrent.Callable;
-
+import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
+import io.spring.cloud.samples.brewery.common.model.Ingredients;
+import io.spring.cloud.samples.brewery.common.model.Order;
+import io.spring.cloud.samples.brewery.common.model.Version;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
@@ -12,11 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
-import io.spring.cloud.samples.brewery.common.model.Ingredients;
-import io.spring.cloud.samples.brewery.common.model.Order;
-import io.spring.cloud.samples.brewery.common.model.Version;
-import lombok.extern.slf4j.Slf4j;
+import java.util.concurrent.Callable;
 
 @RestController
 @RequestMapping(value = "/ingredients", consumes = Version.BREWING_V1, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -42,7 +41,7 @@ class IngredientsController {
                                                      defaultValue = "REST_TEMPLATE", required = false)
                                              TestConfigurationHolder.TestCommunicationType testCommunicationType) {
         log.info("Starting beer brewing process for process id [{}]", processId);
-        Span span = tracer.startTrace("inside_aggregating");
+        Span span = tracer.createSpan("inside_aggregating");
         try {
             TestConfigurationHolder testConfigurationHolder = TestConfigurationHolder.TEST_CONFIG.get();
             return () -> ingredientsAggregator.fetchIngredients(order, processId, testConfigurationHolder);
