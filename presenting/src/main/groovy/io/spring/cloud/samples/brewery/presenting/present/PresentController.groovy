@@ -56,16 +56,17 @@ class PresentController {
                 new JdkIdGenerator().generateId().toString()
         log.info("Making new order with [$body.body] and processid [$processId].")
         Span span = this.tracer.createSpan("inside_presenting")
-        String result;
-        switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
-            case FEIGN:
-                result = useFeignToCallAggregation(body, processId);
-                break;
-            default:
-                result = useRestTemplateToCallAggregation(body, processId)
+        try {
+            switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
+                case FEIGN:
+                    return useFeignToCallAggregation(body, processId);
+                    break;
+                default:
+                    return useRestTemplateToCallAggregation(body, processId)
+            }
+        } finally {
+            tracer.close(span)
         }
-        tracer.close(span)
-        return result
     }
 
     private String useRestTemplateToCallAggregation(HttpEntity<String> body, String processId) {
