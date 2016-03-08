@@ -15,6 +15,12 @@ import org.springframework.web.client.RestTemplate;
 class BrewConfiguration {
 
     @Bean
+    @LoadBalanced
+    public RestTemplate loadBalancedRestTemplate() {
+        return new RestTemplate();
+    }
+
+    @Bean
     BottlingServiceUpdater bottlingServiceUpdater(Tracer trace, PresentingServiceClient presentingServiceClient,
                                                   BottlingService bottlingService,
                                                   @LoadBalanced RestTemplate restTemplate,

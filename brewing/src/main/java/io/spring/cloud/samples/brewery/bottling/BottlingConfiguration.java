@@ -25,6 +25,12 @@ class BottlingConfiguration {
         return new BottlerService(bottlingWorker, presentingClient, restTemplate, asyncRestTemplate, tracer);
     }
 
+    @Bean
+    @LoadBalanced
+    public RestTemplate loadBalancedRestTemplate() {
+        return new RestTemplate();
+    }
+
 
     @Bean
     AsyncRestTemplate asyncRestTemplate(@LoadBalanced RestTemplate restTemplate) {

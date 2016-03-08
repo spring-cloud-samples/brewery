@@ -26,6 +26,12 @@ class AggregationConfiguration {
 	}
 
 	@Bean
+	@LoadBalanced
+	public RestTemplate loadBalancedRestTemplate() {
+		return new RestTemplate();
+	}
+
+	@Bean
 	MaturingServiceUpdater maturingServiceUpdater(IngredientsProperties ingredientsProperties,
 												  IngredientWarehouse ingredientWarehouse,
 												  MaturingService maturingService,
