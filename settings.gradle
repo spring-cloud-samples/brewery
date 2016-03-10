@@ -1,6 +1,8 @@
 rootProject.name = "brewery"
 include 'brewing',
 		'presenting',
+		'reporting',
+		'ingredients',
 		'common',
 		'common-zipkin',
 		'zookeeper',

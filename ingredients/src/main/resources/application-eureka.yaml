@@ -1,0 +1,7 @@
+eureka:
+  instance:
+    preferIpAddress: true
+
+ribbon:
+  eureka:
+    enabled: true

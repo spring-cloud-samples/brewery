@@ -1,9 +1,8 @@
 package io.spring.cloud.samples.brewery.common.model;
 
 import com.google.common.collect.Lists;
-import lombok.ToString;
-
 import java.util.List;
+import lombok.ToString;
 
 @ToString
 public class Ingredients {

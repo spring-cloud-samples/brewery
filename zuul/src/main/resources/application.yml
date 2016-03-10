@@ -12,9 +12,6 @@ spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 
 zuul:
   ignoredPatterns: /health
-  ignoredServices: '*'
   retryable: true
-  routes:
-    brewing: /**
 
 hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000

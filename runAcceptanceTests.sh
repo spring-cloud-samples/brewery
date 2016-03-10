@@ -91,6 +91,8 @@ function print_logs() {
     tail_log "brewing"
     tail_log "zuul"
     tail_log "presenting"
+    tail_log "reporting"
+    tail_log "ingredients"
     tail_log "config-server"
     tail_log "eureka"
     tail_log "discovery"
@@ -152,6 +154,8 @@ function start_brewery_apps() {
     java_jar "presenting" "$1 $REMOTE_DEBUG=8991"
     java_jar "brewing" "$1 $REMOTE_DEBUG=8992"
     java_jar "zuul" "$1 $REMOTE_DEBUG=8993"
+    java_jar "ingredients" "$1 $REMOTE_DEBUG=8994"
+    java_jar "reporting" "$1 $REMOTE_DEBUG=8995"
     return 0
 }
 
@@ -165,6 +169,8 @@ function kill_all_apps() {
             kill_and_log "brewing"
             kill_and_log "zuul"
             kill_and_log "presenting"
+            kill_and_log "ingredients"
+            kill_and_log "reporting"
             kill_and_log "config-server"
             kill_and_log "eureka"
             kill_and_log "zookeeper"
@@ -176,6 +182,8 @@ function kill_all_apps() {
             reset "brewery-brewing" || echo "Failed to kill the app"
             reset "brewery-zuul" || echo "Failed to kill the app"
             reset "brewery-presenting" || echo "Failed to kill the app"
+            reset "brewery-ingredients" || echo "Failed to kill the app"
+            reset "brewery-reporting" || echo "Failed to kill the app"
             yes | cf delete-service "brewery-config-server" || echo "Failed to kill the app"
             reset "brewery-config-server" || echo "Failed to kill the app"
             yes | cf delete-service "brewery-discovery" || echo "Failed to kill the app"
@@ -321,7 +329,7 @@ done
 [[ -z "${HEALTH_HOST}" ]] && HEALTH_HOST="${DEFAULT_HEALTH_HOST}"
 [[ -z "${NUMBER_OF_LINES_TO_LOG}" ]] && NUMBER_OF_LINES_TO_LOG="${DEFAULT_NUMBER_OF_LINES_TO_LOG}"
 
-HEALTH_PORTS=('9991' '9992' '9993')
+HEALTH_PORTS=('9991' '9992' '9993' '9994' '9995')
 HEALTH_ENDPOINTS="$( printf "http://${LOCALHOST}:%s/health " "${HEALTH_PORTS[@]}" )"
 ACCEPTANCE_TEST_OPTS="${ACCEPTANCE_TEST_OPTS:--DLOCAL_URL=http://${HEALTH_HOST}}"
 
@@ -469,7 +477,7 @@ if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
             for i in $( seq 1 "${RETRIES}" ); do
                 sleep "${WAIT_TIME}"
                 curl -m 5 http://${LOCALHOST}:9991/health | grep presenting |
-                    grep brewing && READY_FOR_TESTS="yes" && break
+                    grep brewing | grep ingredients | grep reporting && READY_FOR_TESTS="yes" && break
                 echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
             done
 

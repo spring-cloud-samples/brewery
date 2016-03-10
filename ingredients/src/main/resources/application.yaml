@@ -1,16 +1,13 @@
-spring.application.name: brewing
+spring.application.name: ingredients
 
 logging:
   level.org.springframework.cloud: DEBUG
 
-server.port: ${PORT:9992}
+server.port: ${PORT:9994}
 
 spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 
-logging.file: build/brewing.log
+logging.file: build/ingredients.log
 
 hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
-
-spring.cloud.stream:
-  binder.rabbit.default.maxConcurrency: 5
-  bindings.events: events
+spring.cloud.stream.binder.rabbit.default.maxConcurrency: 5

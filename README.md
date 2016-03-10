@@ -44,10 +44,6 @@ Brewing service contains the following functionalities:
 - Once the threshold is met the application sends a request to the maturing service **(8)**
 - Each time a request is sent to the aggregating service it returns as a response its warehouse state
 
-#### Ingredients
-
-- Returns a fixed value of ingredients **(5)**
-
 #### Maturing
 
 - It receives a request with ingredients needed to brew a beer
@@ -62,7 +58,11 @@ Brewing service contains the following functionalities:
 - Once it's done an event is emitted **(11)** 
 - Presenting service is called to update the current status of the beer brewing process **(12)**
 
-#### Reporting
+### Ingredients Service
+
+- Returns a fixed value of ingredients **(5)**
+
+### Reporting Service
 
 - Listens to events and stores them in the "database"
 
@@ -77,7 +77,7 @@ Brewing service contains the following functionalities:
 
 ```
 ├── acceptance-tests (code containing acceptace-tests of brewery)
-├── brewing          (service that creates beer - consists of aggregating, maturing, bottling, reporting and ingredients functionalities)
+├── brewing          (service that creates beer - consists of aggregating, maturing, bottling functionalities)
 ├── common           (common code for the services)
 ├── docker           (docker scripts for additional apps - e.g. graphite)
 ├── config-server    (set up for the config server)
@@ -85,7 +85,9 @@ Brewing service contains the following functionalities:
 ├── git-props        (properties for config-server to pick)
 ├── gradle           (gradle related stuff)
 ├── img              (the fabulous diagram of the brewery)
+├── ingredients      (service returns ingredients)
 ├── presenting       (UI of the brewery)
+├── reporting        (service that listens to events)
 ├── zipkin-server    (Zipkin Server for Sleuth Stream tests)
 ├── zookeeper        (embedded zookeeper)
 └── zuul             (Zuul proxy that forwards requests to ingredients)

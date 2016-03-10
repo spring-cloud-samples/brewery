@@ -116,6 +116,8 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
     deploy_app_with_name "presenting" "brewery-presenting"
     deploy_app_with_name "brewing" "brewery-brewing"
     deploy_app_with_name "zuul" "brewery-zuul"
+    deploy_app_with_name "ingredients" "brewery-ingredients"
+    deploy_app_with_name "reporting" "brewery-reporting"
 
 else
     INITIALIZATION_FAILED="no"
