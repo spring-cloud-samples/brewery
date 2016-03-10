@@ -1,1 +1,3 @@
-spring.application.name: dependency/presenting
+spring:
+  application.name: presenting
+  cloud.zookeeper.prefix: dependency
