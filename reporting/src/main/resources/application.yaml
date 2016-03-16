@@ -13,4 +13,3 @@ hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
 
 spring.cloud.stream:
   binder.rabbit.default.maxConcurrency: 5
-  events.destination: events

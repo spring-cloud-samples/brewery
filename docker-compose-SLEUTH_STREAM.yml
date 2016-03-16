@@ -1,11 +1,13 @@
-web:
-  image: openzipkin/zipkin-web:1.36.0
-  environment:
-    # Remove TRANSPORT_TYPE to disable tracing
-    - TRANSPORT_TYPE=http
-  ports:
-    - 8080:8080
-    - 9990:9990
+#web:
+#  image: openzipkin/zipkin-web:1.36.0
+#  environment:
+#    # Remove TRANSPORT_TYPE to disable tracing
+#    - TRANSPORT_TYPE=http
+#  ports:
+#    - 8080:8080
+#    - 9990:9990
+
+# run zipkin-web from `zipkin-web` folder
 
 rabbitmq:
   image: rabbitmq:management
