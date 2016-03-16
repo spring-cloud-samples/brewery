@@ -43,7 +43,7 @@ import static java.util.concurrent.TimeUnit.SECONDS
 @ContextConfiguration(classes = TestConfiguration, loader = SpringApplicationContextLoader)
 abstract class AbstractBreweryAcceptanceSpec extends Specification implements SleuthHashing {
 
-	public static final String TRACE_ID_HEADER_NAME = 'X-TRACE-ID'
+	public static final String TRACE_ID_HEADER_NAME = Span.TRACE_ID_NAME
 	public static final Logger log = LoggerFactory.getLogger(AbstractBreweryAcceptanceSpec)
 
 	private static final List<String> APP_NAMES = ['presenting', 'brewing', 'zuul']
