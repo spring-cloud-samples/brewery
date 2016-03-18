@@ -25,7 +25,7 @@ class FeedRepository {
     }
 
     void setBottles(String id, Integer bottles) {
-        this.bottles.set(bottles)
+        this.bottles.addAndGet(bottles)
         addModifyProcess(id, ProcessState.DONE)
     }
 
