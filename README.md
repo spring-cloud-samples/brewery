@@ -114,7 +114,7 @@ The easiest way is to:
 * GO to the cloned `brewery` where you have the `runAcceptanceTests.sh` script (which in fact is already a symbolic link to `acceptance-tests/scripts/runDockerAcceptanceTests.sh`
  for your convenience)
 * You can execute that script with such options
-    * `-t` what do you want to test (`SLEUTH`, `ZOOKEEPER`, `CONSUL`, `SLEUTH`, `SLEUTH_STREAM`)
+    * `-t` what do you want to test (`EUREKA`, `ZOOKEEPER`, `CONSUL`, `SLEUTH`, `SLEUTH_STREAM`)
     * `-v` in which version of the BOM (defaults to `Brixton.BUILD-SNAPSHOT`)
     * `-h` where is your docker host? (defaults to '127.0.0.1' - provide your docker-machine host here)
     * `-r` is brewery repo already in place and needs to be reset? (defaults to `not` resetting of repo)
