@@ -429,11 +429,17 @@ echo -e "\n\n"
 # Build the apps
 APP_BUILDING_RETRIES=3
 APP_WAIT_TIME=1
+APP_FAILED="yes"
 if [[ -z "${SKIP_BUILDING}" ]] ; then
     for i in $( seq 1 "${APP_BUILDING_RETRIES}" ); do
-          ./gradlew clean build --parallel --no-daemon && break
+          ./gradlew clean build --parallel --no-daemon && APP_FAILED="no" && break
           echo "Fail #$i/${APP_BUILDING_RETRIES}... will try again in [${APP_WAIT_TIME}] seconds"
     done
+fi
+
+if [[ "${APP_FAILED}" == "yes" ]] ; then
+    echo -e "\n\nFailed to build the apps!"
+    exit 1
 fi
 
 

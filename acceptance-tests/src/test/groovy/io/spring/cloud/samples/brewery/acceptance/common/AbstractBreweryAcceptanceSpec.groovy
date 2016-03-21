@@ -23,7 +23,6 @@ import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
 import io.spring.cloud.samples.brewery.acceptance.model.IngredientType
 import io.spring.cloud.samples.brewery.acceptance.model.Order
 import io.spring.cloud.samples.brewery.acceptance.model.ProcessState
-import io.zipkin.Codec
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -33,6 +32,7 @@ import org.springframework.http.*
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
+import zipkin.Codec
 
 import static com.jayway.awaitility.Awaitility.await
 import static java.util.concurrent.TimeUnit.SECONDS
