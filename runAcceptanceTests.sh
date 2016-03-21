@@ -427,8 +427,13 @@ cat gradle.properties
 echo -e "\n\n"
 
 # Build the apps
+APP_BUILDING_RETRIES=3
+APP_WAIT_TIME=1
 if [[ -z "${SKIP_BUILDING}" ]] ; then
-    ./gradlew clean build --parallel --no-daemon
+    for i in $( seq 1 "${APP_BUILDING_RETRIES}" ); do
+          ./gradlew clean build --parallel --no-daemon && break
+          echo "Fail #$i/${APP_BUILDING_RETRIES}... will try again in [${APP_WAIT_TIME}] seconds"
+    done
 fi
 
 
@@ -437,9 +442,15 @@ INITIALIZATION_FAILED="yes"
 if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
         if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
             . ./docker-compose-$WHAT_TO_TEST.sh && INITIALIZATION_FAILED="no"
+        else
+          INITIALIZATION_FAILED="no"
         fi
     else
-        . ./cloud-foundry-$WHAT_TO_TEST.sh && INITIALIZATION_FAILED="no"
+        if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
+          . ./cloud-foundry-$WHAT_TO_TEST.sh && INITIALIZATION_FAILED="no"
+        else
+          INITIALIZATION_FAILED="no"
+        fi
 fi
 
 if [[ "${INITIALIZATION_FAILED}" == "yes" ]] ; then
