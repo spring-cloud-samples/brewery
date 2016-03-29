@@ -71,25 +71,7 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
         cd $root
 
         # ====================================================
-        echo -e "\n\nDeploying Zipkin Web"
-        zw=zipkin-web
-        ZW_APP_NAME="brewery-$zw"
-        reset $ZW_APP_NAME
-        cf d -f $ZW_APP_NAME
-        zqs_name=`app_domain $ZQ_APP_NAME`
-        echo -e "Zipkin Query server host is [${zqs_name}]"
-        cd $root/zipkin-web
-        cf push --no-start
-        jcjm=`$root/scripts/zipkin-deploy-helper.py $zqs_name`
-        echo -e "Setting env vars [${jcjm}]"
-        cf set-env $ZW_APP_NAME JBP_CONFIG_JAVA_MAIN "${jcjm}"
-        cf restart $ZW_APP_NAME && READY_FOR_TESTS="yes"
-
-        if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
-            echo "Zipkin Web failed to start..."
-            exit 1
-        fi
-        cd $root
+        echo -e "\n\nZipkin web is a part of the Zipkin Server"
 
         # ====================================================
 

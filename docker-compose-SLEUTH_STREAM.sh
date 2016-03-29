@@ -44,10 +44,7 @@ if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
     exit 1
 fi
 
-#echo -e "\n\nBooting up Zipkin web"
-# TODO: Add running of zipkin-web from jar
-echo -e "\n\nTo get Zipkin web run the jar from the zipkin-web folder"
-#docker-compose -f $dockerComposeFile up -d web
+echo -e "\n\nZipkin Web is available under 9411 port"
 
 # Boot config-server
 READY_FOR_TESTS="no"
