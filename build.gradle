@@ -87,10 +87,6 @@ configure(subprojects) {
                     if (details.requested.group == 'org.codehaus.groovy' && details.requested.name != "groovy-all") {
                         details.useTarget("org.codehaus.groovy:groovy-all:${details.requested.version}")
                     }
-//                    if (details.requested.name.startsWith("spring-cloud-stream") ||
-//                            details.requested.name.startsWith("spring-cloud-starter-stream")) {
-//                        details.useVersion("1.0.0.RC1")
-//                    }
                 }
             }
         }

@@ -35,6 +35,8 @@ class SleuthBreweryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 			beer_has_been_brewed_for_process_id(referenceProcessId)
 		and: 'entry will be present in Zipkin'
 			entry_for_trace_id_is_present_in_Zipkin(referenceProcessId)
+		and: 'dependency graph is correct'
+			dependency_graph_is_correct()
 		where:
 			communicationType << [CommunicationType.REST_TEMPLATE, CommunicationType.FEIGN]
 			referenceProcessId = Span.idToHex(new Random().nextLong())

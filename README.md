@@ -20,6 +20,10 @@ And here additional tech related applications:
 
 ![Diagram](img/Tech_apps.png)
 
+And here how the flow of apps look like (screenshot taken from Zipkin)
+
+![Diagram](img/Dependency_graph.png)
+
 ### Presenting service (point of entry to the system)
 
 Here is the UI

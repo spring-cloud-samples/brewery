@@ -122,6 +122,28 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 		})
 	}
 
+	void dependency_graph_is_correct() {
+		await().pollInterval(pollInterval, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
+			@Override
+			void run() {
+				ResponseEntity<String> response = checkDependencies()
+				log.info("Response from the Zipkin query service about the dependencies [$response]")
+				assert response.statusCode == HttpStatus.OK
+				assert response.hasBody()
+				Map<String, List<String>> parentsAndChildren = [:]
+				new JsonSlurper().parseText(response.body).inject(parentsAndChildren) { Map<String, String> acc, def json ->
+					def list = acc[json.parent] ?: []
+					list << json.child
+					acc.put(json.parent, list)
+					return acc
+				}
+				assert parentsAndChildren['presenting'] == ['brewing']
+				assert parentsAndChildren['brewing'] == ['brewing', 'zuul', 'reporting', 'presenting']
+				assert parentsAndChildren['zuul'] == ['ingredients']
+			}
+		})
+	}
+
 	ResponseEntity<String> checkStateOfTheProcess(String processId) {
 		URI uri = URI.create("$presentingUrl/feed/process/$processId")
 		log.info("Sending request to the presenting service [$uri] to check the beer brewing process. The process id is [$processId]")
@@ -134,6 +156,15 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 		URI uri = URI.create("${wrapQueryWithProtocolIfPresent() ?: zipkinQueryUrl}:${zipkinQueryPort}/api/v1/trace/$traceId")
 		HttpHeaders headers = new HttpHeaders()
 		log.info("Sending request to the Zipkin query service [$uri]. Checking presence of trace id [$traceId]")
+		return new ExceptionLoggingRestTemplate().exchange(
+				new RequestEntity<>(headers, HttpMethod.GET, uri), String
+		)
+	}
+
+	ResponseEntity<String> checkDependencies() {
+		URI uri = URI.create("${wrapQueryWithProtocolIfPresent() ?: zipkinQueryUrl}:${zipkinQueryPort}/api/v1/dependencies?endTs=${System.currentTimeMillis()}")
+		HttpHeaders headers = new HttpHeaders()
+		log.info("Sending request to the Zipkin query service [$uri]. Checking the dependency graph")
 		return new ExceptionLoggingRestTemplate().exchange(
 				new RequestEntity<>(headers, HttpMethod.GET, uri), String
 		)
