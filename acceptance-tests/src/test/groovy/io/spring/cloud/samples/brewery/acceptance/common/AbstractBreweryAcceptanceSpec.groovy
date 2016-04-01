@@ -138,7 +138,8 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification implements Sl
 					return acc
 				}
 				assert parentsAndChildren['presenting'] == ['brewing']
-				assert parentsAndChildren['brewing'] == ['brewing', 'zuul', 'reporting', 'presenting']
+				assert parentsAndChildren['brewing'].size() == 4
+				assert parentsAndChildren['brewing'].containsAll(['brewing', 'zuul', 'reporting', 'presenting'])
 				assert parentsAndChildren['zuul'] == ['ingredients']
 			}
 		})
