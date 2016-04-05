@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 package io.spring.cloud.samples.brewery.acceptance.common
+
 import groovy.json.JsonSlurper
-import io.spring.cloud.samples.brewery.acceptance.common.sleuth.SleuthHashing
 import io.spring.cloud.samples.brewery.acceptance.common.tech.ExceptionLoggingAsyncRestTemplate
 import io.spring.cloud.samples.brewery.acceptance.common.tech.ExceptionLoggingRestTemplate
 import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConfiguration
@@ -36,12 +36,11 @@ import zipkin.Codec
 
 import static com.jayway.awaitility.Awaitility.await
 import static java.util.concurrent.TimeUnit.SECONDS
-
 /**
  *  TODO: Split responsibilities
  */
 @ContextConfiguration(classes = TestConfiguration, loader = SpringApplicationContextLoader)
-abstract class AbstractBreweryAcceptanceSpec extends Specification implements SleuthHashing {
+abstract class AbstractBreweryAcceptanceSpec extends Specification {
 
 	public static final String TRACE_ID_HEADER_NAME = Span.TRACE_ID_NAME
 	public static final Logger log = LoggerFactory.getLogger(AbstractBreweryAcceptanceSpec)

@@ -37,7 +37,7 @@ class ServiceDiscoveryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 		where:
 			communicationType << [CommunicationType.REST_TEMPLATE, CommunicationType.FEIGN]
 			referenceProcessId = Span.idToHex(new Random().nextLong())
-			serviceDiscovery = System.getProperty(WhatToTest.WHAT_TO_TEST)
+			serviceDiscovery = System.getProperty(WhatToTest.WHAT_TO_TEST_SYSTEM_PROP)
 	}
 
 }
