@@ -59,8 +59,7 @@ class PresentController {
         try {
             switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
                 case FEIGN:
-                    return useFeignToCallAggregation(body, processId);
-                    break;
+                    return useFeignToCallAggregation(body, processId)
                 default:
                     return useRestTemplateToCallAggregation(body, processId)
             }
