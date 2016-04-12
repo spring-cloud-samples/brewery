@@ -113,6 +113,12 @@ E.g. `brewing` module
 
 ## How to run it?
 
+### Prerequisite
+
+YOU NEED DOCKER-COMPOSE INSTALLED TO RUN THE BREWERY!
+
+### Running Brewery
+
 The easiest way is to:
 
 * GO to the cloned `brewery` where you have the `runAcceptanceTests.sh` script (which in fact is already a symbolic link to `acceptance-tests/scripts/runDockerAcceptanceTests.sh`
