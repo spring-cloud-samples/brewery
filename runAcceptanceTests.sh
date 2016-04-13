@@ -435,6 +435,8 @@ if [[ -z "${SKIP_BUILDING}" ]] ; then
           ./gradlew clean build --parallel --no-daemon && APP_FAILED="no" && break
           echo "Fail #$i/${APP_BUILDING_RETRIES}... will try again in [${APP_WAIT_TIME}] seconds"
     done
+else
+    APP_FAILED="no"
 fi
 
 if [[ "${APP_FAILED}" == "yes" ]] ; then
@@ -508,6 +510,7 @@ if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
             echo
         else
             echo "Skipping deployment"
+            READY_FOR_TESTS="yes"
         fi
 else
     READY_FOR_TESTS="yes"
