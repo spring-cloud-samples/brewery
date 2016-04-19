@@ -56,7 +56,10 @@ function deploy_service(){
     N=$1
     D=`app_domain $N`
     JSON='{"uri":"http://'$D'"}'
+    # terrible hack - create-user-provided-service doesn't accept -f switch
+    ln -sf "manifest-${CLOUD_PREFIX}.yml" manifest.yml
     cf create-user-provided-service $N -p $JSON
+    git checkout manifest.yml
 }
 
 function reset(){

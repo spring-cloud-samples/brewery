@@ -1,9 +1,9 @@
 ---
 applications:
-- name: docbrewing-discovery
+- name: docsbrewing-discovery
   memory: 512M
   instances: 1
-  host: docbrewing-discovery
+  host: docsbrewing-discovery
   path: build/libs/eureka-1.0.0.jar
   env:
     SPRING_PROFILES_ACTIVE: cloud
