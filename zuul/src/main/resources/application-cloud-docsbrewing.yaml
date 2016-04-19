@@ -1,0 +1,9 @@
+spring.rabbitmq.addresses: ${vcap.services.docsbrewing-rabbitmq.credentials.uri}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${vcap.services.docsbrewing-discovery.credentials.uri:http://127.0.0.1:8761}/eureka/
+  instance:
+    hostname: ${APPLICATION_DOMAIN}
+    nonSecurePort: 80

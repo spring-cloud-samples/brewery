@@ -6,5 +6,5 @@ applications:
   host: docsbrewing-discovery
   path: build/libs/eureka-1.0.0.jar
   env:
-    SPRING_PROFILES_ACTIVE: cloud
+    SPRING_PROFILES_ACTIVE: cloud,cloud-docsbrewing
     DEBUG: "true"

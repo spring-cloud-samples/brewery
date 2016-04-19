@@ -1,0 +1,3 @@
+spring.rabbitmq.addresses: ${vcap.services.docsbrewing-rabbitmq.credentials.uri}
+
+spring.datasource.initialize: false

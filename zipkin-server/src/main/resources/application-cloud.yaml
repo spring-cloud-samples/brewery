@@ -1,4 +1,3 @@
 spring.rabbitmq.addresses: ${vcap.services.brewery-rabbitmq.credentials.uri}
-spring.cloud.zookeeper.connectString: ${vcap.services.brewery-discovery.credentials.uri}:2181
 
 spring.datasource.initialize: false
