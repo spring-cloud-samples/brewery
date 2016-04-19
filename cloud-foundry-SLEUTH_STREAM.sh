@@ -62,7 +62,7 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
         reset $ZQ_APP_NAME
         cf d -f $ZQ_APP_NAME
         cd $root/zipkin-server
-        cf push && READY_FOR_TESTS="yes"
+        cf push -f "manifest-${CLOUD_PREFIX}.yml" && READY_FOR_TESTS="yes"
 
         if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
             echo "Zipkin Server failed to start..."
