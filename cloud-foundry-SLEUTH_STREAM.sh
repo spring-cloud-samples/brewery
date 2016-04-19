@@ -35,7 +35,7 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
             exit 1
         fi
 
-        DISCOVERY_HOST=`app_domain discovery`
+        DISCOVERY_HOST=`app_domain "${CLOUD_PREFIX}-discovery"`
         echo -e "Discovery host is [${DISCOVERY_HOST}]"
 
         # ====================================================
