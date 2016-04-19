@@ -1,0 +1,15 @@
+---
+applications:
+- name: docsbrewing-brewing
+  memory: 512M
+  instances: 1
+  host: docsbrewing-brewing
+  path: build/libs/brewing-1.0.0.jar
+  services:
+    - docsbrewing-rabbitmq
+    - docsbrewing-discovery
+    - docsbrewing-config-server
+  env:
+    SPRING_PROFILES_ACTIVE: cloud
+    spring.cloud.config.uri: http://docsbrewing-config-server.cfapps.io
+    DEBUG: "true"

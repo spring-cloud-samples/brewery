@@ -1,0 +1,13 @@
+---
+applications:
+- name: docsbrewing-zipkin-server
+  memory: 512M
+  instances: 1
+  host: docsbrewing-zipkin-server
+  path: build/libs/zipkin-server-1.0.0.jar
+  services:
+    - docsbrewing-rabbitmq
+    - docsbrewing-mysql
+  env:
+    SPRING_PROFILES_ACTIVE: cloud
+    DEBUG: "true"

@@ -1,14 +1,1 @@
----
-applications:
-- name: brewery-reporting
-  memory: 512M
-  instances: 1
-  host: brewery-reporting
-  path: build/libs/reporting-1.0.0.jar
-  services:
-    - brewery-rabbitmq
-    - brewery-discovery
-    - brewery-config-server
-  env:
-    SPRING_PROFILES_ACTIVE: cloud
-    DEBUG: "true"
+manifest-brewery.yml

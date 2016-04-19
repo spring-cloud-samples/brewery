@@ -1,14 +1,1 @@
----
-applications:
-- name: brewery-presenting
-  memory: 512M
-  instances: 1
-  host: brewery-presenting
-  path: build/libs/presenting-1.0.0.jar
-  services:
-    - brewery-rabbitmq
-    - brewery-discovery
-    - brewery-config-server
-  env:
-    SPRING_PROFILES_ACTIVE: cloud
-    DEBUG: "true"
+manifest-brewery.yml

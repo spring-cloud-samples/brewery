@@ -1,0 +1,12 @@
+---
+applications:
+- name: docsbrewing-config-server
+  memory: 512M
+  instances: 1
+  host: docsbrewing-config-server
+  path: build/libs/config-server-1.0.0.jar
+  services:
+    - docsbrewing-discovery
+  env:
+    SPRING_PROFILES_ACTIVE: cloud
+    DEBUG: "true"

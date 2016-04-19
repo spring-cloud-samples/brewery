@@ -13,3 +13,4 @@ logs
 /out
 *~
 *.log
+.DS_STORE

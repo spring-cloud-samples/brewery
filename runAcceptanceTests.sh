@@ -40,7 +40,7 @@ function deploy_app_with_name(){
     APP_DIR=$1
     APP_NAME=$2
     cd $APP_DIR
-    cf push $APP_NAME --no-start
+    cf push $APP_NAME --no-start -f "manifest-${CLOUD_PREFIX}.yml"
     APPLICATION_DOMAIN=`app_domain $APP_NAME`
     echo determined that application_domain for $APP_NAME is $APPLICATION_DOMAIN.
     cf env $APP_NAME | grep APPLICATION_DOMAIN || cf set-env $APP_NAME APPLICATION_DOMAIN $APPLICATION_DOMAIN

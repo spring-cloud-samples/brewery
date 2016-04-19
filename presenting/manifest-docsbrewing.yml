@@ -1,0 +1,14 @@
+---
+applications:
+- name: docsbrewing-presenting
+  memory: 512M
+  instances: 1
+  host: docsbrewing-presenting
+  path: build/libs/presenting-1.0.0.jar
+  services:
+    - docsbrewing-rabbitmq
+    - docsbrewing-discovery
+    - docsbrewing-config-server
+  env:
+    SPRING_PROFILES_ACTIVE: cloud
+    DEBUG: "true"

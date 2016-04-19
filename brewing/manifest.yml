@@ -1,15 +1,1 @@
----
-applications:
-- name: brewery-brewing
-  memory: 512M
-  instances: 1
-  host: brewery-brewing
-  path: build/libs/brewing-1.0.0.jar
-  services:
-    - brewery-rabbitmq
-    - brewery-discovery
-    - brewery-config-server
-  env:
-    SPRING_PROFILES_ACTIVE: cloud
-    spring.cloud.config.uri: http://brewery-config-server.cfapps.io
-    DEBUG: "true"
+manifest-brewery.yml
