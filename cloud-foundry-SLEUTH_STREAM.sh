@@ -12,7 +12,7 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
         READY_FOR_TESTS="no"
         echo "Waiting for RabbitMQ to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
         # create RabbitMQ
-        APP_NAME=brewery-rabbitmq
+        APP_NAME="${CLOUD_PREFIX}-rabbitmq"
         cf s | grep ${APP_NAME} && echo "found ${APP_NAME}" && READY_FOR_TESTS="yes" ||
             cf cs cloudamqp lemur ${APP_NAME} && echo "Started RabbitMQ" && READY_FOR_TESTS="yes"
 
@@ -25,10 +25,10 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
 
         READY_FOR_TESTS="no"
         echo "Waiting for Eureka to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
-        yes | cf delete-service "brewery-discovery" || echo "Failed to kill the app...  Continuing with the script"
-        cf s | grep "brewery-discovery" && cf ds -f "brewery-discovery" || echo "Failed to delete the app...  Continuing with the script"
-        deploy_app_with_name "eureka" "brewery-discovery" && READY_FOR_TESTS="yes"
-        deploy_service "brewery-discovery" && READY_FOR_TESTS="yes"
+        yes | cf delete-service "${CLOUD_PREFIX}-discovery" || echo "Failed to kill the app...  Continuing with the script"
+        cf s | grep "${CLOUD_PREFIX}-discovery" && cf ds -f "${CLOUD_PREFIX}-discovery" || echo "Failed to delete the app...  Continuing with the script"
+        deploy_app_with_name "eureka" "${CLOUD_PREFIX}-discovery" && READY_FOR_TESTS="yes"
+        deploy_service "${CLOUD_PREFIX}-discovery" && READY_FOR_TESTS="yes"
 
         if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
             echo "Eureka failed to start..."
@@ -43,7 +43,7 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
         echo -e "\n\nBooting up MySQL"
         READY_FOR_TESTS="no"
         # create MySQL DB
-        APP_NAME=brewery-mysql
+        APP_NAME="${CLOUD_PREFIX}-mysql"
         cf s | grep ${APP_NAME} && echo "found ${APP_NAME}" && READY_FOR_TESTS="yes" ||
             cf cs cleardb spark ${APP_NAME} && echo "Started ${APP_NAME}" && READY_FOR_TESTS="yes"
 
@@ -57,7 +57,7 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
 
         echo -e "\n\nDeploying Zipkin Server"
         zq=zipkin-server
-        ZQ_APP_NAME="brewery-$zq"
+        ZQ_APP_NAME="${CLOUD_PREFIX}-$zq"
         cd $root/$zq
         reset $ZQ_APP_NAME
         cf d -f $ZQ_APP_NAME
@@ -78,10 +78,10 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
         # Boot config-server
         READY_FOR_TESTS="no"
         echo "Waiting for the Config Server app to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
-        yes | cf delete-service "brewery-config-server" || echo "Failed to kill the app"
-        cf s | grep "brewery-config-server" && cf ds -f "brewery-config-server" || echo "Failed to delete the app...  Continuing with the script"
-        deploy_app_with_name "config-server" "brewery-config-server" && READY_FOR_TESTS="yes"
-        deploy_service "brewery-config-server" || echo "Failed to bind the service... Continuing with the script"
+        yes | cf delete-service "${CLOUD_PREFIX}-config-server" || echo "Failed to kill the app"
+        cf s | grep "${CLOUD_PREFIX}-config-server" && cf ds -f "${CLOUD_PREFIX}-config-server" || echo "Failed to delete the app...  Continuing with the script"
+        deploy_app_with_name "config-server" "${CLOUD_PREFIX}-config-server" && READY_FOR_TESTS="yes"
+        deploy_service "${CLOUD_PREFIX}-config-server" || echo "Failed to bind the service... Continuing with the script"
 
         if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
             echo "Config server failed to start..."
@@ -95,11 +95,11 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
 
     cd $root
     echo -e "\n\nStarting brewery apps..."
-    deploy_app_with_name "presenting" "brewery-presenting"
-    deploy_app_with_name "brewing" "brewery-brewing"
-    deploy_app_with_name "zuul" "brewery-zuul"
-    deploy_app_with_name "ingredients" "brewery-ingredients"
-    deploy_app_with_name "reporting" "brewery-reporting"
+    deploy_app_with_name "presenting" "${CLOUD_PREFIX}-presenting"
+    deploy_app_with_name "brewing" "${CLOUD_PREFIX}-brewing"
+    deploy_app_with_name "zuul" "${CLOUD_PREFIX}-zuul"
+    deploy_app_with_name "ingredients" "${CLOUD_PREFIX}-ingredients"
+    deploy_app_with_name "reporting" "${CLOUD_PREFIX}-reporting"
 
 else
     INITIALIZATION_FAILED="no"
@@ -108,8 +108,8 @@ fi
 
 # ====================================================
 
-PRESENTING_HOST=`app_domain presenting`
-ZIPKIN_SERVER_HOST=`app_domain zipkin-server`
+PRESENTING_HOST=`app_domain ${CLOUD_PREFIX}-presenting`
+ZIPKIN_SERVER_HOST=`app_domain ${CLOUD_PREFIX}-zipkin-server`
 echo -e "Presenting host is [${PRESENTING_HOST}]"
 echo -e "Zikpin server host is [${ZIPKIN_SERVER_HOST}]"
 

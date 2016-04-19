@@ -74,7 +74,7 @@ function tail_log() {
     if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
         tail -n $NUMBER_OF_LINES_TO_LOG build/"$1".log || echo "Failed to open log"
     else
-        cf logs "brewery-$1" --recent || echo "Failed to open log"
+        cf logs "${CLOUD_PREFIX}-$1" --recent || echo "Failed to open log"
     fi
 }
 
@@ -179,17 +179,17 @@ function kill_all_apps() {
                 docker kill $(docker ps -q) || echo "No running docker containers are left"
             fi
         else
-            reset "brewery-brewing" || echo "Failed to kill the app"
-            reset "brewery-zuul" || echo "Failed to kill the app"
-            reset "brewery-presenting" || echo "Failed to kill the app"
-            reset "brewery-ingredients" || echo "Failed to kill the app"
-            reset "brewery-reporting" || echo "Failed to kill the app"
-            yes | cf delete-service "brewery-config-server" || echo "Failed to kill the app"
-            reset "brewery-config-server" || echo "Failed to kill the app"
-            yes | cf delete-service "brewery-discovery" || echo "Failed to kill the app"
-            reset "brewery-discovery" || echo "Failed to kill the app"
-            reset "brewery-zipkin-server" || echo "Failed to kill the app"
-            reset "brewery-zipkin-web" || echo "Failed to kill the app"
+            reset "${CLOUD_PREFIX}-brewing" || echo "Failed to kill the app"
+            reset "${CLOUD_PREFIX}-zuul" || echo "Failed to kill the app"
+            reset "${CLOUD_PREFIX}-presenting" || echo "Failed to kill the app"
+            reset "${CLOUD_PREFIX}-ingredients" || echo "Failed to kill the app"
+            reset "${CLOUD_PREFIX}-reporting" || echo "Failed to kill the app"
+            yes | cf delete-service "${CLOUD_PREFIX}-config-server" || echo "Failed to kill the app"
+            reset "${CLOUD_PREFIX}-config-server" || echo "Failed to kill the app"
+            yes | cf delete-service "${CLOUD_PREFIX}-discovery" || echo "Failed to kill the app"
+            reset "${CLOUD_PREFIX}-discovery" || echo "Failed to kill the app"
+            reset "${CLOUD_PREFIX}-zipkin-server" || echo "Failed to kill the app"
+            reset "${CLOUD_PREFIX}-zipkin-web" || echo "Failed to kill the app"
             yes | cf delete-orphaned-routes || echo "Failed to delete routes"
     fi
     return 0
@@ -226,6 +226,7 @@ You can use the following options:
 -c|--cloudfoundry - should run tests for cloud foundry? Defaults to "no"
 -o|--deployonlyapps - should deploy only the brewery business apps instead of the infra too? Defaults to "no"
 -d|--skipdeployment - should skip deployment of apps? Defaults to "no"
+-p|--cloudfoundryprefix - provides the prefix to the brewery app name. Defaults to 'brewery'
 
 EOF
 }
@@ -250,6 +251,7 @@ DEFAULT_NUMBER_OF_LINES_TO_LOG="${DEFAULT_NUMBER_OF_LINES_TO_LOG:-1000}"
 SHOULD_START_RABBIT="${SHOULD_START_RABBIT:-yes}"
 LOCALHOST="127.0.0.1"
 MEM_ARGS="-Xmx128m -Xss1024k"
+CLOUD_PREFIX="brewery"
 
 BOM_VERSION_PROP_NAME="BOM_VERSION"
 
@@ -310,6 +312,10 @@ case $key in
     -d|--skipdeployment)
     SKIP_DEPLOYMENT="yes"
     ;;
+    -p|--cloudfoundryprefix)
+    CLOUD_PREFIX="$2"
+    shift # past argument
+    ;;
     --help)
     print_usage
     exit 0
@@ -351,6 +357,7 @@ ACCEPTANCE_TEST_OPTS=${ACCEPTANCE_TEST_OPTS}
 CLOUD_FOUNDRY=${CLOUD_FOUNDRY}
 DEPLOY_ONLY_APPS=${DEPLOY_ONLY_APPS}
 SKIP_DEPLOYMENT=${SKIP_DEPLOYMENT}
+CLOUD_PREFIX=${CLOUD_PREFIX}
 
 EOF
 
@@ -373,6 +380,7 @@ export ACCEPTANCE_TEST_OPTS=$ACCEPTANCE_TEST_OPTS
 export CLOUD_FOUNDRY=$CLOUD_FOUNDRY
 export DEPLOY_ONLY_APPS=$DEPLOY_ONLY_APPS
 export SKIP_DEPLOYMENT=$SKIP_DEPLOYMENT
+export CLOUD_PREFIX=$CLOUD_PREFIX
 
 export -f login
 export -f app_domain
