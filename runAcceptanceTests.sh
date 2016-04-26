@@ -137,7 +137,7 @@ function curl_local_health_endpoint() {
 # Runs the `java -jar` for given application $1 and system properties $2
 function java_jar() {
     local APP_JAVA_PATH=$1/build/libs
-    local EXPRESSION="nohup $JAVA_HOME/bin/java $2 $MEM_ARGS -jar $APP_JAVA_PATH/*.jar >$APP_JAVA_PATH/nohup.log &"
+    local EXPRESSION="nohup ${JAVA_PATH_TO_BIN}java $2 $MEM_ARGS -jar $APP_JAVA_PATH/*.jar >$APP_JAVA_PATH/nohup.log &"
     echo -e "\nTrying to run [$EXPRESSION]"
     eval $EXPRESSION
     pid=$!
@@ -249,6 +249,10 @@ DEFAULT_VERSION="${DEFAULT_VERSION:-Brixton.BUILD-SNAPSHOT}"
 DEFAULT_HEALTH_HOST="${DEFAULT_HEALTH_HOST:-127.0.0.1}"
 DEFAULT_NUMBER_OF_LINES_TO_LOG="${DEFAULT_NUMBER_OF_LINES_TO_LOG:-1000}"
 SHOULD_START_RABBIT="${SHOULD_START_RABBIT:-yes}"
+JAVA_PATH_TO_BIN="${JAVA_HOME}/bin/"
+if [[ -z "${JAVA_HOME}" ]] ; then
+    JAVA_PATH_TO_BIN=""
+fi
 LOCALHOST="127.0.0.1"
 MEM_ARGS="-Xmx128m -Xss1024k"
 CLOUD_PREFIX="brewery"
@@ -381,6 +385,7 @@ export CLOUD_FOUNDRY=$CLOUD_FOUNDRY
 export DEPLOY_ONLY_APPS=$DEPLOY_ONLY_APPS
 export SKIP_DEPLOYMENT=$SKIP_DEPLOYMENT
 export CLOUD_PREFIX=$CLOUD_PREFIX
+export JAVA_PATH_TO_BIN=$JAVA_PATH_TO_BIN
 
 export -f login
 export -f app_domain
