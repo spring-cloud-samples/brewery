@@ -106,7 +106,7 @@ function netcat_port() {
     local READY_FOR_TESTS=1
     for i in $( seq 1 "${RETRIES}" ); do
         sleep "${WAIT_TIME}"
-        nc -v -z -w 1 $PASSED_HOST $1 && READY_FOR_TESTS=0 && break
+        nc -v -w 1 $PASSED_HOST $1 && READY_FOR_TESTS=0 && break
         echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
     done
     return $READY_FOR_TESTS
