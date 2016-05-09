@@ -87,6 +87,10 @@ configure(subprojects) {
                     if (details.requested.group == 'org.codehaus.groovy' && details.requested.name != "groovy-all") {
                         details.useTarget("org.codehaus.groovy:groovy-all:${details.requested.version}")
                     }
+                    // TODO: Hack to pick proper version of rxjava. For some reason 1.0.14 is picked
+                    if (details.requested.group == 'io.reactivex' && details.requested.name == 'rxjava') {
+                        details.useVersion('1.1.5')
+                    }
                 }
             }
         }
@@ -188,7 +192,7 @@ configure(subprojects - techProjects - commonZipkinProject) {
     }
 
     wrapper {
-        gradleVersion '2.11'
+        gradleVersion '2.13'
     }
 
     bootRun {
