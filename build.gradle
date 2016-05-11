@@ -105,9 +105,12 @@ configure(subprojects) {
         maven {
             url "http://repo.spring.io/milestone"
         }
-//        maven {
-//            url "http://repo.spring.io/libs-staging-local/"
-//        }
+        maven {
+            url "http://repo.spring.io/libs-release-local"
+        }
+       maven {
+           url "http://repo.spring.io/libs-staging-local/"
+       }
     }
 
     dependencyManagement {
