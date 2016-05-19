@@ -163,6 +163,27 @@ function kill_and_log() {
     kill -9 $(cat "$1"/build/libs/app.pid) && echo "Killed $1" || echo "Can't find $1 in running processes"
     pkill -f "$1" && echo "Killed $1 via pkill" ||  echo "Can't find $1 in running processes (tried with pkill)"
 }
+
+function kill_all_apps_with_port() {
+    kill_app_with_port 9991
+    kill_app_with_port 9992
+    kill_app_with_port 9993
+    kill_app_with_port 9994
+    kill_app_with_port 9995
+    kill_app_with_port 9996
+    kill_app_with_port 9997
+    kill_app_with_port 9998
+    kill_app_with_port 9999
+    kill_app_with_port 8888
+    kill_app_with_port 8761
+    kill_app_with_port 9411
+}
+
+# port is $1
+function kill_app_with_port() {
+    kill -9 $(lsof -t -i:$1) && echo "Killed an app running on port [$1]" || echo "No app running on port [$1]"
+}
+
 # Kills all started aps
 function kill_all_apps() {
     if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
@@ -176,6 +197,7 @@ function kill_all_apps() {
             kill_and_log "eureka"
             kill_and_log "zookeeper"
             kill_and_log "zipkin-server"
+            kill_all_apps_with_port
             if [[ -z "${KILL_NOW_APPS}" ]] ; then
                 docker kill $(docker ps -q) || echo "No running docker containers are left"
             fi
@@ -406,6 +428,8 @@ export -f java_jar
 export -f start_brewery_apps
 export -f kill_all_apps
 export -f kill_and_log
+export -f kill_all_apps_with_port
+export -f kill_app_with_port
 
 # ======================================= EXPORTING VARS END =======================================
 
