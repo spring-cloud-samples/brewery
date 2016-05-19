@@ -161,6 +161,7 @@ function start_brewery_apps() {
 
 function kill_and_log() {
     kill -9 $(cat "$1"/build/libs/app.pid) && echo "Killed $1" || echo "Can't find $1 in running processes"
+    pkill -f "$1" && echo "Killed $1 via pkill" ||  echo "Can't find $1 in running processes (tried with pkill)"
 }
 # Kills all started aps
 function kill_all_apps() {
