@@ -8,7 +8,11 @@ docker-compose -f $dockerComposeFile build
 
 if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
     if [[ "${KAFKA}" == "yes" ]] ; then
+        echo -e "\nThe following containers are running:"
+        docker ps
+        echo -e "\nWill try to stop kafka if it's running"
         docker stop `docker ps -a -q --filter="image=spotify/kafka"` || echo "No docker with Kafka was running - won't stop anything"
+        echo -e "\nTrying to run Kafka with Zookeeper in Docker\n"
         docker run -d -p 2181:2181 -p 9092:9092 --env ADVERTISED_HOST="${DEFAULT_HEALTH_HOST}" --env ADVERTISED_PORT=9092 spotify/kafka
     else
         echo -e "\n\nBooting up RabbitMQ"
