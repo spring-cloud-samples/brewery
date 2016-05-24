@@ -132,6 +132,7 @@ The easiest way is to:
     * `-n` should the apps and all running docker containers be killed now and nothing else should happen? pass `-n` to turn on (defaults to `not` doing that)
     * `-x` should the apps be booted no tests should be ran? pass `-x` to turn on (defaults to `not` doing that)
     * `-s` should the building of apps be skipped? pass `-s` to turn on (defaults to `no` - the apps will be cleaned and built)
+    * `-f` should use Kafka for messaging? pass `-f` to turn on (defaults to `no` - messaging will be used via RabbitMQ)
 * For more options just run `runAcceptanceTests.sh` without any options or with `--help` switch
 
 Once you run the script, the brewery app will be cloned, built with proper lib versions and proper tests

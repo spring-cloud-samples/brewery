@@ -1,14 +1,12 @@
 moduleEnabled(whatToTest('SLEUTH_STREAM'))
 
 dependencies {
-    compile "org.springframework.integration:spring-integration-jmx"
     compile "org.springframework:spring-jdbc"
-    compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.springframework.boot:spring-boot-starter-actuator"
     compile "org.springframework.cloud:spring-cloud-sleuth-zipkin-stream"
-    compile "org.springframework.cloud:spring-cloud-starter-stream-rabbit"
-    compile "org.springframework.amqp:spring-amqp:${amqpVersion}"
-    compile "io.zipkin:zipkin-ui:1.39.3"
+    compile "org.springframework.cloud:spring-cloud-starter-stream-${propOrSysEnvPresent('kafka') ? 'kafka' : 'rabbit'}"
+    if (!propOrSysEnvPresent('kafka')) { compile "org.springframework.amqp:spring-amqp:${amqpVersion}" }
+    compile "io.zipkin:zipkin-ui:1.40.1"
 }
 
 createDockerTaskWithPort(9411)
