@@ -178,6 +178,7 @@ function kill_all_apps_with_port() {
     kill_app_with_port 8761
     kill_app_with_port 9411
     kill_app_with_port 9092
+    kill_app_with_port 2181
 }
 
 # port is $1
