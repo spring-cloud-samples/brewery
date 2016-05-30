@@ -7,7 +7,7 @@ dependencies {
     compile "org.springframework.cloud:spring-cloud-sleuth-zipkin-stream"
     compile "org.springframework.cloud:spring-cloud-starter-stream-${propOrSysEnvPresent('kafka') ? 'kafka' : 'rabbit'}"
     if (!propOrSysEnvPresent('kafka')) { compile "org.springframework.amqp:spring-amqp:${amqpVersion}" }
-    compile "io.zipkin:zipkin-ui:1.40.1"
+    runtime "io.zipkin.java:zipkin-autoconfigure-ui:1.0.0"
 }
 
 createDockerTaskWithPort(9411)
