@@ -92,17 +92,22 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 				log.info("Response from the Zipkin query service about the trace id [$response] for trace with id [$traceId]")
 				assert response.statusCode == HttpStatus.OK
 				assert response.hasBody()
-				List<Span> spans = Codec.JSON.readSpans(response.body.bytes)
+				List<zipkin.Span> spans = Codec.JSON.readSpans(response.body.bytes)
 				List<String> serviceNamesNotFoundInZipkin = serviceNamesNotFoundInZipkin(spans)
 				List<String> spanNamesNotFoundInZipkin = spanNamesNotFoundInZipkin(spans)
 				log.info("The following services were not found in Zipkin $serviceNamesNotFoundInZipkin")
 				log.info("The following spans were not found in Zipkin $spanNamesNotFoundInZipkin")
 				assert serviceNamesNotFoundInZipkin.empty
 				assert spanNamesNotFoundInZipkin.empty
+				zipkin.Span spanByTag = findSpanByTag('beer', spans)
+				assert spanByTag.annotations.find { it.value == 'ingredientsAggregationStarted' }
+				log.info("Custom log [ingredientsAggregationStarted] found!")
+				assert spanByTag.binaryAnnotations.find { it.key == 'beer' && new String(it.value) == 'stout' }
+				log.info("Custom tag ['beer' -> 'stout'] found!")
 				log.info("Zipkin tracing is working! Sleuth is working! Let's be happy!")
 			}
 
-			private List<String> serviceNamesNotFoundInZipkin(List<Span> spans) {
+			private List<String> serviceNamesNotFoundInZipkin(List<zipkin.Span> spans) {
 				List<String> serviceNamesFoundInAnnotations = spans.collect {
 					it.annotations.endpoint.serviceName
 				}.flatten().unique()
@@ -112,7 +117,11 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 				return (APP_NAMES - serviceNamesFoundInAnnotations - serviceNamesFoundInBinaryAnnotations)
 			}
 
-			private List<String> spanNamesNotFoundInZipkin(List<Span> spans) {
+			private zipkin.Span findSpanByTag(String tagKey, List<zipkin.Span> spans) {
+				return spans.find { it.binaryAnnotations.find { it.key == tagKey} }
+			}
+
+			private List<String> spanNamesNotFoundInZipkin(List<zipkin.Span> spans) {
 				List<String> spanNamesFoundInAnnotations = spans.collect {
 					it.name
 				}.flatten().unique()

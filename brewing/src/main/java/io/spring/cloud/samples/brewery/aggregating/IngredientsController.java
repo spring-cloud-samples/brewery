@@ -40,6 +40,9 @@ class IngredientsController {
                                                        @RequestHeader(value = TestConfigurationHolder.TEST_COMMUNICATION_TYPE_HEADER_NAME,
                                                      defaultValue = "REST_TEMPLATE", required = false)
                                              TestConfigurationHolder.TestCommunicationType testCommunicationType) {
+        log.info("Setting tags and events on an already existing span");
+        tracer.addTag("beer", "stout");
+        tracer.getCurrentSpan().logEvent("ingredientsAggregationStarted");
         log.info("Starting beer brewing process for process id [{}]", processId);
         Span span = tracer.createSpan("inside_aggregating");
         try {
