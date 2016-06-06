@@ -12,16 +12,17 @@ buildscript {
 
 def commonProject = project(':common')
 def commonZipkinProject = project(':common-zipkin')
+def commonZipkinStreamProject = project(':common-zipkin-stream')
 def acceptanceTestsProject = project(':acceptance-tests')
 def zipkinServerProject = project(':zipkin-server')
 def eurekaProject = project(':eureka')
 def configServerProject = project(':config-server')
 def zookeeperServerProject = project(':zookeeper')
-def techProjects = [commonProject, commonZipkinProject, acceptanceTestsProject,
+def techProjects = [commonProject, commonZipkinProject, commonZipkinStreamProject, acceptanceTestsProject,
                     eurekaProject, zipkinServerProject, configServerProject,
                     zookeeperServerProject]
 def nonZipkinProjects = techProjects - zipkinServerProject
-def nonDockerProjects = [commonProject, commonZipkinProject, acceptanceTestsProject]
+def nonDockerProjects = [commonProject, commonZipkinProject, commonZipkinStreamProject, acceptanceTestsProject]
 def zipkinRelatedProjects = subprojects - nonZipkinProjects
 
 allprojects {
@@ -166,11 +167,12 @@ configure(subprojects - nonDockerProjects) {
     }
 }
 
-configure(subprojects - techProjects - commonZipkinProject) {
+configure(subprojects - techProjects - commonZipkinProject - commonZipkinStreamProject) {
 
     dependencies {
         compile(commonProject)
         if (whatToTest('SLEUTH')) { compile commonZipkinProject }
+        if (whatToTest('SLEUTH_STREAM')) { compile commonZipkinStreamProject }
 
         compile "org.springframework.boot:spring-boot-starter-actuator"
         compile 'com.fasterxml.jackson.core:jackson-databind'
