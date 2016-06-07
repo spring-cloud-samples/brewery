@@ -1,4 +1,5 @@
 #!/bin/bash
+
 HEX_VALUE="2fb8094330bba913"
 DEFAULT_HEALTH_HOST="127.0.0.1"
 echo -e "\nHex value [$HEX_VALUE]"

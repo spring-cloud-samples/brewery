@@ -43,6 +43,7 @@ import static java.util.concurrent.TimeUnit.SECONDS
 abstract class AbstractBreweryAcceptanceSpec extends Specification {
 
 	public static final String TRACE_ID_HEADER_NAME = Span.TRACE_ID_NAME
+	public static final String SPAN_ID_HEADER_NAME = Span.SPAN_ID_NAME
 	public static final Logger log = LoggerFactory.getLogger(AbstractBreweryAcceptanceSpec)
 
 	private static final List<String> APP_NAMES = ['presenting', 'brewing', 'zuul']
@@ -199,6 +200,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 		HttpHeaders headers = new HttpHeaders()
 		headers.add("PROCESS-ID", processId)
 		headers.add(TRACE_ID_HEADER_NAME, processId)
+		headers.add(SPAN_ID_HEADER_NAME, processId)
 		headers.add("TEST-COMMUNICATION-TYPE", communicationType.name())
 		URI uri = URI.create("$presentingUrl/present/order")
 		Order allIngredients = allIngredients()
