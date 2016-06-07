@@ -9,6 +9,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
@@ -63,11 +64,12 @@ class IngredientsCollector {
 				.build(), Ingredient.class).getBody();
 	}
 
-	private void callZuulAtNonExistentUrl(Runnable runnable) {
+	private Object callZuulAtNonExistentUrl(Callable<Object> runnable) {
 		try {
-			runnable.run();
+			return runnable.call();
 		} catch (Exception e) {
 			log.error("Exception occurred while trying to call Zuul. We're doing it deliberately!", e);
+			return "";
 		}
 	}
 }
