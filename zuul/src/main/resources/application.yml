@@ -11,7 +11,7 @@ spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 #zuul.route.ingredients: /
 
 zuul:
-  ignoredPatterns: /health
+  ignoredPatterns: /health,/error
   retryable: true
 
 hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
