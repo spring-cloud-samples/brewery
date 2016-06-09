@@ -93,8 +93,8 @@ configure(subprojects) {
                     }
                     // TODO: Hack to pick proper snapshot version for Brixton.SNAPSHOT
                     if ("$BOM_VERSION".contains("SNAPSHOT")) {
-                        def artifacts = ['spring-cloud-netflix', 'spring-cloud-starter-zuul']
-                        if (artifacts.any { details.requested.name.contains(it) } ) {
+                        def artifacts = ['spring-cloud-netflix-core', 'spring-cloud-starter-zuul', 'spring-cloud-starter', 'spring-cloud-starter-ribbon']
+                        if (artifacts.any { details.requested.name == it } ) {
                             details.useVersion('1.1.2.BUILD-SNAPSHOT')
                         }
                     }
