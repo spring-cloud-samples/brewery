@@ -2,11 +2,15 @@ spring.application.name: presenting
 
 logging:
   level.org.springframework.cloud: DEBUG
+  level.org.springframework.cloud.sleuth: TRACE
+  level.org.springframework.cloud.sleuth.log: DEBUG
+  level.org.springframework.cloud.sleuth.trace: DEBUG
+  level.org.springframework.cloud.sleuth.instrument.rxjava: DEBUG
 
 server.port: ${PORT:9991}
 
 spring.rabbitmq.host: ${RABBIT_HOST:localhost}
-spring.sleuth.web.skipPattern: /api-docs.*|/autoconfig|/configprops|/dump|/info|/metrics.*|/mappings|/trace|/swagger.*|.*\.png|.*\.css|.*\.js|.*\.html|/favicon.ico|/hystrix.stream
+spring.sleuth.web.skipPattern: /api-docs.*|/autoconfig|/health|/configprops|/dump|/info|/metrics.*|/mappings|/trace|/swagger.*|.*\.png|.*\.css|.*\.js|.*\.html|/favicon.ico|/hystrix.stream|/feed/process/.*
 
 logging.file: build/presenting.log
 

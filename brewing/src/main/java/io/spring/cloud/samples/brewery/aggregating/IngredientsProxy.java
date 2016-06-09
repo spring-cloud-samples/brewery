@@ -17,4 +17,8 @@ interface IngredientsProxy {
 	Ingredient ingredients(@PathVariable("ingredient") IngredientType ingredientType,
 						   @RequestHeader("PROCESS-ID") String processId,
 						   @RequestHeader(TEST_COMMUNICATION_TYPE_HEADER_NAME) String testCommunicationType);
+
+	@RequestMapping(value = "/ingredients/api/nonExistentUrl/", method = RequestMethod.POST)
+	Ingredient nonExistentIngredients(@RequestHeader("PROCESS-ID") String processId,
+						   @RequestHeader(TEST_COMMUNICATION_TYPE_HEADER_NAME) String testCommunicationType);
 }
