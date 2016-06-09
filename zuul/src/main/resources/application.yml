@@ -1,5 +1,9 @@
 logging:
   level.org.springframework.cloud: DEBUG
+  level.org.springframework.cloud.sleuth: TRACE
+  level.org.springframework.cloud.sleuth.log: DEBUG
+  level.org.springframework.cloud.sleuth.trace: DEBUG
+  level.org.springframework.cloud.sleuth.instrument.rxjava: DEBUG
 
 logging.file: build/zuul.log
 
