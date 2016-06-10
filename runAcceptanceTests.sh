@@ -507,11 +507,7 @@ if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
           INITIALIZATION_FAILED="no"
         fi
     else
-        if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
-          . ./cloud-foundry-$WHAT_TO_TEST.sh && INITIALIZATION_FAILED="no"
-        else
-          INITIALIZATION_FAILED="no"
-        fi
+        . ./cloud-foundry-$WHAT_TO_TEST.sh && INITIALIZATION_FAILED="no"
 fi
 
 if [[ "${INITIALIZATION_FAILED}" == "yes" ]] ; then
