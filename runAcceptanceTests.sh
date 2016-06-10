@@ -532,7 +532,7 @@ if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
             done
 
             if [[ "${APPS_ARE_RUNNING}" == "no" ]] ; then
-                echo "\n\nFailed to boot the apps!"
+                echo -e "\n\nFailed to boot the apps!"
                 print_logs
                 kill_all_apps_if_switch_on
                 exit 1
@@ -550,7 +550,7 @@ if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
             done
 
             if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
-                echo "\n\nThe apps failed to register in Service Discovery!"
+                echo -e "\n\nThe apps failed to register in Service Discovery!"
                 print_logs
                 kill_all_apps_if_switch_on
                 exit 1
@@ -563,7 +563,7 @@ if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
         fi
 else
     READY_FOR_TESTS="yes"
-    echo "\n\nSkipping the check if apps are booted"
+    echo -e "\n\nSkipping the check if apps are booted"
 fi
 
 # ======================================= Running acceptance tests =======================================
