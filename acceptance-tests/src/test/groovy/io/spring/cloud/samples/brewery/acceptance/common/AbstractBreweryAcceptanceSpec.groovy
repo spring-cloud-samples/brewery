@@ -16,7 +16,6 @@
 package io.spring.cloud.samples.brewery.acceptance.common
 
 import groovy.json.JsonSlurper
-import io.spring.cloud.samples.brewery.acceptance.common.tech.ExceptionLoggingAsyncRestTemplate
 import io.spring.cloud.samples.brewery.acceptance.common.tech.ExceptionLoggingRestTemplate
 import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConfiguration
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
@@ -62,7 +61,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 	@Value('${presenting.url:http://localhost:9991}') String presentingUrl
 	@Value('${zipkin.query.port:9411}') Integer zipkinQueryPort
 	@Value('${LOCAL_URL:http://localhost}') String zipkinQueryUrl
-	private final ExceptionLoggingAsyncRestTemplate asyncRestTemplate = new ExceptionLoggingAsyncRestTemplate();
+	@Value('${test.zipkin.dependencies:true}') boolean checkZipkinDependencies
 
 	def setup() {
 		log.info("Starting test")
@@ -132,6 +131,10 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 	}
 
 	void dependency_graph_is_correct() {
+		if (!checkZipkinDependencies) {
+			log.warn("Skipping the test for Zipkin dependencies")
+			return
+		}
 		await().pollInterval(pollInterval, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
 			@Override
 			void run() {
