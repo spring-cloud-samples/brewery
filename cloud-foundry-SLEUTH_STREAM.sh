@@ -46,7 +46,8 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
         # create MySQL DB
         APP_NAME="${CLOUD_PREFIX}-mysql"
         cf s | grep ${APP_NAME} && echo "found ${APP_NAME}" && READY_FOR_TESTS="yes" ||
-            cf cs cleardb spark ${APP_NAME} && echo "Started ${APP_NAME}" && READY_FOR_TESTS="yes"
+            cf cs cleardb spark ${APP_NAME} && echo "Started ${APP_NAME}" && READY_FOR_TESTS="yes" ||
+            cf cs p-mysql 512mb ${APP_NAME} && echo "Started ${APP_NAME} for PCF Dev" && READY_FOR_TESTS="yes"
 
         if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
             echo "MySQL failed to start..."
