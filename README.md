@@ -30,7 +30,7 @@ Here is the UI
 
 ![UI](img/Brewery_UI.png)
 
-- Go to the presenting service (http://localhost:9991) and order ingredients **(1)**
+- Go to the presenting service (http://localhost:9991 or to http://brewery-presenting.${PCF_DOMAIN}) and order ingredients **(1)**
 - A request from the presenting service is sent to the aggregating service when order is placed **(2)**
 - A "PROCESS-ID" header is set and will be passed through each part of beer brewing
 
@@ -124,15 +124,21 @@ The easiest way is to:
 * GO to the cloned `brewery` where you have the `runAcceptanceTests.sh` script (which in fact is already a symbolic link to `acceptance-tests/scripts/runDockerAcceptanceTests.sh`
  for your convenience)
 * You can execute that script with such options
-    * `-t` what do you want to test (`EUREKA`, `ZOOKEEPER`, `CONSUL`, `SLEUTH`, `SLEUTH_STREAM`)
-    * `-v` in which version of the BOM (defaults to `Brixton.BUILD-SNAPSHOT`)
-    * `-h` where is your docker host? (defaults to '127.0.0.1' - provide your docker-machine host here)
-    * `-r` is brewery repo already in place and needs to be reset? (defaults to `not` resetting of repo)
-    * `-k` should the apps and all running docker containers be killed after the tests are executed? pass `-k` to turn on (defaults to `not` killing the apps)
-    * `-n` should the apps and all running docker containers be killed now and nothing else should happen? pass `-n` to turn on (defaults to `not` doing that)
-    * `-x` should the apps be booted no tests should be ran? pass `-x` to turn on (defaults to `not` doing that)
-    * `-s` should the building of apps be skipped? pass `-s` to turn on (defaults to `no` - the apps will be cleaned and built)
-    * `-f` should use Kafka for messaging? pass `-f` to turn on (defaults to `no` - messaging will be used via RabbitMQ)
+    * -t|--whattotest  - define what you want to test (e.g. SLEUTH, ZOOKEEPER, SLEUTH_STREAM, EUREKA, CONSUL)
+    * -v|--version - which version of BOM do you want to use? Defaults to Brixton snapshot
+    * -h|--healthhost - what is your health host? where is docker? defaults to localhost
+    * -l|--numberoflines - how many lines of logs of your app do you want to print? Defaults to 1000
+    * -r|--reset - do you want to reset the git repo of brewery? Defaults to "no"
+    * -k|--killattheend - should kill all the running apps at the end of execution? Defaults to "no"
+    * -n|--killnow - should not run all the logic but only kill the running apps? Defaults to "no"
+    * -x|--skiptests - should skip running of e2e tests? Defaults to "no"
+    * -s|--skipbuilding - should skip building of the projects? Defaults to "no"
+    * -c|--cloudfoundry - should run tests for cloud foundry? (works only for SLEUTH_STREAM) Defaults to "no"
+    * -y|--cloudfoundrydomain - should run tests for cloud foundry? Defaults to "no"
+    * -o|--deployonlyapps - should deploy only the brewery business apps instead of the infra too? Defaults to "no"
+    * -d|--skipdeployment - should skip deployment of apps? Defaults to "no"
+    * -p|--cloudfoundryprefix - provides the prefix to the brewery app name. Defaults to 'brewery'
+    * -f|--kafka - uses Kafka instead of RabbitMQ
 * For more options just run `runAcceptanceTests.sh` without any options or with `--help` switch
 
 Once you run the script, the brewery app will be cloned, built with proper lib versions and proper tests
