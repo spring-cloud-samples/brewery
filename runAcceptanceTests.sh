@@ -6,9 +6,6 @@ set -o errexit
 
 # CLOUD FOUNDRY -- START
 
-CLOUD_DOMAIN=${DOMAIN:-run.pivotal.io}
-CLOUD_TARGET=api.${DOMAIN}
-
 function login(){
     cf api | grep ${CLOUD_TARGET} || cf api ${CLOUD_TARGET} --skip-ssl-validation
     cf apps | grep OK || cf login
@@ -240,7 +237,7 @@ USAGE:
 
 You can use the following options:
 
--t|--whattotest  - define what you want to test (e.g. SLEUTH, ZOOKEEPER)
+-t|--whattotest  - define what you want to test (e.g. SLEUTH, ZOOKEEPER, SLEUTH_STREAM, EUREKA, CONSUL)
 -v|--version - which version of BOM do you want to use? Defaults to Brixton snapshot
 -h|--healthhost - what is your health host? where is docker? defaults to localhost
 -l|--numberoflines - how many lines of logs of your app do you want to print? Defaults to 1000
@@ -249,7 +246,8 @@ You can use the following options:
 -n|--killnow - should not run all the logic but only kill the running apps? Defaults to "no"
 -x|--skiptests - should skip running of e2e tests? Defaults to "no"
 -s|--skipbuilding - should skip building of the projects? Defaults to "no"
--c|--cloudfoundry - should run tests for cloud foundry? Defaults to "no"
+-c|--cloudfoundry - should run tests for cloud foundry? (works only for SLEUTH_STREAM) Defaults to "no"
+-y|--cloudfoundrydomain - should run tests for cloud foundry? Defaults to "no"
 -o|--deployonlyapps - should deploy only the brewery business apps instead of the infra too? Defaults to "no"
 -d|--skipdeployment - should skip deployment of apps? Defaults to "no"
 -p|--cloudfoundryprefix - provides the prefix to the brewery app name. Defaults to 'brewery'
@@ -337,6 +335,10 @@ case $key in
     -c|--cloudfoundry)
     CLOUD_FOUNDRY="yes"
     ;;
+    -y|--cloudfoundrydomain)
+    DOMAIN="$2"
+    shift # past argument
+    ;;
     -o|--deployonlyapps)
     DEPLOY_ONLY_APPS="yes"
     ;;
@@ -368,6 +370,10 @@ done
 [[ -z "${VERSION}" ]] && VERSION="${DEFAULT_VERSION}"
 [[ -z "${HEALTH_HOST}" ]] && HEALTH_HOST="${DEFAULT_HEALTH_HOST}"
 [[ -z "${NUMBER_OF_LINES_TO_LOG}" ]] && NUMBER_OF_LINES_TO_LOG="${DEFAULT_NUMBER_OF_LINES_TO_LOG}"
+[[ -z "${DOMAIN}" ]] && DOMAIN="run.pivotal.io"
+
+CLOUD_DOMAIN=${DOMAIN}
+CLOUD_TARGET=api.${DOMAIN}
 
 HEALTH_PORTS=('9991' '9992' '9993' '9994' '9995')
 HEALTH_ENDPOINTS="$( printf "http://${LOCALHOST}:%s/health " "${HEALTH_PORTS[@]}" )"
