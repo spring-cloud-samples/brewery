@@ -54,7 +54,11 @@ configure(subprojects) {
             }
         }
         createDockerTaskWithPort = { int port ->
-            project.task([type: Docker], "docker", ext.dockerConfiguration.curry(port))
+            if (hasProperty("docker")) {
+                project.task([type: Docker], "docker", ext.dockerConfiguration.curry(port))
+            } else {
+                getLogger().debug("docker property is not set")
+            }
         }
         systemPropsFromGradle = {
             project.gradle.startParameter.systemPropertiesArgs.entrySet().collect{"-D${it.key}=${it.value}"}
