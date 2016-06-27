@@ -13,3 +13,4 @@ applications:
     SPRING_PROFILES_ACTIVE: cloud
     spring.cloud.config.uri: http://brewery-config-server.cfapps.io
     DEBUG: "true"
+    JAVA_OPTS: -Djava.security.egd=file:///dev/urandom

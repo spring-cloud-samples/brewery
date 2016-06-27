@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:1.3.5.RELEASE"
-        classpath 'se.transmode.gradle:gradle-docker:1.2'
+        if (hasProperty("docker")) { classpath 'se.transmode.gradle:gradle-docker:1.2' }
     }
 }
 
@@ -38,16 +38,20 @@ configure(subprojects) {
 
     ext {
         dockerConfiguration = { int port ->
-            int debugPort = port-1000
-            dependsOn 'build'
-            dryRun true
-            addFile("${libsDir}/${project.name}-${buildNrLoc}.jar", "/${project.name}/${project.name}.jar")
-            exposePort(port)
-            exposePort(debugPort)
-            // Random beacuse of https://wiki.apache.org/tomcat/HowTo/FasterStartUp
-            entryPoint(['java', '-Xmx64m', '-Xss1024k',
-                        "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=$debugPort",
-                        '-Djava.security.egd=file:/dev/./urandom', '-jar', "/${project.name}/${project.name}.jar"])
+            if (hasProperty("docker")) {
+                int debugPort = port - 1000
+                dependsOn 'build'
+                dryRun true
+                addFile("${libsDir}/${project.name}-${buildNrLoc}.jar", "/${project.name}/${project.name}.jar")
+                exposePort(port)
+                exposePort(debugPort)
+                // Random beacuse of https://wiki.apache.org/tomcat/HowTo/FasterStartUp
+                entryPoint(['java', '-Xmx64m', '-Xss1024k',
+                            "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=$debugPort",
+                            '-Djava.security.egd=file:/dev/./urandom', '-jar', "/${project.name}/${project.name}.jar"])
+            } else {
+                getLogger().debug("docker property is not set")
+            }
         }
         createDockerTaskWithPort = { int port ->
             project.task([type: Docker], "docker", ext.dockerConfiguration.curry(port))
@@ -161,12 +165,14 @@ configure(nonDockerProjects) {
     }
 }
 
-configure(subprojects - nonDockerProjects) {
+if (hasProperty("docker")) {
+    configure(subprojects - nonDockerProjects) {
 
-    apply plugin: 'docker'
+        apply plugin: 'docker'
 
-    docker {
-        baseImage 'frolvlad/alpine-oraclejdk8'
+        docker {
+            baseImage 'frolvlad/alpine-oraclejdk8'
+        }
     }
 }
 

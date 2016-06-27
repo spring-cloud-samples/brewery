@@ -12,3 +12,4 @@ applications:
   env:
     SPRING_PROFILES_ACTIVE: cloud,cloud-docsbrewing
     DEBUG: "true"
+    JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
