@@ -134,7 +134,7 @@ The easiest way is to:
     * -x|--skiptests - should skip running of e2e tests? Defaults to "no"
     * -s|--skipbuilding - should skip building of the projects? Defaults to "no"
     * -c|--cloudfoundry - should run tests for cloud foundry? (works only for SLEUTH_STREAM) Defaults to "no"
-    * -y|--cloudfoundrydomain - should run tests for cloud foundry? Defaults to "no"
+    * -y|--cloudfoundrydomain - what's the domain of your cloud foundry? Defaults to "run.pivotal.io"
     * -o|--deployonlyapps - should deploy only the brewery business apps instead of the infra too? Defaults to "no"
     * -d|--skipdeployment - should skip deployment of apps? Defaults to "no"
     * -p|--cloudfoundryprefix - provides the prefix to the brewery app name. Defaults to 'brewery'
