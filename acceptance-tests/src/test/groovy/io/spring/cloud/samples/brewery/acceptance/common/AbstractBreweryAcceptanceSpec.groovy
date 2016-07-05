@@ -104,7 +104,6 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 				log.info("Custom log [ingredientsAggregationStarted] found!")
 				assert spanByTag.binaryAnnotations.find { it.key == 'beer' && new String(it.value) == 'stout' }
 				log.info("Custom tag ['beer' -> 'stout'] found!")
-				log.info("Zipkin tracing is working! Sleuth is working! Let's be happy!")
 			}
 
 			private List<String> serviceNamesNotFoundInZipkin(List<zipkin.Span> spans) {
@@ -153,6 +152,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 				assert parentsAndChildren['brewing'].size() == 4
 				assert parentsAndChildren['brewing'].containsAll(['brewing', 'zuul', 'reporting', 'presenting'])
 				assert parentsAndChildren['zuul'] == ['ingredients']
+				log.info("Zipkin tracing is working! Sleuth is working! Let's be happy!")
 			}
 		})
 	}

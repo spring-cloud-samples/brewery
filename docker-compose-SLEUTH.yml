@@ -1,10 +1,10 @@
 mysql:
-  image: openzipkin/zipkin-mysql:1.40.1
+  image: openzipkin/zipkin-mysql:1.2.1
   ports:
     - 3306:3306
 
 query:
-  image: openzipkin/zipkin-java:1.0.0
+  image: openzipkin/zipkin:1.1.5
   environment:
     # Remove TRANSPORT_TYPE to disable tracing
     - TRANSPORT_TYPE=http
