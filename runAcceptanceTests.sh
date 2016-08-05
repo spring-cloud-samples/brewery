@@ -285,6 +285,7 @@ CLOUD_PREFIX="brewery"
 DEFAULT_SCS_VERSION="1.1.2.BUILD-SNAPSHOT"
 
 BOM_VERSION_PROP_NAME="BOM_VERSION"
+SCS_BOM_VERSION_PROP_NAME="SCS_VERSION"
 
 # ======================================= VARIABLES END =======================================
 
@@ -420,6 +421,7 @@ export HEALTH_HOST=$HEALTH_HOST
 export WAIT_TIME=$WAIT_TIME
 export RETRIES=$RETRIES
 export BOM_VERSION_PROP_NAME=$BOM_VERSION_PROP_NAME
+export SCS_BOM_VERSION_PROP_NAME=$SCS_BOM_VERSION_PROP_NAME
 export NUMBER_OF_LINES_TO_LOG=$NUMBER_OF_LINES_TO_LOG
 export KILL_AT_THE_END=$KILL_AT_THE_END
 export KILL_NOW_APPS=$KILL_NOW_APPS
@@ -483,6 +485,8 @@ echo -e "\nAppending if not present the following entry to gradle.properties\n"
 
 # Update the desired BOM version
 grep "${BOM_VERSION_PROP_NAME}=${VERSION}" gradle.properties || echo -e "\n${BOM_VERSION_PROP_NAME}=${VERSION}" >> gradle.properties
+# Update the desired SCS BOM version
+grep "${SCS_BOM_VERSION_PROP_NAME}=${SCS_VERSION}" gradle.properties || echo -e "\n${SCS_BOM_VERSION_PROP_NAME}=${SCS_VERSION}" >> gradle.properties
 
 echo -e "\n\nUsing the following gradle.properties"
 cat gradle.properties
