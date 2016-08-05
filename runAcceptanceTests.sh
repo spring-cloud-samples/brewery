@@ -237,8 +237,9 @@ USAGE:
 
 You can use the following options:
 
--t|--whattotest  - define what you want to test (e.g. SLEUTH, ZOOKEEPER, SLEUTH_STREAM, EUREKA, CONSUL)
+-t|--whattotest  - define what you want to test (i.e. SLEUTH, ZOOKEEPER, SLEUTH, SLEUTH_STREAM, EUREKA, CONSUL, SCS)
 -v|--version - which version of BOM do you want to use? Defaults to Brixton snapshot
+-e|--scsversion - which version of BOM for Spring Cloud Services do you want to use? Defaults to 1.1.2.BUILD-SNAPSHOT
 -h|--healthhost - what is your health host? where is docker? defaults to localhost
 -l|--numberoflines - how many lines of logs of your app do you want to print? Defaults to 1000
 -r|--reset - do you want to reset the git repo of brewery? Defaults to "no"
@@ -281,6 +282,7 @@ fi
 LOCALHOST="127.0.0.1"
 MEM_ARGS="-Xmx128m -Xss1024k"
 CLOUD_PREFIX="brewery"
+DEFAULT_SCS_VERSION="1.1.2.BUILD-SNAPSHOT"
 
 BOM_VERSION_PROP_NAME="BOM_VERSION"
 
@@ -303,6 +305,10 @@ case $key in
     ;;
     -v|--version)
     VERSION="$2"
+    shift # past argument
+    ;;
+    -e|--scsversion)
+    SCS_VERSION="$2"
     shift # past argument
     ;;
     -h|--healthhost)
@@ -368,6 +374,7 @@ done
 
 [[ -z "${WHAT_TO_TEST}" ]] && WHAT_TO_TEST=ZOOKEEPER
 [[ -z "${VERSION}" ]] && VERSION="${DEFAULT_VERSION}"
+[[ -z "${SCS_VERSION}" ]] && SCS_VERSION="${DEFAULT_SCS_VERSION}"
 [[ -z "${HEALTH_HOST}" ]] && HEALTH_HOST="${DEFAULT_HEALTH_HOST}"
 [[ -z "${NUMBER_OF_LINES_TO_LOG}" ]] && NUMBER_OF_LINES_TO_LOG="${DEFAULT_NUMBER_OF_LINES_TO_LOG}"
 [[ -z "${DOMAIN}" ]] && DOMAIN="run.pivotal.io"
@@ -386,6 +393,7 @@ Running tests with the following parameters
 HEALTH_HOST=${HEALTH_HOST}
 WHAT_TO_TEST=${WHAT_TO_TEST}
 VERSION=${VERSION}
+SCS_VERSION=${SCS_VERSION}
 NUMBER_OF_LINES_TO_LOG=${NUMBER_OF_LINES_TO_LOG}
 KILL_AT_THE_END=${KILL_AT_THE_END}
 KILL_NOW=${KILL_NOW}
@@ -407,6 +415,7 @@ EOF
 # ======================================= EXPORTING VARS START =======================================
 export WHAT_TO_TEST=$WHAT_TO_TEST
 export VERSION=$VERSION
+export SCS_VERSION=$SCS_VERSION
 export HEALTH_HOST=$HEALTH_HOST
 export WAIT_TIME=$WAIT_TIME
 export RETRIES=$RETRIES
@@ -506,14 +515,17 @@ fi
 
 # ======================================= Deploying apps locally or to cloud foundry =======================================
 INITIALIZATION_FAILED="yes"
-if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
-        if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
-            . ./docker-compose-$WHAT_TO_TEST.sh && INITIALIZATION_FAILED="no"
-        else
-          INITIALIZATION_FAILED="no"
-        fi
+if [[ -z "${CLOUD_FOUNDRY}" &&  "${WHAT_TO_TEST}" == "SCS" ]] ; then
+    echo -e "You have to pass the CF flag (-c) - you can't test SCS without it"
+    exit 1
+elif [[ -z "${CLOUD_FOUNDRY}" ]] ; then
+    if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
+        . ./docker-compose-$WHAT_TO_TEST.sh && INITIALIZATION_FAILED="no"
     else
-        . ./cloud-foundry-$WHAT_TO_TEST.sh && INITIALIZATION_FAILED="no"
+      INITIALIZATION_FAILED="no"
+    fi
+else
+    . ./cloud-foundry-$WHAT_TO_TEST.sh && INITIALIZATION_FAILED="no"
 fi
 
 if [[ "${INITIALIZATION_FAILED}" == "yes" ]] ; then
