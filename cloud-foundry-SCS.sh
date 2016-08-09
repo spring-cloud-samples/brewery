@@ -29,7 +29,13 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
         READY_FOR_TESTS="no"
         (yes | cf delete-service "${CLOUD_PREFIX}-config-server" -f) || echo "Failed to kill the app"
         (cf s | grep "${CLOUD_PREFIX}-config-server" && cf ds -f "${CLOUD_PREFIX}-config-server") || echo "Failed to delete the app...  Continuing with the script"
+        {
         cf cs p-config-server standard "${CLOUD_PREFIX}-config-server" -c '{"git": { "uri": "https://github.com/spring-cloud-samples/brewery-config.git" } }' && READY_FOR_TESTS="yes"
+        } &> /dev/null
+        until [ `cf service "${CLOUD_PREFIX}-config-server" | grep -c "succeeded"` -eq 1  ]
+        do
+          echo -n "."
+        done
 
         if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
             echo "Config server failed to start..."
@@ -41,7 +47,13 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
         READY_FOR_TESTS="no"
         (yes | cf delete-service "${CLOUD_PREFIX}-discovery" -f) || echo "Failed to kill the app...  Continuing with the script"
         (cf s | grep "${CLOUD_PREFIX}-discovery" && cf ds -f "${CLOUD_PREFIX}-discovery") || echo "Failed to delete the app...  Continuing with the script"
+        {
         cf cs p-service-registry standard "${CLOUD_PREFIX}-discovery" && READY_FOR_TESTS="yes"
+        }  &> /dev/null
+        until [ `cf service "${CLOUD_PREFIX}-discovery" | grep -c "succeeded"` -eq 1  ]
+        do
+          echo -n "."
+        done
 
         if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
             echo "Eureka failed to start..."
