@@ -1,8 +1,8 @@
 ---
+instances: 1
+memory: 1024M
 applications:
 - name: scsbrewery-zuul
-  memory: 512M
-  instances: 1
   host: scsbrewery-zuul
   path: build/libs/zuul-1.0.0.jar
   services:

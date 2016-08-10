@@ -182,7 +182,7 @@ configure(subprojects - techProjects - commonZipkinProject - commonZipkinStreamP
 
         compile "org.springframework.boot:spring-boot-starter-actuator"
         compile 'com.fasterxml.jackson.core:jackson-databind'
-        if (!whatToTest('CONSUL') && !whatToTest('EUREKA') && !whatToTest('SLEUTH_STREAM')) {
+        if (!whatToTest('CONSUL') && !whatToTest('EUREKA') && !whatToTest('SLEUTH_STREAM') && !whatToTest('SCS')) {
             compile "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery"
         }
         if (whatToTest('CONSUL')) { compile "org.springframework.cloud:spring-cloud-starter-consul-discovery" }

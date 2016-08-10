@@ -1,8 +1,8 @@
 ---
+instances: 1
+memory: 1024M
 applications:
 - name: scsbrewery-reporting
-  memory: 512M
-  instances: 1
   host: scsbrewery-reporting
   path: build/libs/reporting-1.0.0.jar
   services:

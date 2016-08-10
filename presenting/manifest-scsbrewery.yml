@@ -1,8 +1,8 @@
 ---
+instances: 1
+memory: 1024M
 applications:
 - name: scsbrewery-presenting
-  memory: 512M
-  instances: 1
   host: scsbrewery-presenting
   path: build/libs/presenting-1.0.0.jar
   services:

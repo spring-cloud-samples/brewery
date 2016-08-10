@@ -124,21 +124,33 @@ The easiest way is to:
 * GO to the cloned `brewery` where you have the `runAcceptanceTests.sh` script (which in fact is already a symbolic link to `acceptance-tests/scripts/runDockerAcceptanceTests.sh`
  for your convenience)
 * You can execute that script with such options
-    * -t|--whattotest  - define what you want to test (e.g. SLEUTH, ZOOKEEPER, SLEUTH_STREAM, EUREKA, CONSUL)
-    * -v|--version - which version of BOM do you want to use? Defaults to Brixton snapshot
-    * -h|--healthhost - what is your health host? where is docker? defaults to localhost
-    * -l|--numberoflines - how many lines of logs of your app do you want to print? Defaults to 1000
-    * -r|--reset - do you want to reset the git repo of brewery? Defaults to "no"
-    * -k|--killattheend - should kill all the running apps at the end of execution? Defaults to "no"
-    * -n|--killnow - should not run all the logic but only kill the running apps? Defaults to "no"
-    * -x|--skiptests - should skip running of e2e tests? Defaults to "no"
-    * -s|--skipbuilding - should skip building of the projects? Defaults to "no"
-    * -c|--cloudfoundry - should run tests for cloud foundry? (works only for SLEUTH_STREAM) Defaults to "no"
-    * -y|--cloudfoundrydomain - what's the domain of your cloud foundry? Defaults to "run.pivotal.io"
-    * -o|--deployonlyapps - should deploy only the brewery business apps instead of the infra too? Defaults to "no"
-    * -d|--skipdeployment - should skip deployment of apps? Defaults to "no"
-    * -p|--cloudfoundryprefix - provides the prefix to the brewery app name. Defaults to 'brewery'
-    * -f|--kafka - uses Kafka instead of RabbitMQ
+
+```
+GLOBAL:
+-t  |--whattotest  - define what you want to test (i.e. SLEUTH, ZOOKEEPER, SLEUTH, SLEUTH_STREAM, EUREKA, CONSUL, SCS)
+-v  |--version - which version of BOM do you want to use? Defaults to Brixton snapshot
+-sv |--scsversion - which version of BOM for Spring Cloud Services do you want to use? Defaults to 1.1.2.BUILD-SNAPSHOT
+-h  |--healthhost - what is your health host? where is docker? defaults to localhost
+-l  |--numberoflines - how many lines of logs of your app do you want to print? Defaults to 1000
+-r  |--reset - do you want to reset the git repo of brewery? Defaults to "no"
+-ke |--killattheend - should kill all the running apps at the end of execution? Defaults to "no"
+-n  |--killnow - should not run all the logic but only kill the running apps? Defaults to "no"
+-x  |--skiptests - should skip running of e2e tests? Defaults to "no"
+-s  |--skipbuilding - should skip building of the projects? Defaults to "no"
+-k  |--kafka - uses Kafka instead of RabbitMQ
+-d  |--skipdeployment - should skip deployment of apps? Defaults to "no"
+-a  |--deployonlyapps - should deploy only the brewery business apps instead of the infra too? Defaults to "no"
+
+CLOUD FOUNDRY RELATED PROPERTIES:
+-c  |--usecloudfoundry - should run tests for cloud foundry? (works only for SLEUTH_STREAM) Defaults to "no"
+-cd |--cloudfoundrydomain - what's the domain of your cloud foundry? Defaults to "run.pivotal.io"
+-cu |--username - username to log in with to CF
+-cp |--password - password to log in with to CF
+-cpr|--cloudfoundryprefix - provides the prefix to the brewery app name. Defaults to 'brewery'
+-cs |--space - provides the space for Cloud Foundry. Defaults to 'brewery'
+-co |--org - provides the prefix to the brewery app name. Defaults to 'brewery'
+```
+
 * For more options just run `runAcceptanceTests.sh` without any options or with `--help` switch
 
 Once you run the script, the brewery app will be cloned, built with proper lib versions and proper tests
@@ -175,7 +187,7 @@ bash runAcceptanceTests.sh -x -t EUREKA
 Execute:
 
 ```
-bash runAcceptanceTests.sh -t CONSUL -k
+bash runAcceptanceTests.sh -t CONSUL -ke
 ```
 
 #### I want to run end to end tests of Consul on my docker-machine (ip. 1.2.3.4) and kill all the apps after the tests finish
@@ -183,7 +195,7 @@ bash runAcceptanceTests.sh -t CONSUL -k
 Execute:
 
 ```
-bash runAcceptanceTests.sh -t CONSUL -k -h 1.2.3.4
+bash runAcceptanceTests.sh -t CONSUL -ke -h 1.2.3.4
 ```
 
 #### I want to run end to end tests of Consul, kill all the apps after the tests finish and skip build
@@ -191,7 +203,7 @@ bash runAcceptanceTests.sh -t CONSUL -k -h 1.2.3.4
 Execute:
 
 ```
-bash runAcceptanceTests.sh -t CONSUL -k -s
+bash runAcceptanceTests.sh -t CONSUL -ke -s
 ```
 
 #### I just want to kill all the brewery related apps

@@ -8,6 +8,8 @@ CLOUD_PREFIX="scsbrewery"
 if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
     # ====================================================
     if [[ -z "${DEPLOY_ONLY_APPS}" ]] ; then
+        echo -e "Killing all apps"
+        kill_all_apps
         echo -e "\nDeploying infrastructure apps\n\n"
 
         READY_FOR_TESTS="no"

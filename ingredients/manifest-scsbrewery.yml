@@ -1,8 +1,6 @@
 ---
 applications:
 - name: scsbrewery-ingredients
-  memory: 512M
-  instances: 1
   host: scsbrewery-ingredients
   path: build/libs/ingredients-1.0.0.jar
   services:

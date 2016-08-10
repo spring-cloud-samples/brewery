@@ -1,8 +1,8 @@
 ---
+instances: 1
+memory: 1024M
 applications:
 - name: scsbrewery-brewing
-  memory: 512M
-  instances: 1
   host: scsbrewery-brewing
   path: build/libs/brewing-1.0.0.jar
   services:
