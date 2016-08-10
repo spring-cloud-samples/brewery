@@ -50,7 +50,11 @@ function deploy_app_with_name(){
     APPLICATION_DOMAIN=`app_domain ${APP_NAME}`
     echo -e "\n\nDetermined that application_domain for $APP_NAME is $APPLICATION_DOMAIN\n\n"
     cf env ${APP_NAME} | grep APPLICATION_DOMAIN || cf set-env ${APP_NAME} APPLICATION_DOMAIN ${APPLICATION_DOMAIN}
-    cf set-env ${APP_NAME} CF_TARGET ${CLOUD_TARGET}
+
+    if [[ "${WHAT_TO_TEST}" == "SCS" ]] ; then
+      cf se ${APP_NAME} CF_TARGET "https://"${CLOUD_TARGET}
+    fi
+
     cf restart ${APP_NAME}
     cd ..
 }
