@@ -6,14 +6,23 @@ set -o errexit
 
 # CLOUD FOUNDRY -- START
 
+# can have 2 params , username and password
 function login(){
+    echo "Logging in to Cloud Foundry at ${CLOUD_TARGET}"
     cf api | grep ${CLOUD_TARGET} || cf api ${CLOUD_TARGET} --skip-ssl-validation
-    cf apps | grep OK || cf login
+    if [[ -z "$1" ]] ; then
+        echo "No username and password provided - will ask for all data"
+        cf apps | grep OK || cf login --skip-ssl-validation -a ${CLOUD_TARGET}
+    else
+        echo "Username and password provided - will try to log in"
+        cf apps | grep OK || cf login --skip-ssl-validation -a ${CLOUD_TARGET} -u $1 -p $2 -o ${CLOUD_ORG} -s ${CLOUD_SPACE}
+    fi
+
 }
 
 function app_domain(){
     D=`cf apps | grep $1 | tr -s ' ' | cut -d' ' -f 6 | cut -d, -f1`
-    echo $D
+    echo ${D}
 }
 
 function deploy_app(){
@@ -23,25 +32,25 @@ function deploy_app(){
 function deploy_zookeeper_app(){
     APP_DIR=$1
     APP_NAME=$1
-    cd $APP_DIR
-    cf push $APP_NAME --no-start
-    APPLICATION_DOMAIN=`app_domain $APP_NAME`
-    echo determined that application_domain for $APP_NAME is $APPLICATION_DOMAIN.
-    cf env $APP_NAME | grep APPLICATION_DOMAIN || cf set-env $APP_NAME APPLICATION_DOMAIN $APPLICATION_DOMAIN
-    cf env $APP_NAME | grep arguments || cf set-env $APP_NAME "spring.cloud.zookeeper.connectString" "$2:2181"
-    cf restart $APP_NAME
+    cd ${APP_DIR}
+    cf push ${APP_NAME} --no-start
+    APPLICATION_DOMAIN=`app_domain ${APP_NAME}`
+    echo determined that application_domain for ${APP_NAME} is ${APPLICATION_DOMAIN}.
+    cf env ${APP_NAME} | grep APPLICATION_DOMAIN || cf set-env ${APP_NAME} APPLICATION_DOMAIN ${APPLICATION_DOMAIN}
+    cf env ${APP_NAME} | grep arguments || cf set-env ${APP_NAME} "spring.cloud.zookeeper.connectString" "$2:2181"
+    cf restart ${APP_NAME}
     cd ..
 }
 
 function deploy_app_with_name(){
     APP_DIR=$1
     APP_NAME=$2
-    cd $APP_DIR
-    cf push $APP_NAME --no-start -f "manifest-${CLOUD_PREFIX}.yml"
-    APPLICATION_DOMAIN=`app_domain $APP_NAME`
-    echo determined that application_domain for $APP_NAME is $APPLICATION_DOMAIN.
-    cf env $APP_NAME | grep APPLICATION_DOMAIN || cf set-env $APP_NAME APPLICATION_DOMAIN $APPLICATION_DOMAIN
-    cf restart $APP_NAME
+    cd ${APP_DIR}
+    cf push ${APP_NAME} --no-start -f "manifest-${CLOUD_PREFIX}.yml"
+    APPLICATION_DOMAIN=`app_domain ${APP_NAME}`
+    echo -e "\n\nDetermined that application_domain for $APP_NAME is $APPLICATION_DOMAIN\n\n"
+    cf env ${APP_NAME} | grep APPLICATION_DOMAIN || cf set-env ${APP_NAME} APPLICATION_DOMAIN ${APPLICATION_DOMAIN}
+    cf restart ${APP_NAME}
     cd ..
 }
 
@@ -51,15 +60,15 @@ function deploy_app_with_name_parallel(){
 
 function deploy_service(){
     N=$1
-    D=`app_domain $N`
-    JSON='{"uri":"http://'$D'"}'
-    cf create-user-provided-service $N -p $JSON
+    D=`app_domain ${N}`
+    JSON='{"uri":"http://'${D}'"}'
+    cf create-user-provided-service ${N} -p ${JSON}
 }
 
 function reset(){
     app_name=$1
     echo "going to remove ${app_name} if it exists"
-    cf apps | grep $app_name && cf d -f $app_name
+    cf apps | grep ${app_name} && cf d -f ${app_name}
     echo "deleted ${app_name}"
 }
 # CLOUD FOUNDRY -- FINISH
@@ -69,7 +78,7 @@ function reset(){
 function tail_log() {
     echo -e "\n\nLogs of [$1] jar app"
     if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
-        tail -n $NUMBER_OF_LINES_TO_LOG build/"$1".log || echo "Failed to open log"
+        tail -n ${NUMBER_OF_LINES_TO_LOG} build/"$1".log || echo "Failed to open log"
     else
         cf logs "${CLOUD_PREFIX}-$1" --recent || echo "Failed to open log"
     fi
@@ -82,7 +91,7 @@ function print_logs() {
             docker ps | sed -n '1!p' > /tmp/containers.txt
             while read field1 field2 field3; do
               echo -e "\n\nContainer name [$field2] with id [$field1] logs: \n\n"
-              docker logs --tail=$NUMBER_OF_LINES_TO_LOG -t $field1
+              docker logs --tail=${NUMBER_OF_LINES_TO_LOG} -t ${field1}
             done < /tmp/containers.txt
     fi
     tail_log "brewing"
@@ -103,10 +112,10 @@ function netcat_port() {
     local READY_FOR_TESTS=1
     for i in $( seq 1 "${RETRIES}" ); do
         sleep "${WAIT_TIME}"
-        nc -v -w 1 $PASSED_HOST $1 && READY_FOR_TESTS=0 && break
+        nc -v -w 1 ${PASSED_HOST} $1 && READY_FOR_TESTS=0 && break
         echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
     done
-    return $READY_FOR_TESTS
+    return ${READY_FOR_TESTS}
 }
 
 # ${RETRIES} number of times will try to netcat to passed port $1 and localhost
@@ -123,7 +132,7 @@ function curl_health_endpoint() {
         curl -m 5 "${PASSED_HOST}:$1/health" && READY_FOR_TESTS=0 && break
         echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
     done
-    return $READY_FOR_TESTS
+    return ${READY_FOR_TESTS}
 }
 
 # ${RETRIES} number of times will try to curl to /health endpoint to passed port $1 and localhost
@@ -136,9 +145,9 @@ function java_jar() {
     local APP_JAVA_PATH=$1/build/libs
     local EXPRESSION="nohup ${JAVA_PATH_TO_BIN}java $2 $MEM_ARGS -jar $APP_JAVA_PATH/*.jar >$APP_JAVA_PATH/nohup.log &"
     echo -e "\nTrying to run [$EXPRESSION]"
-    eval $EXPRESSION
+    eval ${EXPRESSION}
     pid=$!
-    echo $pid > $APP_JAVA_PATH/app.pid
+    echo ${pid} > ${APP_JAVA_PATH}/app.pid
     echo -e "[$1] process pid is [$pid]"
     echo -e "System props are [$2]"
     echo -e "Logs are under [build/$1.log] or from nohup [$APP_JAVA_PATH/nohup.log]\n"
@@ -207,12 +216,12 @@ function kill_all_apps() {
             reset "${CLOUD_PREFIX}-presenting" || echo "Failed to kill the app"
             reset "${CLOUD_PREFIX}-ingredients" || echo "Failed to kill the app"
             reset "${CLOUD_PREFIX}-reporting" || echo "Failed to kill the app"
-            yes | cf delete-service "${CLOUD_PREFIX}-config-server" || echo "Failed to kill the app"
-            reset "${CLOUD_PREFIX}-config-server" || echo "Failed to kill the app"
-            yes | cf delete-service "${CLOUD_PREFIX}-discovery" || echo "Failed to kill the app"
-            reset "${CLOUD_PREFIX}-discovery" || echo "Failed to kill the app"
             reset "${CLOUD_PREFIX}-zipkin-server" || echo "Failed to kill the app"
             reset "${CLOUD_PREFIX}-zipkin-web" || echo "Failed to kill the app"
+            reset "${CLOUD_PREFIX}-discovery" || echo "Failed to kill the app"
+            yes | cf delete-service "${CLOUD_PREFIX}-config-server" -f || echo "Failed to kill the app"
+            reset "${CLOUD_PREFIX}-config-server" || echo "Failed to kill the app"
+            yes | cf delete-service "${CLOUD_PREFIX}-discovery" -f || echo "Failed to kill the app"
             yes | cf delete-orphaned-routes || echo "Failed to delete routes"
     fi
     return 0
@@ -220,7 +229,7 @@ function kill_all_apps() {
 
 # Kills all started aps if the switch is on
 function kill_all_apps_if_switch_on() {
-    if [[ $KILL_AT_THE_END ]]; then
+    if [[ ${KILL_AT_THE_END} ]]; then
         echo -e "\n\nKilling all the apps"
         kill_all_apps
     else
@@ -237,21 +246,29 @@ USAGE:
 
 You can use the following options:
 
--t|--whattotest  - define what you want to test (e.g. SLEUTH, ZOOKEEPER, SLEUTH_STREAM, EUREKA, CONSUL)
--v|--version - which version of BOM do you want to use? Defaults to Brixton snapshot
--h|--healthhost - what is your health host? where is docker? defaults to localhost
--l|--numberoflines - how many lines of logs of your app do you want to print? Defaults to 1000
--r|--reset - do you want to reset the git repo of brewery? Defaults to "no"
--k|--killattheend - should kill all the running apps at the end of execution? Defaults to "no"
--n|--killnow - should not run all the logic but only kill the running apps? Defaults to "no"
--x|--skiptests - should skip running of e2e tests? Defaults to "no"
--s|--skipbuilding - should skip building of the projects? Defaults to "no"
--c|--cloudfoundry - should run tests for cloud foundry? (works only for SLEUTH_STREAM) Defaults to "no"
--y|--cloudfoundrydomain - what's the domain of your cloud foundry? Defaults to "run.pivotal.io"
--o|--deployonlyapps - should deploy only the brewery business apps instead of the infra too? Defaults to "no"
--d|--skipdeployment - should skip deployment of apps? Defaults to "no"
--p|--cloudfoundryprefix - provides the prefix to the brewery app name. Defaults to 'brewery'
--f|--kafka - uses Kafka instead of RabbitMQ
+GLOBAL:
+-t  |--whattotest  - define what you want to test (i.e. SLEUTH, ZOOKEEPER, SLEUTH, SLEUTH_STREAM, EUREKA, CONSUL, SCS)
+-v  |--version - which version of BOM do you want to use? Defaults to Brixton snapshot
+-sv |--scsversion - which version of BOM for Spring Cloud Services do you want to use? Defaults to 1.1.2.BUILD-SNAPSHOT
+-h  |--healthhost - what is your health host? where is docker? defaults to localhost
+-l  |--numberoflines - how many lines of logs of your app do you want to print? Defaults to 1000
+-r  |--reset - do you want to reset the git repo of brewery? Defaults to "no"
+-ke |--killattheend - should kill all the running apps at the end of execution? Defaults to "no"
+-n  |--killnow - should not run all the logic but only kill the running apps? Defaults to "no"
+-x  |--skiptests - should skip running of e2e tests? Defaults to "no"
+-s  |--skipbuilding - should skip building of the projects? Defaults to "no"
+-k  |--kafka - uses Kafka instead of RabbitMQ
+-d  |--skipdeployment - should skip deployment of apps? Defaults to "no"
+-a  |--deployonlyapps - should deploy only the brewery business apps instead of the infra too? Defaults to "no"
+
+CLOUD FOUNDRY RELATED PROPERTIES:
+-c  |--usecloudfoundry - should run tests for cloud foundry? (works only for SLEUTH_STREAM) Defaults to "no"
+-cd |--cloudfoundrydomain - what's the domain of your cloud foundry? Defaults to "run.pivotal.io"
+-cu |--username - username to log in with to CF
+-cp |--password - password to log in with to CF
+-cpr|--cloudfoundryprefix - provides the prefix to the brewery app name. Defaults to 'brewery'
+-cs |--space - provides the space for Cloud Foundry. Defaults to 'brewery'
+-co |--org - provides the prefix to the brewery app name. Defaults to 'brewery'
 
 EOF
 }
@@ -281,8 +298,13 @@ fi
 LOCALHOST="127.0.0.1"
 MEM_ARGS="-Xmx128m -Xss1024k"
 CLOUD_PREFIX="brewery"
+DEFAULT_SCS_VERSION="1.1.2.BUILD-SNAPSHOT"
 
 BOM_VERSION_PROP_NAME="BOM_VERSION"
+SCS_BOM_VERSION_PROP_NAME="SCS_VERSION"
+
+DEFAULT_ORG="${DEFAULT_ORG:-brewery}"
+DEFAULT_SPACE="${DEFAULT_SPACE:-scs}"
 
 # ======================================= VARIABLES END =======================================
 
@@ -296,13 +318,17 @@ fi
 while [[ $# > 0 ]]
 do
 key="$1"
-case $key in
+case ${key} in
     -t|--whattotest)
     WHAT_TO_TEST="$2"
     shift # past argument
     ;;
     -v|--version)
     VERSION="$2"
+    shift # past argument
+    ;;
+    -sv|--scsversion)
+    SCS_VERSION="$2"
     shift # past argument
     ;;
     -h|--healthhost)
@@ -316,7 +342,7 @@ case $key in
     -r|--reset)
     RESET="yes"
     ;;
-    -k|--killattheend)
+    -ke|--killattheend)
     KILL_AT_THE_END="yes"
     ;;
     -n|--killnow)
@@ -332,24 +358,40 @@ case $key in
     -s|--skipbuilding)
     SKIP_BUILDING="yes"
     ;;
-    -c|--cloudfoundry)
+    -c|--usecloudfoundry)
     CLOUD_FOUNDRY="yes"
     ;;
-    -y|--cloudfoundrydomain)
+    -cd|--cloudfoundrydomain)
     DOMAIN="$2"
     shift # past argument
     ;;
-    -o|--deployonlyapps)
+    -a|--deployonlyapps)
     DEPLOY_ONLY_APPS="yes"
     ;;
     -d|--skipdeployment)
     SKIP_DEPLOYMENT="yes"
     ;;
-    -p|--cloudfoundryprefix)
+    -cu|--username)
+    USERNAME="$2"
+    shift # past argument
+    ;;
+    -cp|--password)
+    PASSWORD="$2"
+    shift # past argument
+    ;;
+    -cpr|--cloudfoundryprefix)
     CLOUD_PREFIX="$2"
     shift # past argument
     ;;
-    -f|--kafka)
+    -cs|--space)
+    CLOUD_SPACE="$2"
+    shift # past argument
+    ;;
+    -co|--org)
+    CLOUD_ORG="$2"
+    shift # past argument
+    ;;
+    -k|--kafka)
     KAFKA="yes"
     ;;
     --help)
@@ -368,9 +410,12 @@ done
 
 [[ -z "${WHAT_TO_TEST}" ]] && WHAT_TO_TEST=ZOOKEEPER
 [[ -z "${VERSION}" ]] && VERSION="${DEFAULT_VERSION}"
+[[ -z "${SCS_VERSION}" ]] && SCS_VERSION="${DEFAULT_SCS_VERSION}"
 [[ -z "${HEALTH_HOST}" ]] && HEALTH_HOST="${DEFAULT_HEALTH_HOST}"
 [[ -z "${NUMBER_OF_LINES_TO_LOG}" ]] && NUMBER_OF_LINES_TO_LOG="${DEFAULT_NUMBER_OF_LINES_TO_LOG}"
 [[ -z "${DOMAIN}" ]] && DOMAIN="run.pivotal.io"
+[[ -z "${CLOUD_SPACE}" ]] && CLOUD_SPACE="${DEFAULT_SPACE}"
+[[ -z "${CLOUD_ORG}" ]] && CLOUD_ORG="${DEFAULT_ORG}"
 
 CLOUD_DOMAIN=${DOMAIN}
 CLOUD_TARGET=api.${DOMAIN}
@@ -394,37 +439,49 @@ NO_TESTS=${NO_TESTS}
 SKIP_BUILDING=${SKIP_BUILDING}
 SHOULD_START_RABBIT=${SHOULD_START_RABBIT}
 ACCEPTANCE_TEST_OPTS=${ACCEPTANCE_TEST_OPTS}
-CLOUD_FOUNDRY=${CLOUD_FOUNDRY}
 DEPLOY_ONLY_APPS=${DEPLOY_ONLY_APPS}
 SKIP_DEPLOYMENT=${SKIP_DEPLOYMENT}
-CLOUD_PREFIX=${CLOUD_PREFIX}
 KAFKA=${KAFKA:-"no"}
+
+CLOUD FOUNDRY PROPS:
+
+SCS_VERSION=${SCS_VERSION}
+CLOUD_FOUNDRY=${CLOUD_FOUNDRY}
+CLOUD_PREFIX=${CLOUD_PREFIX}
+CLOUD_ORG=${CLOUD_ORG}
+CLOUD_SPACE=${CLOUD_SPACE}
 
 EOF
 
 # ======================================= PARSING ARGS END =======================================
 
 # ======================================= EXPORTING VARS START =======================================
-export WHAT_TO_TEST=$WHAT_TO_TEST
-export VERSION=$VERSION
-export HEALTH_HOST=$HEALTH_HOST
-export WAIT_TIME=$WAIT_TIME
-export RETRIES=$RETRIES
-export BOM_VERSION_PROP_NAME=$BOM_VERSION_PROP_NAME
-export NUMBER_OF_LINES_TO_LOG=$NUMBER_OF_LINES_TO_LOG
-export KILL_AT_THE_END=$KILL_AT_THE_END
-export KILL_NOW_APPS=$KILL_NOW_APPS
-export LOCALHOST=$LOCALHOST
-export MEM_ARGS=$MEM_ARGS
-export SHOULD_START_RABBIT=$SHOULD_START_RABBIT
-export ACCEPTANCE_TEST_OPTS=$ACCEPTANCE_TEST_OPTS
-export CLOUD_FOUNDRY=$CLOUD_FOUNDRY
-export DEPLOY_ONLY_APPS=$DEPLOY_ONLY_APPS
-export SKIP_DEPLOYMENT=$SKIP_DEPLOYMENT
-export CLOUD_PREFIX=$CLOUD_PREFIX
-export JAVA_PATH_TO_BIN=$JAVA_PATH_TO_BIN
-export KAFKA=$KAFKA
-export DEFAULT_HEALTH_HOST=$DEFAULT_HEALTH_HOST
+export WHAT_TO_TEST=${WHAT_TO_TEST}
+export VERSION=${VERSION}
+export SCS_VERSION=${SCS_VERSION}
+export HEALTH_HOST=${HEALTH_HOST}
+export WAIT_TIME=${WAIT_TIME}
+export RETRIES=${RETRIES}
+export BOM_VERSION_PROP_NAME=${BOM_VERSION_PROP_NAME}
+export SCS_BOM_VERSION_PROP_NAME=${SCS_BOM_VERSION_PROP_NAME}
+export NUMBER_OF_LINES_TO_LOG=${NUMBER_OF_LINES_TO_LOG}
+export KILL_AT_THE_END=${KILL_AT_THE_END}
+export KILL_NOW_APPS=${KILL_NOW_APPS}
+export LOCALHOST=${LOCALHOST}
+export MEM_ARGS=${MEM_ARGS}
+export SHOULD_START_RABBIT=${SHOULD_START_RABBIT}
+export ACCEPTANCE_TEST_OPTS=${ACCEPTANCE_TEST_OPTS}
+export CLOUD_FOUNDRY=${CLOUD_FOUNDRY}
+export DEPLOY_ONLY_APPS=${DEPLOY_ONLY_APPS}
+export SKIP_DEPLOYMENT=${SKIP_DEPLOYMENT}
+export CLOUD_PREFIX=${CLOUD_PREFIX}
+export JAVA_PATH_TO_BIN=${JAVA_PATH_TO_BIN}
+export KAFKA=${KAFKA}
+export DEFAULT_HEALTH_HOST=${DEFAULT_HEALTH_HOST}
+export CLOUD_ORG=${CLOUD_ORG}
+export CLOUD_SPACE=${CLOUD_SPACE}
+export USERNAME=${USERNAME}
+export PASSWORD=${PASSWORD}
 
 export -f login
 export -f app_domain
@@ -450,7 +507,7 @@ export -f kill_app_with_port
 # ======================================= EXPORTING VARS END =======================================
 
 # ======================================= Kill all apps and exit if switch set =======================================
-if [[ $KILL_NOW ]] ; then
+if [[ ${KILL_NOW} ]] ; then
     echo -e "\nKilling all apps"
     kill_all_apps
     exit 0
@@ -462,7 +519,7 @@ if [[ ! -e "${REPO_LOCAL}/.git" ]]; then
     cd "${REPO_LOCAL}"
 else
     cd "${REPO_LOCAL}"
-    if [[ $RESET ]]; then
+    if [[ ${RESET} ]]; then
         git reset --hard
         git pull "${REPO_URL}" "${REPO_BRANCH}"
     fi
@@ -474,6 +531,8 @@ echo -e "\nAppending if not present the following entry to gradle.properties\n"
 
 # Update the desired BOM version
 grep "${BOM_VERSION_PROP_NAME}=${VERSION}" gradle.properties || echo -e "\n${BOM_VERSION_PROP_NAME}=${VERSION}" >> gradle.properties
+# Update the desired SCS BOM version
+grep "${SCS_BOM_VERSION_PROP_NAME}=${SCS_VERSION}" gradle.properties || echo -e "\n${SCS_BOM_VERSION_PROP_NAME}=${SCS_VERSION}" >> gradle.properties
 
 echo -e "\n\nUsing the following gradle.properties"
 cat gradle.properties
@@ -491,7 +550,7 @@ if [[ -z "${SKIP_BUILDING}" ]] ; then
         PARAMS="${PARAMS} -Pkafka"
     fi
     for i in $( seq 1 "${APP_BUILDING_RETRIES}" ); do
-          ./gradlew clean build $PARAMS && APP_FAILED="no" && break
+          ./gradlew clean build ${PARAMS} && APP_FAILED="no" && break
           echo "Fail #$i/${APP_BUILDING_RETRIES}... will try again in [${APP_WAIT_TIME}] seconds"
     done
 else
@@ -505,15 +564,22 @@ fi
 
 
 # ======================================= Deploying apps locally or to cloud foundry =======================================
+if [[ "${CLOUD_FOUNDRY}" == "yes" ]] ; then
+    login ${USERNAME} ${PASSWORD}
+fi
+
 INITIALIZATION_FAILED="yes"
-if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
-        if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
-            . ./docker-compose-$WHAT_TO_TEST.sh && INITIALIZATION_FAILED="no"
-        else
-          INITIALIZATION_FAILED="no"
-        fi
+if [[ -z "${CLOUD_FOUNDRY}" &&  "${WHAT_TO_TEST}" == "SCS" ]] ; then
+    echo -e "You have to pass the CF flag (-c) - you can't test SCS without it"
+    exit 1
+elif [[ -z "${CLOUD_FOUNDRY}" ]] ; then
+    if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
+        . ./docker-compose-${WHAT_TO_TEST}.sh && INITIALIZATION_FAILED="no"
     else
-        . ./cloud-foundry-$WHAT_TO_TEST.sh && INITIALIZATION_FAILED="no"
+      INITIALIZATION_FAILED="no"
+    fi
+else
+    . ./cloud-foundry-${WHAT_TO_TEST}.sh && INITIALIZATION_FAILED="no"
 fi
 
 if [[ "${INITIALIZATION_FAILED}" == "yes" ]] ; then
@@ -575,7 +641,7 @@ fi
 # ======================================= Running acceptance tests =======================================
 TESTS_PASSED="no"
 
-if [[ $NO_TESTS ]] ; then
+if [[ ${NO_TESTS} ]] ; then
     echo -e "\nSkipping end to end tests"
     kill_all_apps_if_switch_on
     exit 0

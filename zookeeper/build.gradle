@@ -1,4 +1,4 @@
-moduleEnabled(!(whatToTest('EUREKA') || whatToTest('SLEUTH_STREAM') || whatToTest('CONSUL')))
+moduleEnabled(!(whatToTest('EUREKA') || whatToTest('SLEUTH_STREAM') || whatToTest('CONSUL') || whatToTest('SCS')))
 
 dependencies {
     compile "org.apache.curator:curator-test:2.8.0"

@@ -1,0 +1,13 @@
+---
+applications:
+- name: scsbrewery-ingredients
+  host: scsbrewery-ingredients
+  path: build/libs/ingredients-1.0.0.jar
+  services:
+    - scsbrewery-rabbitmq
+    - scsbrewery-discovery
+    - scsbrewery-config-server
+  env:
+    SPRING_PROFILES_ACTIVE: pcf,cloud-scsbrewery
+    CF_TARGET: https://api.cf.indigo.springapps.io
+    JAVA_OPTS: -Djava.security.egd=file:///dev/urandom

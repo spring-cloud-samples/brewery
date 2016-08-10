@@ -1,0 +1,5 @@
+spring.rabbitmq.addresses: ${vcap.services.scsbrewery-rabbitmq.credentials.uri}
+
+security:
+  basic:
+    enabled: false
