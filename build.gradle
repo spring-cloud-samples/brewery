@@ -72,7 +72,7 @@ configure(subprojects) {
                     propName.equalsIgnoreCase(System.getenv(whatToTestProp))
         }
         propOrSysEnvPresent = { String propName ->
-            project.hasProperty(propName) || systemPropsFromGradle(propName) || System.getenv(propName.toUpperCase())
+            project.hasProperty(propName) || systemPropsFromGradleContains(propName) || System.getenv(propName.toUpperCase())
         }
         moduleEnabled = { boolean enabled ->
             if (!enabled) {
