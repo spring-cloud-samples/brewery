@@ -252,7 +252,7 @@ USAGE:
 You can use the following options:
 
 GLOBAL:
--t  |--whattotest  - define what you want to test (i.e. SLEUTH, ZOOKEEPER, SLEUTH, SLEUTH_STREAM, EUREKA, CONSUL, SCS)
+-t  |--whattotest  - define what you want to test (i.e. ZOOKEEPER, SLEUTH, SLEUTH_STREAM, EUREKA, CONSUL, SCS)
 -v  |--version - which version of BOM do you want to use? Defaults to Camden snapshot
 -sv |--scsversion - which version of BOM for Spring Cloud Services do you want to use? Defaults to 1.1.2.BUILD-SNAPSHOT
 -h  |--healthhost - what is your health host? where is docker? defaults to localhost
