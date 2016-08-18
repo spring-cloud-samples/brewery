@@ -130,7 +130,6 @@ configure(subprojects - zipkinServerProject - acceptanceTestsProject - zookeeper
 
     dependencies {
         compile 'org.projectlombok:lombok:1.16.6'
-        compile 'org.apache.tomcat.embed:tomcat-embed-core:8.0.23'
         compile "org.springframework.cloud:spring-cloud-starter-sleuth"
         if (!whatToTest('SCS')) compile "org.springframework.cloud:spring-cloud-starter-config"
         if (whatToTest('SCS')) compile("io.pivotal.spring.cloud:spring-cloud-services-starter-config-client")
@@ -138,7 +137,7 @@ configure(subprojects - zipkinServerProject - acceptanceTestsProject - zookeeper
         compile "org.springframework.cloud:spring-cloud-starter-hystrix"
         compile "org.springframework.cloud:spring-cloud-starter-stream-${propOrSysEnvPresent('kafka') ? 'kafka' : 'rabbit'}"
         if (!whatToTest('SLEUTH')) { compile "org.springframework.cloud:spring-cloud-sleuth-stream" }
-        compile "org.springframework.amqp:spring-amqp:${amqpVersion}"
+        compile "org.springframework.amqp:spring-amqp"
         compile "io.dropwizard.metrics:metrics-core"
         compile "io.dropwizard.metrics:metrics-graphite"
     }

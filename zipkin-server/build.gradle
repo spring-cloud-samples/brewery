@@ -6,7 +6,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-actuator"
     compile "org.springframework.cloud:spring-cloud-sleuth-zipkin-stream"
     compile "org.springframework.cloud:spring-cloud-starter-stream-${propOrSysEnvPresent('kafka') ? 'kafka' : 'rabbit'}"
-    if (!propOrSysEnvPresent('kafka')) { compile "org.springframework.amqp:spring-amqp:${amqpVersion}" }
+    if (!propOrSysEnvPresent('kafka')) { compile "org.springframework.amqp:spring-amqp" }
     if ("$BOM_VERSION".toString() == "Brixton.RELEASE") {
         runtime "io.zipkin:zipkin-ui:1.40.2"
     } else {
