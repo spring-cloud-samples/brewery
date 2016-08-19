@@ -549,7 +549,7 @@ APP_BUILDING_RETRIES=3
 APP_WAIT_TIME=1
 APP_FAILED="yes"
 if [[ -z "${SKIP_BUILDING}" ]] ; then
-    PARAMS="--parallel --no-daemon";
+    PARAMS="--parallel --no-daemon --refresh-dependencies";
     if [[ "${KAFKA}" == "yes" ]] ; then
         echo "Will use Kafka as a message broker"
         PARAMS="${PARAMS} -Pkafka"
