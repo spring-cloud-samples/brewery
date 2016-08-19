@@ -1,7 +1,7 @@
 ---
 applications:
 - name: brewery-discovery
-  memory: 512M
+  memory: 1024M
   instances: 1
   host: brewery-discovery
   path: build/libs/eureka-1.0.0.jar

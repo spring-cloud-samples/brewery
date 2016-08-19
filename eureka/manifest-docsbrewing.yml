@@ -1,7 +1,7 @@
 ---
 applications:
 - name: docsbrewing-discovery
-  memory: 512M
+  memory: 1024M
   instances: 1
   host: docsbrewing-discovery
   path: build/libs/eureka-1.0.0.jar

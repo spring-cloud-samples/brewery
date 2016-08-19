@@ -1,7 +1,7 @@
 ---
 applications:
 - name: docsbrewing-reporting
-  memory: 512M
+  memory: 1024M
   instances: 1
   host: docsbrewing-reporting
   path: build/libs/reporting-1.0.0.jar

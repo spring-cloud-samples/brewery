@@ -1,7 +1,7 @@
 ---
 applications:
 - name: docsbrewing-zuul
-  memory: 512M
+  memory: 1024M
   instances: 1
   host: docsbrewing-zuul
   path: build/libs/zuul-1.0.0.jar

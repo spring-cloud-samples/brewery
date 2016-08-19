@@ -1,7 +1,7 @@
 ---
 applications:
 - name: docsbrewing-presenting
-  memory: 512M
+  memory: 1024M
   instances: 1
   host: docsbrewing-presenting
   path: build/libs/presenting-1.0.0.jar

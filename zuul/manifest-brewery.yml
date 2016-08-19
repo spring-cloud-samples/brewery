@@ -1,7 +1,7 @@
 ---
 applications:
 - name: brewery-zuul
-  memory: 512M
+  memory: 1024M
   instances: 1
   host: brewery-zuul
   path: build/libs/zuul-1.0.0.jar

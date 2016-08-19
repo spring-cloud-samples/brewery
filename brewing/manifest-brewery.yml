@@ -1,7 +1,7 @@
 ---
 applications:
 - name: brewery-brewing
-  memory: 512M
+  memory: 1024M
   instances: 1
   host: brewery-brewing
   path: build/libs/brewing-1.0.0.jar

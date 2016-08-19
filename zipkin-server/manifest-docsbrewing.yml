@@ -1,7 +1,7 @@
 ---
 applications:
 - name: docsbrewing-zipkin-server
-  memory: 512M
+  memory: 1024M
   instances: 1
   host: docsbrewing-zipkin-server
   path: build/libs/zipkin-server-1.0.0.jar

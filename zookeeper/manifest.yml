@@ -2,7 +2,7 @@
 ---
 applications:
 - name: brewery-discovery
-  memory: 512M
+  memory: 1024M
   instances: 1
   host: brewery-discovery
   path: build/libs/zookeeper-1.0.0.jar

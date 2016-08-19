@@ -1,7 +1,7 @@
 ---
 applications:
 - name: brewery-ingredients
-  memory: 512M
+  memory: 1024M
   instances: 1
   host: brewery-ingredients
   path: build/libs/ingredients-1.0.0.jar
