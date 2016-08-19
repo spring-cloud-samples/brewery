@@ -555,7 +555,7 @@ if [[ -z "${SKIP_BUILDING}" ]] ; then
         PARAMS="${PARAMS} -Pkafka"
     fi
     for i in $( seq 1 "${APP_BUILDING_RETRIES}" ); do
-          ./gradlew clean build ${PARAMS} && APP_FAILED="no" && break
+          ./gradlew clean --parallel && ./gradlew build ${PARAMS} && APP_FAILED="no" && break
           echo "Fail #$i/${APP_BUILDING_RETRIES}... will try again in [${APP_WAIT_TIME}] seconds"
     done
 else
