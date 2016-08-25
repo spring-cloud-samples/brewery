@@ -23,6 +23,8 @@ if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
 
         if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
             echo "Zookeeper failed to start..."
+            print_logs
+            kill_all_apps_if_switch_on
             exit 1
         fi
 
@@ -35,6 +37,8 @@ if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
 
         if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
             echo "Kafka failed to start..."
+            print_logs
+            kill_all_apps_if_switch_on
             exit 1
         fi
     else
@@ -51,6 +55,8 @@ if [[ "${KAFKA}" != "yes" ]] ; then
 
     if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
         echo "RabbitMQ failed to start..."
+        print_logs
+        kill_all_apps_if_switch_on
         exit 1
     fi
 fi
@@ -68,6 +74,8 @@ netcat_local_port $PORT_TO_CHECK && READY_FOR_TESTS="yes"
 
 if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
     echo "Eureka failed to start..."
+    print_logs
+    kill_all_apps_if_switch_on
     exit 1
 fi
 
@@ -83,6 +91,8 @@ curl_local_health_endpoint $PORT_TO_CHECK  && READY_FOR_TESTS="yes"
 
 if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
     echo "Config server failed to start..."
+    print_logs
+    kill_all_apps_if_switch_on
     exit 1
 fi
 
@@ -97,6 +107,8 @@ curl_local_health_endpoint $PORT_TO_CHECK  && READY_FOR_TESTS="yes"
 
 if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
     echo "Config server failed to start..."
+    print_logs
+    kill_all_apps_if_switch_on
     exit 1
 fi
 
