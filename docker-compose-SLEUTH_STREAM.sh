@@ -11,25 +11,10 @@ if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
         echo -e "\nThe following containers are running:"
         docker ps
         echo -e "\nWill try to stop kafka if it's running"
-        docker stop `docker ps -a -q --filter="image=wurstmeister/zookeeper"` || echo "No docker with Zookeeper was running - won't stop anything"
-        docker stop `docker ps -a -q --filter="image=wurstmeister/kafka"` || echo "No docker with Kafka was running - won't stop anything"
-
-        echo -e "\nTrying to run Zookeeper in Docker\n"
-        docker run -d -p 2181:2181 wurstmeister/zookeeper
-        READY_FOR_TESTS="no"
-        PORT_TO_CHECK=2181
-        echo "Waiting for Zookeeper to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
-        netcat_port $PORT_TO_CHECK && READY_FOR_TESTS="yes"
-
-        if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
-            echo "Zookeeper failed to start..."
-            print_logs
-            kill_all_apps_if_switch_on
-            exit 1
-        fi
+        docker stop `docker ps -a -q --filter="image=flozano/kafka"` || echo "No docker with Kafka was running - won't stop anything"
 
         echo -e "\nTrying to run Kafka in Docker\n"
-        docker run -d -p 9092:9092 --env KAFKA_ADVERTISED_HOST_NAME="${DEFAULT_HEALTH_HOST}" --env KAFKA_ADVERTISED_PORT=9092 --env KAFKA_ZOOKEEPER_CONNECT="${DEFAULT_HEALTH_HOST}":2181 wurstmeister/kafka:0.10.0.0
+        docker run -d -p 2181:2181 -p 9092:9092 --env _KAFKA_advertised_host_name="${DEFAULT_HEALTH_HOST}" --env _KAFKA_advertised_port=9092 flozano/kafka
         READY_FOR_TESTS="no"
         PORT_TO_CHECK=9092
         echo "Waiting for Kafka to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
