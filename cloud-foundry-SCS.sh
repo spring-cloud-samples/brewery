@@ -69,11 +69,22 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
 
     cd $root
     echo -e "\n\nStarting brewery apps..."
-    deploy_app_with_name "presenting" "${CLOUD_PREFIX}-presenting"
-    deploy_app_with_name "brewing" "${CLOUD_PREFIX}-brewing"
-    deploy_app_with_name "zuul" "${CLOUD_PREFIX}-zuul"
-    deploy_app_with_name "ingredients" "${CLOUD_PREFIX}-ingredients"
-    deploy_app_with_name "reporting" "${CLOUD_PREFIX}-reporting"
+    echo "Starting presenting"
+    presenting=$( deploy_app_with_name "presenting" "${CLOUD_PREFIX}-presenting" ) &
+    echo ${presenting}
+    echo "Starting brewing"
+    brewing=$( deploy_app_with_name "brewing" "${CLOUD_PREFIX}-brewing" ) &
+    echo ${brewing}
+    echo "Starting zuul"
+    zuul=$( deploy_app_with_name "zuul" "${CLOUD_PREFIX}-zuul" ) &
+    echo ${zuul}
+    echo "Starting ingredients"
+    ingredients=$( deploy_app_with_name "ingredients" "${CLOUD_PREFIX}-ingredients" ) &
+    echo ${ingredients}
+    echo "Starting reporting"
+    reporting=$( deploy_app_with_name "reporting" "${CLOUD_PREFIX}-reporting" ) &
+    echo ${reporting}
+    wait
 
 else
     INITIALIZATION_FAILED="no"
