@@ -23,7 +23,7 @@ def techProjects = [commonProject, commonZipkinProject, commonZipkinProjectOld, 
                     eurekaProject, zipkinServerProject, configServerProject,
                     zookeeperServerProject]
 def nonZipkinProjects = techProjects - zipkinServerProject
-def nonDockerProjects = [commonProject, commonZipkinProject, commonZipkinStreamProject, acceptanceTestsProject]
+def nonDockerProjects = [commonProject, commonZipkinProject, commonZipkinProjectOld, commonZipkinStreamProject, acceptanceTestsProject]
 def zipkinRelatedProjects = subprojects - nonZipkinProjects
 
 allprojects {
