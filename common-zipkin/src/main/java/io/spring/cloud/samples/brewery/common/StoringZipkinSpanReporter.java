@@ -34,8 +34,8 @@ public class StoringZipkinSpanReporter implements ZipkinSpanReporter {
 	private final HttpZipkinSpanReporter delegate;
 
 	@Autowired
-	public StoringZipkinSpanReporter(RestTemplate restTemplate, SpanMetricReporter spanReporterService, ZipkinProperties zipkin) {
-		delegate = new HttpZipkinSpanReporter(restTemplate, zipkin.getBaseUrl(), zipkin.getFlushInterval(),
+	public StoringZipkinSpanReporter(SpanMetricReporter spanReporterService, ZipkinProperties zipkin) {
+		delegate = new HttpZipkinSpanReporter(new RestTemplate(), zipkin.getBaseUrl(), zipkin.getFlushInterval(),
 				spanReporterService);
 	}
 
