@@ -5,6 +5,7 @@ spring:
         binder:
           zkNodes: ${DEFAULT_HEALTH_HOST:localhost}
           brokers: ${DEFAULT_HEALTH_HOST:localhost}
+          # The X- are for Sleuth 1.0.x and 1.1.x compatibility
           headers:
             - X-B3-TraceId
             - X-B3-SpanId
@@ -12,3 +13,9 @@ spring:
             - X-B3-ParentSpanId
             - X-Span-Name
             - X-Process-Id
+            - spanId
+            - spanSampled
+            - spanProcessId
+            - spanParentSpanId
+            - spanTraceId
+            - spanName
