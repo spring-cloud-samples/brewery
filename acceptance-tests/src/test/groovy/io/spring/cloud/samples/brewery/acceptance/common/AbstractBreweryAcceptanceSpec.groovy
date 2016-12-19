@@ -149,8 +149,8 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 					return acc
 				}
 				assert parentsAndChildren['presenting'] == ['brewing']
-				assert parentsAndChildren['brewing'].size() == 4
-				assert parentsAndChildren['brewing'].containsAll(['brewing', 'zuul', 'reporting', 'presenting'])
+				assert parentsAndChildren['brewing'].size() == 3
+				assert parentsAndChildren['brewing'].containsAll(['zuul', 'reporting', 'presenting'])
 				assert parentsAndChildren['zuul'] == ['ingredients']
 				log.info("Zipkin tracing is working! Sleuth is working! Let's be happy!")
 			}
