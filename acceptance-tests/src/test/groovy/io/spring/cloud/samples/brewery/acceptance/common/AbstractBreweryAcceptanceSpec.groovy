@@ -56,7 +56,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 													'inside_ingredients',
 													'inside_reporting']
 
-	@Value('${presenting.poll.interval:1}') Integer pollInterval
+	@Value('${presenting.poll.interval:5}') Integer pollInterval
 	@Value('${presenting.timeout:60}') Integer timeout
 	@Value('${presenting.url:http://localhost:9991}') String presentingUrl
 	@Value('${zipkin.query.port:9411}') Integer zipkinQueryPort
