@@ -56,7 +56,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 													'inside_ingredients',
 													'inside_reporting']
 
-	@Value('${presenting.poll.interval:5}') Integer pollInterval
+	@Value('${presenting.poll.interval:1}') Integer pollInterval
 	@Value('${presenting.timeout:60}') Integer timeout
 	@Value('${presenting.url:http://localhost:9991}') String presentingUrl
 	@Value('${zipkin.query.port:9411}') Integer zipkinQueryPort
@@ -213,17 +213,11 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 	}
 
 	void presenting_service_has_been_called(RequestEntity requestEntity) {
-		await().pollInterval(pollInterval, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
-				@Override
-				void run() {
-					log.info("Sending [$requestEntity] to start brewing the beer.")
-					ResponseEntity<String> responseEntity = restTemplate().exchange(requestEntity, String)
-					log.info("Received [$responseEntity] from the presenting service.")
-					assert responseEntity.statusCode == HttpStatus.OK
-					log.info("Beer brewing process has successfully been started!")
-				}
-			}
-		)
+		log.info("Sending [$requestEntity] to start brewing the beer.")
+		ResponseEntity<String> responseEntity = restTemplate().exchange(requestEntity, String)
+		log.info("Received [$responseEntity] from the presenting service.")
+		assert responseEntity.statusCode == HttpStatus.OK
+		log.info("Beer brewing process has successfully been started!")
 	}
 
 	Order allIngredients() {
