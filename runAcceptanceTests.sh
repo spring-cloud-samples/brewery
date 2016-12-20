@@ -675,6 +675,12 @@ if [[ "${READY_FOR_TESTS}" == "yes" ]] ; then
     ./gradlew :acceptance-tests:acceptanceTests "-DWHAT_TO_TEST=${WHAT_TO_TEST}" ${ACCEPTANCE_TEST_OPTS} --stacktrace --no-daemon --configure-on-demand && TESTS_PASSED="yes"
 fi
 
+if [[ "${TESTS_PASSED}" == "yes" ]] ; then
+    TESTS_PASSED="no"
+    echo -e "\n\nTests passed - now checking that there are no ExceptionUtils from Sleuth logs (this means that we broke sth with context passing)"
+    grep ExceptionUtils build/*.log && echo "There are ExceptionUtils entries. That's not good..." || TESTS_PASSED="yes"
+fi
+
 # Check the result of tests execution
 if [[ "${TESTS_PASSED}" == "yes" ]] ; then
     echo -e "\n\nTests passed successfully."
