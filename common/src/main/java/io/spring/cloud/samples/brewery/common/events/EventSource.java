@@ -17,7 +17,7 @@
 package io.spring.cloud.samples.brewery.common.events;
 
 import org.springframework.cloud.stream.annotation.Output;
-import org.springframework.messaging.SubscribableChannel;
+import org.springframework.messaging.MessageChannel;
 
 /**
  * @author Dave Syer
@@ -27,7 +27,6 @@ public interface EventSource {
 
 	String OUTPUT = "events";
 
-	@Output(EventSource.OUTPUT)
-	SubscribableChannel output();
+	@Output(EventSource.OUTPUT) MessageChannel output();
 
 }
