@@ -1,10 +1,12 @@
 package io.spring.cloud.samples.brewery;
 
-import io.spring.cloud.samples.brewery.common.events.EventSink;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.sleuth.util.ExceptionUtils;
 import org.springframework.cloud.stream.annotation.EnableBinding;
+
+import io.spring.cloud.samples.brewery.common.events.EventSink;
 
 @SpringBootApplication
 @EnableDiscoveryClient
@@ -12,6 +14,7 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 public class Application {
 
     public static void main(String[] args) {
+        ExceptionUtils.setFail(true);
         new SpringApplication(Application.class).run(args);
     }
 }

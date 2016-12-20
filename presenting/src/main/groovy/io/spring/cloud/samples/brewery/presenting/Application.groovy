@@ -9,6 +9,7 @@ import org.springframework.cloud.client.loadbalancer.LoadBalanced
 import org.springframework.cloud.netflix.feign.EnableFeignClients
 import org.springframework.cloud.sleuth.Sampler
 import org.springframework.cloud.sleuth.sampler.AlwaysSampler
+import org.springframework.cloud.sleuth.util.ExceptionUtils
 import org.springframework.cloud.stream.annotation.EnableBinding
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.EnableAspectJAutoProxy
@@ -36,6 +37,7 @@ class Application {
     }
 
     static void main(String[] args) {
+        ExceptionUtils.setFail(true)
         new SpringApplication(Application.class).run(args)
     }
 }
