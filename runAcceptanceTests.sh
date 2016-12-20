@@ -639,8 +639,25 @@ if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
             READY_FOR_TESTS="yes"
         fi
 else
-    READY_FOR_TESTS="yes"
-    echo -e "\n\nSkipping the check if apps are booted"
+    DISCOVERY_HOST=`app_domain ${CLOUD_PREFIX}-discovery`
+    echo "Resolved discovery host for discovery is [${DISCOVERY_HOST}]"
+    echo -e "\n\nChecking for the presence of all services in Service Discovery for [$(( WAIT_TIME * RETRIES ))] seconds"
+    for i in $( seq 1 "${RETRIES}" ); do
+        sleep "${WAIT_TIME}"
+        CURL_RESULT=$( curl -m 5 http://${DISCOVERY_HOST}/eureka/apps/ )
+        echo "${CURL_RESULT}" | grep PRESENTING && PRESENTING_PRESENT="yes"
+        echo "${CURL_RESULT}" | grep BREWING && BREWING_PRESENT="yes"
+        echo "${CURL_RESULT}" | grep INGREDIENTS && INGREDIENTS_PRESENT="yes"
+        echo "${CURL_RESULT}" | grep REPORTING && REPORTING_PRESENT="yes"
+        if [[ "${PRESENTING_PRESENT}" == "yes" && "${BREWING_PRESENT}" == "yes" && "${INGREDIENTS_PRESENT}" == "yes" && "${REPORTING_PRESENT}" == "yes" ]]; then READY_FOR_TESTS="yes" && break; fi
+        echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
+    done
+    if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
+        echo -e "\n\nThe apps failed to register in Service Discovery!"
+        print_logs
+        kill_all_apps_if_switch_on
+        exit 1
+    fi
 fi
 
 # ======================================= Running acceptance tests =======================================
