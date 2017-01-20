@@ -265,7 +265,7 @@ GLOBAL:
 -k  |--kafka - uses Kafka instead of RabbitMQ
 -d  |--skipdeployment - should skip deployment of apps? Defaults to "no"
 -a  |--deployonlyapps - should deploy only the brewery business apps instead of the infra too? Defaults to "no"
--b  |--bootversion - Which version of Boot should be used? Defaults to 1.5.0.BUILD-SNAPSHOT for the plugin and to boot version used by libs
+-b  |--bootversion - Which version of Boot should be used? Defaults to 1.4.0.RELEASE for the plugin and to boot version used by libs
 
 CLOUD FOUNDRY RELATED PROPERTIES:
 -c  |--usecloudfoundry - should run tests for cloud foundry? (works only for SLEUTH_STREAM) Defaults to "no"
