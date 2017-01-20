@@ -10,3 +10,6 @@ spring:
           uri: https://github.com/spring-cloud-samples/brewery-config.git
 
 spring.zipkin.enabled: false
+
+management.security.enabled: false
+endpoints.health.sensitive: false

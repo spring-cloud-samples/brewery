@@ -3,9 +3,21 @@ buildscript {
         mavenLocal()
         jcenter()
         mavenCentral()
+        maven {
+            url "http://repo.spring.io/snapshot"
+        }
+        maven {
+            url "http://repo.spring.io/milestone"
+        }
+        maven {
+            url "http://repo.spring.io/libs-release-local"
+        }
+        maven {
+            url "http://repo.spring.io/libs-staging-local/"
+        }
     }
     dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.4.0.RELEASE"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${hasProperty("BOOT_VERSION") ? "${project.property("BOOT_VERSION")}" : "${BOOT_VERSION}" }"
         if (hasProperty("docker")) { classpath 'se.transmode.gradle:gradle-docker:1.2' }
     }
 }
@@ -126,6 +138,10 @@ configure(subprojects) {
     dependencyManagement {
         imports {
             mavenBom "org.springframework.cloud:spring-cloud-dependencies:$BOM_VERSION"
+            if (hasProperty("BOOT_VERSION")) {
+                println "Using boot in version [${project.property("BOOT_VERSION")}]"
+                mavenBom "org.springframework.boot:spring-boot-dependencies:${project.property("BOOT_VERSION")}"
+            }
             if (ext.whatToTest('SCS')) mavenBom "io.pivotal.spring.cloud:spring-cloud-services-dependencies:$SCS_VERSION"
         }
     }

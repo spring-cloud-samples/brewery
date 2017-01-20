@@ -265,6 +265,7 @@ GLOBAL:
 -k  |--kafka - uses Kafka instead of RabbitMQ
 -d  |--skipdeployment - should skip deployment of apps? Defaults to "no"
 -a  |--deployonlyapps - should deploy only the brewery business apps instead of the infra too? Defaults to "no"
+-b  |--bootversion - Which version of Boot should be used? Defaults to 1.5.0.BUILD-SNAPSHOT for the plugin and to boot version used by libs
 
 CLOUD FOUNDRY RELATED PROPERTIES:
 -c  |--usecloudfoundry - should run tests for cloud foundry? (works only for SLEUTH_STREAM) Defaults to "no"
@@ -307,6 +308,7 @@ DEFAULT_SCS_VERSION="1.1.2.BUILD-SNAPSHOT"
 
 BOM_VERSION_PROP_NAME="BOM_VERSION"
 SCS_BOM_VERSION_PROP_NAME="SCS_VERSION"
+BOOT_VERSION_PROP_NAME="BOOT_VERSION"
 
 DEFAULT_ORG="${DEFAULT_ORG:-brewery}"
 DEFAULT_SPACE="${DEFAULT_SPACE:-scs}"
@@ -399,6 +401,10 @@ case ${key} in
     -k|--kafka)
     KAFKA="yes"
     ;;
+    -b|--bootversion)
+    BOOT_VERSION="$2"
+    shift
+    ;;
     --help)
     print_usage
     exit 0
@@ -447,6 +453,7 @@ ACCEPTANCE_TEST_OPTS=${ACCEPTANCE_TEST_OPTS}
 DEPLOY_ONLY_APPS=${DEPLOY_ONLY_APPS}
 SKIP_DEPLOYMENT=${SKIP_DEPLOYMENT}
 KAFKA=${KAFKA:-"no"}
+BOOT_VERSION=${BOOT_VERSION}
 
 CLOUD FOUNDRY PROPS:
 
@@ -487,6 +494,7 @@ export CLOUD_ORG=${CLOUD_ORG}
 export CLOUD_SPACE=${CLOUD_SPACE}
 export USERNAME=${USERNAME}
 export PASSWORD=${PASSWORD}
+export BOOT_VERSION=${BOOT_VERSION}
 
 export -f login
 export -f app_domain
@@ -538,6 +546,9 @@ echo -e "\nAppending if not present the following entry to gradle.properties\n"
 grep "${BOM_VERSION_PROP_NAME}=${VERSION}" gradle.properties || echo -e "\n${BOM_VERSION_PROP_NAME}=${VERSION}" >> gradle.properties
 # Update the desired SCS BOM version
 grep "${SCS_BOM_VERSION_PROP_NAME}=${SCS_VERSION}" gradle.properties || echo -e "\n${SCS_BOM_VERSION_PROP_NAME}=${SCS_VERSION}" >> gradle.properties
+if [[ "${BOOT_VERSION}" != "" ]] ; then
+    grep "${BOOT_VERSION_PROP_NAME}=${BOOT_VERSION}" gradle.properties || echo -e "\n${BOOT_VERSION_PROP_NAME}=${BOOT_VERSION}" >> gradle.properties
+fi
 
 echo -e "\n\nUsing the following gradle.properties"
 cat gradle.properties
@@ -554,7 +565,12 @@ if [[ -z "${SKIP_BUILDING}" ]] ; then
         echo "Will use Kafka as a message broker"
         PARAMS="${PARAMS} -Pkafka"
     fi
+    if [[ "${BOOT_VERSION}" != "" ]] ; then
+        echo "Will use Boot in version [${BOOT_VERSION}]"
+        PARAMS="${PARAMS} -PBOOT_VERSION=${BOOT_VERSION}"
+    fi
     for i in $( seq 1 "${APP_BUILDING_RETRIES}" ); do
+          echo "Running the build with parameters [${PARAMS}]"
           ./gradlew clean --parallel && ./gradlew build ${PARAMS} && APP_FAILED="no" && break
           echo "Fail #$i/${APP_BUILDING_RETRIES}... will try again in [${APP_WAIT_TIME}] seconds"
     done

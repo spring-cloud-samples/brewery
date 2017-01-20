@@ -20,3 +20,6 @@ zipkin:
     type: mem
 
 logging.file: build/zipkin-server.log
+
+management.security.enabled: false
+endpoints.health.sensitive: false

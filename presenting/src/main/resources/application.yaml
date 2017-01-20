@@ -15,3 +15,6 @@ spring.sleuth.web.skipPattern: /api-docs.*|/autoconfig|/health|/configprops|/dum
 logging.file: build/presenting.log
 
 hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
+
+management.security.enabled: false
+endpoints.health.sensitive: false

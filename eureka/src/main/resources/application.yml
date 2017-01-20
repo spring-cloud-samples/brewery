@@ -6,3 +6,6 @@ eureka:
   client:
     registerWithEureka: false
     fetchRegistry: false
+
+management.security.enabled: false
+endpoints.health.sensitive: false

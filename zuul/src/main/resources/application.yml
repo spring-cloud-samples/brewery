@@ -19,3 +19,6 @@ zuul:
   retryable: true
 
 hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
+
+management.security.enabled: false
+endpoints.health.sensitive: false

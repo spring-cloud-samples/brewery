@@ -25,9 +25,14 @@ import io.spring.cloud.samples.brewery.acceptance.model.ProcessState
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.SpringApplicationContextLoader
+import org.springframework.boot.test.context.SpringBootContextLoader
 import org.springframework.cloud.sleuth.Span
-import org.springframework.http.*
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
+import org.springframework.http.RequestEntity
+import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
@@ -35,10 +40,11 @@ import zipkin.Codec
 
 import static com.jayway.awaitility.Awaitility.await
 import static java.util.concurrent.TimeUnit.SECONDS
+
 /**
  *  TODO: Split responsibilities
  */
-@ContextConfiguration(classes = TestConfiguration, loader = SpringApplicationContextLoader)
+@ContextConfiguration(classes = TestConfiguration, loader = SpringBootContextLoader)
 abstract class AbstractBreweryAcceptanceSpec extends Specification {
 
 	public static final String TRACE_ID_HEADER_NAME = Span.TRACE_ID_NAME

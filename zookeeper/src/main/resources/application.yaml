@@ -1,1 +1,4 @@
 server.port: 9999
+
+management.security.enabled: false
+endpoints.health.sensitive: false
