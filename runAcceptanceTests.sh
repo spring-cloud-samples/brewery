@@ -212,8 +212,7 @@ function kill_all_apps() {
             kill_and_log "zipkin-server"
             kill_all_apps_with_port
             if [[ -z "${KILL_NOW_APPS}" ]] ; then
-                docker kill $(docker ps -q) || echo "No running docker containers are left"
-                docker stop `docker ps -a -q --filter="image=spotify/kafka"` || echo "No docker with Kafka was running - won't stop anything"
+                kill_docker
             fi
         else
             reset "${CLOUD_PREFIX}-brewing" || echo "Failed to kill the app"
@@ -230,6 +229,12 @@ function kill_all_apps() {
             yes | cf delete-orphaned-routes || echo "Failed to delete routes"
     fi
     return 0
+}
+
+# Kills all docker related elements
+function kill_docker() {
+    docker kill $(docker ps -q) || echo "No running docker containers are left"
+    docker kill `docker ps -a -q --filter="image=spotify/kafka"` || echo "No docker with Kafka was running - won't stop anything"
 }
 
 # Kills all started aps if the switch is on
@@ -516,6 +521,7 @@ export -f kill_all_apps
 export -f kill_and_log
 export -f kill_all_apps_with_port
 export -f kill_app_with_port
+export -f kill_docker
 
 # ======================================= EXPORTING VARS END =======================================
 

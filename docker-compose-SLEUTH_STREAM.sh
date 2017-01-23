@@ -10,8 +10,8 @@ if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
     if [[ "${KAFKA}" == "yes" ]] ; then
         echo -e "\nThe following containers are running:"
         docker ps
-        echo -e "\nWill try to restart docker"
-        restart docker
+        echo -e "\nWill try to kill all running docker images"
+        kill_docker
 
         echo -e "\nTrying to run Kafka in Docker\n"
         docker run -d -p 2181:2181 -p 9092:9092 --env _KAFKA_advertised_host_name="${DEFAULT_HEALTH_HOST}" --env _KAFKA_advertised_port=9092 flozano/kafka
