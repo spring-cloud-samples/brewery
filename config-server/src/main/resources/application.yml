@@ -11,5 +11,5 @@ spring:
 
 spring.zipkin.enabled: false
 
-management.security.enabled: false
+
 endpoints.health.sensitive: false

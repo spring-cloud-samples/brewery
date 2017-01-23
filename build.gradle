@@ -145,6 +145,8 @@ configure(subprojects) {
             if (ext.whatToTest('SCS')) mavenBom "io.pivotal.spring.cloud:spring-cloud-services-dependencies:$SCS_VERSION"
         }
     }
+
+    task allDeps(type: DependencyReportTask) {}
 }
 
 configure(subprojects - zipkinServerProject - acceptanceTestsProject - zookeeperServerProject - configServerProject) {

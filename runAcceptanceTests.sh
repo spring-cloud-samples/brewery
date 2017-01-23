@@ -560,7 +560,7 @@ APP_BUILDING_RETRIES=3
 APP_WAIT_TIME=1
 APP_FAILED="yes"
 if [[ -z "${SKIP_BUILDING}" ]] ; then
-    PARAMS="--parallel --no-daemon --refresh-dependencies";
+    PARAMS="--no-daemon --refresh-dependencies";
     if [[ "${KAFKA}" == "yes" ]] ; then
         echo "Will use Kafka as a message broker"
         PARAMS="${PARAMS} -Pkafka"
@@ -570,8 +570,11 @@ if [[ -z "${SKIP_BUILDING}" ]] ; then
         PARAMS="${PARAMS} -PBOOT_VERSION=${BOOT_VERSION}"
     fi
     for i in $( seq 1 "${APP_BUILDING_RETRIES}" ); do
-          echo "Running the build with parameters [${PARAMS}]"
-          ./gradlew clean --parallel && ./gradlew build ${PARAMS} && APP_FAILED="no" && break
+          ./gradlew clean --parallel
+          echo -e "\n\nPrinting the dependency tree for all projects\n\n"
+          ./gradlew allDeps
+          echo -e "\n\nRunning the build with parameters [${PARAMS}]\n\n"
+          ./gradlew build ${PARAMS} --parallel && APP_FAILED="no" && break
           echo "Fail #$i/${APP_BUILDING_RETRIES}... will try again in [${APP_WAIT_TIME}] seconds"
     done
 else
