@@ -24,6 +24,21 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
             exit 1
         fi
 
+        echo -e "\n\nDeploying Zipkin Server"
+        zq=zipkin-server
+        ZQ_APP_NAME="${CLOUD_PREFIX}-$zq"
+        cd $root/$zq
+        reset $ZQ_APP_NAME
+        cf d -f $ZQ_APP_NAME
+        cd $root/zipkin-server
+        cf push -f "manifest-${CLOUD_PREFIX}.yml" && READY_FOR_TESTS="yes"
+
+        if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
+            echo "Zipkin Server failed to start..."
+            exit 1
+        fi
+        cd $root
+
         # ====================================================
 
         # Boot config-server
