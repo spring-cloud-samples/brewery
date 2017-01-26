@@ -1,0 +1,14 @@
+---
+applications:
+- name: scsbrewery-zipkin-server
+  memory: 1024M
+  instances: 1
+  host: scsbrewery-zipkin-server
+  path: build/libs/zipkin-server-1.0.0.jar
+  services:
+    - scsbrewery-rabbitmq
+    - scsbrewery-mysql
+  env:
+    SPRING_PROFILES_ACTIVE: pcf,cloud-scsbrewery
+    DEBUG: "true"
+    JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
