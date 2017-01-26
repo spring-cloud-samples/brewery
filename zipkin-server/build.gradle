@@ -1,4 +1,4 @@
-moduleEnabled(whatToTest('SLEUTH_STREAM') || whatToTest('SCS'))
+moduleEnabled(whatToTest('SLEUTH_STREAM'))
 
 dependencies {
     compile "org.springframework:spring-jdbc"
