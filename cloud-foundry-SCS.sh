@@ -3,7 +3,7 @@
 set -e
 
 root=`pwd`
-CLOUD_PREFIX="scsbrewery"
+export CLOUD_PREFIX="scsbrewery"
 
 if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
     # ====================================================

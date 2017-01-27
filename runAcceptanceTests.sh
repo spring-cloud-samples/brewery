@@ -664,8 +664,9 @@ if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
             READY_FOR_TESTS="yes"
         fi
 else
-    DISCOVERY_HOST=`app_domain ${CLOUD_PREFIX}-discovery`
-    echo "Resolved discovery host for discovery is [${DISCOVERY_HOST}]"
+    DISCOVERY_HOST_NAME="${CLOUD_PREFIX}-discovery"
+    DISCOVERY_HOST=`app_domain ${DISCOVERY_HOST_NAME}`
+    echo "Resolved discovery host for discovery with name [${DISCOVERY_HOST_NAME}] is [${DISCOVERY_HOST}]"
     echo -e "\n\nChecking for the presence of all services in Service Discovery for [$(( WAIT_TIME * RETRIES ))] seconds"
     for i in $( seq 1 "${RETRIES}" ); do
         sleep "${WAIT_TIME}"
