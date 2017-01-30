@@ -271,6 +271,7 @@ GLOBAL:
 -d  |--skipdeployment - should skip deployment of apps? Defaults to "no"
 -a  |--deployonlyapps - should deploy only the brewery business apps instead of the infra too? Defaults to "no"
 -b  |--bootversion - Which version of Boot should be used? Defaults to 1.4.0.RELEASE for the plugin and to boot version used by libs
+-ve |--verbose - Will print all library versions
 
 CLOUD FOUNDRY RELATED PROPERTIES:
 -c  |--usecloudfoundry - should run tests for cloud foundry? (works only for SLEUTH_STREAM) Defaults to "no"
@@ -410,6 +411,9 @@ case ${key} in
     BOOT_VERSION="$2"
     shift
     ;;
+    -ve|--verbose)
+    VERBOSE="yes"
+    ;;
     --help)
     print_usage
     exit 0
@@ -459,6 +463,7 @@ DEPLOY_ONLY_APPS=${DEPLOY_ONLY_APPS}
 SKIP_DEPLOYMENT=${SKIP_DEPLOYMENT}
 KAFKA=${KAFKA:-"no"}
 BOOT_VERSION=${BOOT_VERSION}
+VERBOSE=${VERBOSE}
 
 CLOUD FOUNDRY PROPS:
 
@@ -500,6 +505,7 @@ export CLOUD_SPACE=${CLOUD_SPACE}
 export USERNAME=${USERNAME}
 export PASSWORD=${PASSWORD}
 export BOOT_VERSION=${BOOT_VERSION}
+export VERBOSE=${VERBOSE}
 
 export -f login
 export -f app_domain
@@ -577,8 +583,10 @@ if [[ -z "${SKIP_BUILDING}" ]] ; then
     fi
     for i in $( seq 1 "${APP_BUILDING_RETRIES}" ); do
           ./gradlew clean --parallel
-          echo -e "\n\nPrinting the dependency tree for all projects\n\n"
-          ./gradlew allDeps
+          if [[ "${VERBOSE}" == "yes" ]] ; then
+            echo -e "\n\nPrinting the dependency tree for all projects\n\n"
+            ./gradlew allDeps
+          fi
           echo -e "\n\nRunning the build with parameters [${PARAMS}]\n\n"
           ./gradlew build ${PARAMS} --parallel && APP_FAILED="no" && break
           echo "Fail #$i/${APP_BUILDING_RETRIES}... will try again in [${APP_WAIT_TIME}] seconds"
