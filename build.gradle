@@ -1,7 +1,6 @@
 buildscript {
     repositories {
         mavenLocal()
-        jcenter()
         mavenCentral()
         maven {
             url "http://repo.spring.io/snapshot"
@@ -10,11 +9,12 @@ buildscript {
             url "http://repo.spring.io/milestone"
         }
         maven {
-            url "http://repo.spring.io/libs-release-local"
+            url "http://repo.spring.io/release"
         }
         maven {
             url "http://repo.spring.io/libs-staging-local/"
         }
+        jcenter()
     }
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${hasProperty("BOOT_VERSION") ? "${project.property("BOOT_VERSION")}" : "1.4.0.RELEASE" }"
@@ -120,7 +120,6 @@ configure(subprojects) {
 
     repositories {
         mavenLocal()
-        jcenter()
         mavenCentral()
         maven {
             url "http://repo.spring.io/snapshot"
@@ -129,11 +128,12 @@ configure(subprojects) {
             url "http://repo.spring.io/milestone"
         }
         maven {
-            url "http://repo.spring.io/libs-release-local"
+            url "http://repo.spring.io/release"
         }
         maven {
             url "http://repo.spring.io/libs-staging-local/"
         }
+        jcenter()
     }
 
     dependencyManagement {
