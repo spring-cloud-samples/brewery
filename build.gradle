@@ -121,6 +121,7 @@ configure(subprojects) {
     repositories {
         mavenLocal()
         jcenter()
+        mavenCentral()
         maven {
             url "http://repo.spring.io/snapshot"
         }
@@ -130,9 +131,9 @@ configure(subprojects) {
         maven {
             url "http://repo.spring.io/libs-release-local"
         }
-       maven {
-           url "http://repo.spring.io/libs-staging-local/"
-       }
+        maven {
+            url "http://repo.spring.io/libs-staging-local/"
+        }
     }
 
     dependencyManagement {
@@ -148,6 +149,8 @@ configure(subprojects) {
 
     task allDeps(type: DependencyReportTask) {}
 }
+
+logger.lifecycle("WHAT_TO_TEST is: System prop: [${project.gradle.startParameter.systemPropertiesArgs.get("WHAT_TO_TEST")}] , Env prop: [${System.getenv("WHAT_TO_TEST")}]")
 
 configure(subprojects - zipkinServerProject - acceptanceTestsProject - zookeeperServerProject - configServerProject) {
 
@@ -230,7 +233,7 @@ configure(subprojects - techProjects - commonZipkinProject - commonZipkinProject
     }
 
     wrapper {
-        gradleVersion '2.14'
+        gradleVersion '3.3'
     }
 
     bootRun {
