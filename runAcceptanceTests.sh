@@ -261,7 +261,7 @@ You can use the following options:
 GLOBAL:
 -t  |--whattotest  - define what you want to test (i.e. ZOOKEEPER, SLEUTH, SLEUTH_STREAM, EUREKA, CONSUL, SCS)
 -v  |--version - which version of BOM do you want to use? Defaults to Dalston snapshot
--sv |--scsversion - which version of BOM for Spring Cloud Services do you want to use? Defaults to 1.1.2.BUILD-SNAPSHOT
+-sv |--scsversion - which version of BOM for Spring Cloud Services do you want to use? Defaults to 1.3.2.BUILD-SNAPSHOT
 -h  |--healthhost - what is your health host? where is docker? defaults to localhost
 -l  |--numberoflines - how many lines of logs of your app do you want to print? Defaults to 1000
 -r  |--reset - do you want to reset the git repo of brewery? Defaults to "no"
@@ -312,7 +312,7 @@ fi
 LOCALHOST="127.0.0.1"
 MEM_ARGS="-Xmx128m -Xss1024k"
 CLOUD_PREFIX="brewery"
-DEFAULT_SCS_VERSION="1.1.2.BUILD-SNAPSHOT"
+DEFAULT_SCS_VERSION="1.3.2.BUILD-SNAPSHOT"
 
 BOM_VERSION_PROP_NAME="BOM_VERSION"
 SCS_BOM_VERSION_PROP_NAME="SCS_VERSION"
