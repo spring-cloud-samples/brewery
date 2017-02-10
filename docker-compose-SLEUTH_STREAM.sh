@@ -2,7 +2,8 @@
 
 SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.rabbitmq.port=9672 -Dspring.zipkin.host=localhost"
 
-dockerComposeFile="docker-compose-${WHAT_TO_TEST}.yml"
+dockerComposeRoot="docker-compose-${WHAT_TO_TEST}"
+dockerComposeFile="${dockerComposeRoot}.yml"
 docker-compose -f $dockerComposeFile kill
 docker-compose -f $dockerComposeFile build
 
@@ -14,7 +15,11 @@ if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
         kill_docker
 
         echo -e "\nTrying to run Kafka in Docker\n"
-        docker run -d -p 2181:2181 -p 9092:9092 --env _KAFKA_advertised_host_name="${DEFAULT_HEALTH_HOST}" --env _KAFKA_advertised_port=9092 flozano/kafka
+        export KAFKA_ADVERTISED_HOST_NAME="${DEFAULT_HEALTH_HOST}"
+        dockerComposeFile="${dockerComposeRoot}-kafka.yml"
+        docker-compose -f $dockerComposeFile kill
+        docker-compose -f $dockerComposeFile build
+        docker-compose -f $dockerComposeFile up -d
         READY_FOR_TESTS="no"
         PORT_TO_CHECK=9092
         echo "Waiting for Kafka to boot for [$(( WAIT_TIME * RETRIES ))] seconds"

@@ -236,7 +236,6 @@ function kill_all_apps() {
 # Kills all docker related elements
 function kill_docker() {
     docker kill $(docker ps -q) || echo "No running docker containers are left"
-    docker kill `docker ps -a -q --filter="image=spotify/kafka"` || echo "No docker with Kafka was running - won't stop anything"
 }
 
 # Kills all started aps if the switch is on
