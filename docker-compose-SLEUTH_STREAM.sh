@@ -7,6 +7,23 @@ dockerComposeFile="${dockerComposeRoot}.yml"
 docker-compose -f $dockerComposeFile kill
 docker-compose -f $dockerComposeFile build
 
+function run_docker_compose() {
+  local appName=$1
+  local port=$2
+  dockerComposeFile="${dockerComposeRoot}-${appName}.yml"
+  echo "Waiting for ${appName} to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
+  docker-compose -f $dockerComposeFile kill
+  docker-compose -f $dockerComposeFile build
+  docker-compose -f $dockerComposeFile up -d
+  netcat_port $2 && READY_FOR_TESTS="yes"
+  if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
+      echo "${appName} failed to start..."
+      print_logs
+      kill_all_apps_if_switch_on
+      exit 1
+  fi
+}
+
 if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
     if [[ "${KAFKA}" == "yes" ]] ; then
         echo -e "\nThe following containers are running:"
@@ -15,22 +32,12 @@ if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
         kill_docker
 
         echo -e "\nTrying to run Kafka in Docker\n"
-        export KAFKA_ADVERTISED_HOST_NAME="${DEFAULT_HEALTH_HOST}"
-        dockerComposeFile="${dockerComposeRoot}-kafka.yml"
-        docker-compose -f $dockerComposeFile kill
-        docker-compose -f $dockerComposeFile build
-        docker-compose -f $dockerComposeFile up -d
-        READY_FOR_TESTS="no"
-        PORT_TO_CHECK=9092
-        echo "Waiting for Kafka to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
-        netcat_port $PORT_TO_CHECK && READY_FOR_TESTS="yes"
-
-        if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
-            echo "Kafka failed to start..."
-            print_logs
-            kill_all_apps_if_switch_on
-            exit 1
-        fi
+        # WITH DOCKER COMPOSE V1 WE NEED TO SIMULATE ORDER MANUALY...
+        EXTERNAL_IP=$( ${CURRENT_DIR}/scripts/whats_my_ip.sh )
+        export KAFKA_ADVERTISED_HOST_NAME="${EXTERNAL_IP}"
+        export ZOOKEEPER_ADVERTISED_HOST_NAME="${EXTERNAL_IP}"
+        run_docker_compose "zookeeper" "2181"
+        run_docker_compose "kafka" "9092"
     else
         echo -e "\n\nBooting up RabbitMQ"
         docker-compose -f $dockerComposeFile up -d
