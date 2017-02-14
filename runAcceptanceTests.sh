@@ -271,7 +271,7 @@ GLOBAL:
 -k  |--kafka - uses Kafka instead of RabbitMQ
 -d  |--skipdeployment - should skip deployment of apps? Defaults to "no"
 -a  |--deployonlyapps - should deploy only the brewery business apps instead of the infra too? Defaults to "no"
--b  |--bootversion - Which version of Boot should be used? Defaults to 1.4.0.RELEASE for the plugin and to boot version used by libs
+-b  |--bootversion - Which version of Boot should be used? Defaults to 1.4.4.RELEASE for the plugin and to boot version used by libs
 -ve |--verbose - Will print all library versions
 
 CLOUD FOUNDRY RELATED PROPERTIES:

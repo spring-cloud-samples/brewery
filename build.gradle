@@ -17,7 +17,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:${hasProperty("BOOT_VERSION") ? "${project.property("BOOT_VERSION")}" : "1.4.0.RELEASE" }"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${hasProperty("BOOT_VERSION") ? "${project.property("BOOT_VERSION")}" : "1.4.4.RELEASE" }"
         if (hasProperty("docker")) { classpath 'se.transmode.gradle:gradle-docker:1.2' }
     }
 }
