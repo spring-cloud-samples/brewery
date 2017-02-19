@@ -273,6 +273,7 @@ GLOBAL:
 -d  |--skipdeployment - should skip deployment of apps? Defaults to "no"
 -a  |--deployonlyapps - should deploy only the brewery business apps instead of the infra too? Defaults to "no"
 -b  |--bootversion - Which version of Boot should be used? Defaults to 1.4.4.RELEASE for the plugin and to boot version used by libs
+-cli|--cliversion - which version of Spring Cloud CLI should be used (it's used to start Kafka)? Defaults to 1.2.3.RELEASE
 -ve |--verbose - Will print all library versions
 
 CLOUD FOUNDRY RELATED PROPERTIES:
@@ -412,6 +413,9 @@ case ${key} in
     -b|--bootversion)
     BOOT_VERSION="$2"
     shift
+    -cli|--cliversion)
+    CLI_VERSION="$2"
+    shift
     ;;
     -ve|--verbose)
     VERBOSE="yes"
@@ -466,6 +470,7 @@ SKIP_DEPLOYMENT=${SKIP_DEPLOYMENT}
 KAFKA=${KAFKA:-"no"}
 BOOT_VERSION=${BOOT_VERSION}
 VERBOSE=${VERBOSE}
+CLI_VERSION=${CLI_VERSION}
 
 CLOUD FOUNDRY PROPS:
 
@@ -508,6 +513,7 @@ export USERNAME=${USERNAME}
 export PASSWORD=${PASSWORD}
 export BOOT_VERSION=${BOOT_VERSION}
 export VERBOSE=${VERBOSE}
+export CLI_VERSION=${CLI_VERSION:-1.2.3.RELEASE}
 
 export -f login
 export -f app_domain
