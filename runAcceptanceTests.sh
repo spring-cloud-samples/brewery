@@ -111,6 +111,7 @@ function print_logs() {
     tail_log "discovery"
     tail_log "zookeeper"
     tail_log "zipkin-server"
+    tail_log "kafka"
 }
 
 # ${RETRIES} number of times will try to netcat to passed port $1 and host $2
