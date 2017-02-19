@@ -1,5 +1,17 @@
 #!/bin/bash
 
+function run_kafka() {
+    local APP_JAVA_PATH=${CURRENT_DIR}/build/
+    local EXPRESSION="nohup spring cloud kafka >$APP_JAVA_PATH/kafka.log &"
+    echo -e "\nTrying to run [$EXPRESSION]"
+    eval ${EXPRESSION}
+    pid=$!
+    echo ${pid} > ${APP_JAVA_PATH}/app.pid
+    echo -e "[kafka] process pid is [$pid]"
+    echo -e "Logs are under [build/kafka.log]\n"
+    return 0
+}
+
 SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.rabbitmq.port=9672 -Dspring.zipkin.host=localhost"
 
 dockerComposeRoot="docker-compose-${WHAT_TO_TEST}"
@@ -7,37 +19,34 @@ dockerComposeFile="${dockerComposeRoot}.yml"
 docker-compose -f $dockerComposeFile kill
 docker-compose -f $dockerComposeFile build
 
-function run_docker_compose() {
-  local appName=$1
-  local port=$2
-  dockerComposeFile="${dockerComposeRoot}-${appName}.yml"
-  echo "Waiting for ${appName} to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
-  docker-compose -f $dockerComposeFile kill
-  docker-compose -f $dockerComposeFile build
-  docker-compose -f $dockerComposeFile up -d
-  netcat_port $2 && READY_FOR_TESTS="yes"
-  if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
-      echo "${appName} failed to start..."
-      print_logs
-      kill_all_apps_if_switch_on
-      exit 1
-  fi
-}
-
 if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
     if [[ "${KAFKA}" == "yes" ]] ; then
-        echo -e "\nThe following containers are running:"
-        docker ps
-        echo -e "\nWill try to kill all running docker images"
-        kill_docker
-
-        echo -e "\nTrying to run Kafka in Docker\n"
-        # WITH DOCKER COMPOSE V1 WE NEED TO SIMULATE ORDER MANUALY...
-        EXTERNAL_IP=$( ${CURRENT_DIR}/scripts/whats_my_ip.sh )
-        export KAFKA_ADVERTISED_HOST_NAME="${EXTERNAL_IP}"
-        export ZOOKEEPER_ADVERTISED_HOST_NAME="${EXTERNAL_IP}"
-        run_docker_compose "zookeeper" "2181"
-        run_docker_compose "kafka" "9092"
+        echo -e "\nCheck if sdkman is installed"
+        SDK_INSTALLED="no"
+        sdk version && SDK_INSTALLED="true" || echo "Failed to execute SDK"
+        if [[ "${SDK_INSTALLED}" == "no" ]] ; then
+          echo "Installing sdkman"
+          curl -s "https://get.sdkman.io" | bash
+        fi
+        source "$HOME/.sdkman/bin/sdkman-init.sh"
+        echo -e "\nInstalling spring boot and spring cloud plugins"
+        yes | sdk use springboot 1.4.3.RELEASE
+        yes | spring install org.springframework.cloud:spring-cloud-cli:1.2.3.RELEASE
+        echo -e "\nPrinting versions"
+        spring version
+        spring cloud --version
+        echo -e "\nRunning Kafka"
+        run_kafka
+        READY_FOR_TESTS="no"
+        PORT_TO_CHECK=9092
+        echo "Waiting for Kafka to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
+        netcat_local_port $PORT_TO_CHECK && READY_FOR_TESTS="yes"
+        if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
+            echo "Kafka failed to start..."
+            print_logs
+            kill_all_apps_if_switch_on
+            exit 1
+        fi
     else
         echo -e "\n\nBooting up RabbitMQ"
         docker-compose -f $dockerComposeFile up -d

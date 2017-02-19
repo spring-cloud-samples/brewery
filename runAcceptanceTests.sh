@@ -216,6 +216,7 @@ function kill_all_apps() {
             if [[ -z "${KILL_NOW_APPS}" ]] ; then
                 kill_docker
             fi
+            pkill -15 -f kafka || echo "No kafka was running"
         else
             reset "${CLOUD_PREFIX}-brewing" || echo "Failed to kill the app"
             reset "${CLOUD_PREFIX}-zuul" || echo "Failed to kill the app"
