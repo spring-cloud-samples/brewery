@@ -25,7 +25,7 @@ if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
     if [[ "${KAFKA}" == "yes" ]] ; then
         echo -e "\nCheck if sdkman is installed"
         SDK_INSTALLED="no"
-        source "${HOME}/.sdkman/bin/sdkman-init.sh" || echo "Couldn't source SDKman"
+        [[ -s "${HOME}/.sdkman/bin/sdkman-init.sh" ]] && source "${HOME}/.sdkman/bin/sdkman-init.sh"
         sdk version && SDK_INSTALLED="true" || echo "Failed to execute SDKman"
         CLI_PATH="${HOME}/.sdkman/candidates/springboot/${BOOT_VERSION}/bin/"
         if [[ "${SDK_INSTALLED}" == "no" ]] ; then
