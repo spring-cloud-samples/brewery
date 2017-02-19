@@ -4,6 +4,7 @@ CLI_VERSION=1.2.3.RELEASE
 
 function run_kafka() {
     local APP_JAVA_PATH=${CURRENT_DIR}/build/
+    mkdir -p ${APP_JAVA_PATH}
     local EXPRESSION="nohup ${CLI_PATH}spring cloud kafka >$APP_JAVA_PATH/kafka.log &"
     echo -e "\nTrying to run [$EXPRESSION]"
     eval ${EXPRESSION}
