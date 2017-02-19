@@ -36,7 +36,9 @@ if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
         echo -e "\nInstalling spring boot and spring cloud plugins"
         yes | sdk use springboot "${BOOT_VERSION}"
         echo "Path to Spring CLI [${CLI_PATH}]"
+        rm "${HOME}/.sdkman/candidates/springboot/${BOOT_VERSION}/lib/ext/spring-cloud*"
         yes | ${CLI_PATH}spring install org.springframework.cloud:spring-cloud-cli:${CLI_VERSION}
+        yes |
         echo -e "\nPrinting versions"
         ${CLI_PATH}spring version
         ${CLI_PATH}spring cloud --version
