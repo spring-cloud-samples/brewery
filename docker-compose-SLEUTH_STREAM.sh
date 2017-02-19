@@ -33,7 +33,7 @@ if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
           curl -s "https://get.sdkman.io" | bash
           source "${HOME}/.sdkman/bin/sdkman-init.sh"
         fi
-        echo -e "\nInstalling spring boot and spring cloud plugins"
+        echo -e "\nInstalling spring boot [${BOOT_VERSION}] and spring cloud [${CLI_VERSION}] plugins"
         yes | sdk use springboot "${BOOT_VERSION}"
         echo "Path to Spring CLI [${CLI_PATH}]"
         rm "${HOME}/.sdkman/candidates/springboot/${BOOT_VERSION}/lib/ext/spring-cloud*"
