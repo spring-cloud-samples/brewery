@@ -1,5 +1,9 @@
 #!/bin/bash
 BOOT_VERSION=1.4.3.RELEASE
+if [[ ${CLI_VERSION} == *"SNAPSHOT"* ]]; then
+  BOOT_VERSION=1.5.1.BUILD-SNAPSHOT
+fi
+
 
 function run_kafka() {
     local APP_JAVA_PATH=${CURRENT_DIR}/build/
