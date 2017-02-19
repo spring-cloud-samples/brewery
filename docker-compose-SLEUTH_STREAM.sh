@@ -1,8 +1,10 @@
 #!/bin/bash
+BOOT_VERSION=1.4.3.RELEASE
+CLI_VERSION=1.2.3.RELEASE
 
 function run_kafka() {
     local APP_JAVA_PATH=${CURRENT_DIR}/build/
-    local EXPRESSION="nohup spring cloud kafka >$APP_JAVA_PATH/kafka.log &"
+    local EXPRESSION="nohup ${CLI_PATH}spring cloud kafka >$APP_JAVA_PATH/kafka.log &"
     echo -e "\nTrying to run [$EXPRESSION]"
     eval ${EXPRESSION}
     pid=$!
@@ -23,18 +25,22 @@ if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
     if [[ "${KAFKA}" == "yes" ]] ; then
         echo -e "\nCheck if sdkman is installed"
         SDK_INSTALLED="no"
-        sdk version && SDK_INSTALLED="true" || echo "Failed to execute SDK"
+        source "${HOME}/.sdkman/bin/sdkman-init.sh" || echo "Couldn't source SDKman"
+        sdk version && SDK_INSTALLED="true" || echo "Failed to execute SDKman"
+        CLI_PATH="${HOME}/.sdkman/candidates/springboot/${BOOT_VERSION}/bin/"
         if [[ "${SDK_INSTALLED}" == "no" ]] ; then
-          echo "Installing sdkman"
+          echo "Installing SDKman"
           curl -s "https://get.sdkman.io" | bash
+          source "${HOME}/.sdkman/bin/sdkman-init.sh"
         fi
-        source "$HOME/.sdkman/bin/sdkman-init.sh"
         echo -e "\nInstalling spring boot and spring cloud plugins"
-        yes | sdk use springboot 1.4.3.RELEASE
-        yes | spring install org.springframework.cloud:spring-cloud-cli:1.2.3.RELEASE
+        yes | sdk use springboot "${BOOT_VERSION}"
+        echo "Path to Spring CLI [${CLI_PATH}]"
+        yes | ${CLI_PATH}spring install org.springframework.cloud:spring-cloud-cli:${CLI_VERSION}
         echo -e "\nPrinting versions"
-        spring version
-        spring cloud --version
+        ${CLI_PATH}spring version
+        ${CLI_PATH}spring cloud --version
+
         echo -e "\nRunning Kafka"
         run_kafka
         READY_FOR_TESTS="no"
