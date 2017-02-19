@@ -413,6 +413,7 @@ case ${key} in
     -b|--bootversion)
     BOOT_VERSION="$2"
     shift
+    ;;
     -cli|--cliversion)
     CLI_VERSION="$2"
     shift
