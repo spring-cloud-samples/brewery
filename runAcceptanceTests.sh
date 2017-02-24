@@ -112,6 +112,7 @@ function print_logs() {
     tail_log "zookeeper"
     tail_log "zipkin-server"
     tail_log "kafka"
+    echo -e "\n\nPrinting Kafka logs" && cat /tmp/spring-cloud-dataflow-*/launcher-*/launcher.kafka || echo "No kafka was running"
 }
 
 # ${RETRIES} number of times will try to netcat to passed port $1 and host $2
