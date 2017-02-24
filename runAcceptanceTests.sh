@@ -559,7 +559,7 @@ else
         git pull "${REPO_URL}" "${REPO_BRANCH}"
     fi
 fi
-
+CURRENT_DIR=`pwd`
 
 # ======================================= Building the apps =======================================
 echo -e "\nAppending if not present the following entry to gradle.properties\n"
