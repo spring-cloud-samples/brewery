@@ -1,7 +1,7 @@
 #!/bin/bash
-BOOT_VERSION=1.4.3.RELEASE
+CLI_BOOT_VERSION=1.4.3.RELEASE
 if [[ ${CLI_VERSION} == *"SNAPSHOT"* ]]; then
-  BOOT_VERSION=1.5.1.RELEASE
+  CLI_BOOT_VERSION=1.5.1.RELEASE
 fi
 
 
@@ -31,17 +31,17 @@ if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
         SDK_INSTALLED="no"
         [[ -s "${HOME}/.sdkman/bin/sdkman-init.sh" ]] && source "${HOME}/.sdkman/bin/sdkman-init.sh"
         sdk version && SDK_INSTALLED="true" || echo "Failed to execute SDKman"
-        CLI_PATH="${HOME}/.sdkman/candidates/springboot/${BOOT_VERSION}/bin/"
+        CLI_PATH="${HOME}/.sdkman/candidates/springboot/${CLI_BOOT_VERSION}/bin/"
         if [[ "${SDK_INSTALLED}" == "no" ]] ; then
           echo "Installing SDKman"
           curl -s "https://get.sdkman.io" | bash
           source "${HOME}/.sdkman/bin/sdkman-init.sh"
         fi
-        echo -e "\nInstalling spring boot [${BOOT_VERSION}] and spring cloud [${CLI_VERSION}] plugins"
-        yes | sdk use springboot "${BOOT_VERSION}"
+        echo -e "\nInstalling spring boot [${CLI_BOOT_VERSION}] and spring cloud [${CLI_VERSION}] plugins"
+        yes | sdk use springboot "${CLI_BOOT_VERSION}"
         echo "Path to Spring CLI [${CLI_PATH}]"
-        rm ${HOME}/.sdkman/candidates/springboot/${BOOT_VERSION}/lib/ext/spring-cloud*
-        rm ${HOME}/.sdkman/candidates/springboot/${BOOT_VERSION}/lib/ext/.installed
+        rm ${HOME}/.sdkman/candidates/springboot/${CLI_BOOT_VERSION}/lib/ext/spring-cloud*
+        rm ${HOME}/.sdkman/candidates/springboot/${CLI_BOOT_VERSION}/lib/ext/.installed
         yes | ${CLI_PATH}spring install org.springframework.cloud:spring-cloud-cli:${CLI_VERSION}
         yes |
         echo -e "\nPrinting versions"
