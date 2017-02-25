@@ -659,25 +659,29 @@ if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
                 exit 1
             fi
 
+            # TODO: Either fix this or remove it
             # Wait for the apps to register in Service Discovery
-            READY_FOR_TESTS="no"
+            #READY_FOR_TESTS="no"
 
-            echo -e "\n\nChecking for the presence of all services in Service Discovery for [$(( WAIT_TIME * RETRIES ))] seconds"
-            for i in $( seq 1 "${RETRIES}" ); do
-                sleep "${WAIT_TIME}"
-                curl -m 5 http://${LOCALHOST}:9991/health | grep presenting |
-                    grep brewing | grep ingredients | grep reporting && READY_FOR_TESTS="yes" && break
-                echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
-            done
-
-            if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
-                echo -e "\n\nThe apps failed to register in Service Discovery!"
-                print_logs
-                kill_all_apps_if_switch_on
-                exit 1
+            #echo -e "\n\nChecking for the presence of all services in Service Discovery for [$(( WAIT_TIME * RETRIES ))] seconds"
+            #for i in $( seq 1 "${RETRIES}" ); do
+            #     sleep "${WAIT_TIME}"
+            #     curl -m 5 http://${LOCALHOST}:9991/health | grep presenting |
+            #         grep brewing | grep ingredients | grep reporting && READY_FOR_TESTS="yes" && break
+            #     echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
+            # done
+           
+           if [[ "${WHAT_TO_TEST}" == "EUREKA" ]] ; then
+                echo -e "\n\nWaiting for 30 seconds for the apps to register!"
+                sleep 30
             fi
 
-            echo
+            #if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
+            #    echo -e "\n\nThe apps failed to register in Service Discovery!"
+            #    print_logs
+            #    kill_all_apps_if_switch_on
+            #    exit 1
+            # fi
         else
             echo "Skipping deployment"
             READY_FOR_TESTS="yes"
