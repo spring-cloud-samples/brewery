@@ -316,7 +316,7 @@ LOCALHOST="127.0.0.1"
 MEM_ARGS="-Xmx128m -Xss1024k"
 CLOUD_PREFIX="brewery"
 DEFAULT_SCS_VERSION="1.3.2.BUILD-SNAPSHOT"
-SLEEP_TIME_FOR_EUREKA="${SLEEP_TIME_FOR_EUREKA:-60}"
+SLEEP_TIME_FOR_EUREKA="${SLEEP_TIME_FOR_EUREKA:-45}"
 
 BOM_VERSION_PROP_NAME="BOM_VERSION"
 SCS_BOM_VERSION_PROP_NAME="SCS_VERSION"
@@ -672,7 +672,7 @@ if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
             #     echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
             # done
            
-           if [[ "${WHAT_TO_TEST}" == "EUREKA" ]] ; then
+           if [[ "${WHAT_TO_TEST}" == "EUREKA" || "${WHAT_TO_TEST}" == "SLEUTH_STREAM" ]] ; then
                 echo -e "\n\nWaiting for [${SLEEP_TIME_FOR_EUREKA}] secs for the apps to register in Eureka!"
                 sleep ${SLEEP_TIME_FOR_EUREKA}
             fi
