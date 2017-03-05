@@ -672,8 +672,8 @@ if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
             # done
            
            if [[ "${WHAT_TO_TEST}" == "EUREKA" ]] ; then
-                echo -e "\n\nWaiting for 30 seconds for the apps to register!"
-                sleep 30
+                echo -e "\n\nWaiting for for the apps to register in Eureka!"
+                sleep 60
             fi
 
             #if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
