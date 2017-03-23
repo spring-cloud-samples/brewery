@@ -11,9 +11,6 @@ buildscript {
         maven {
             url "http://repo.spring.io/release"
         }
-        maven {
-            url "http://repo.spring.io/libs-staging-local/"
-        }
         jcenter()
     }
     dependencies {
@@ -129,9 +126,6 @@ configure(subprojects) {
         }
         maven {
             url "http://repo.spring.io/release"
-        }
-        maven {
-            url "http://repo.spring.io/libs-staging-local/"
         }
         jcenter()
     }
