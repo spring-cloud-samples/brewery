@@ -1,9 +1,5 @@
 #!/bin/bash
-CLI_BOOT_VERSION=1.4.3.RELEASE
-if [[ ${CLI_VERSION} == *"SNAPSHOT"* ]]; then
-  CLI_BOOT_VERSION=1.5.1.RELEASE
-fi
-
+CLI_BOOT_VERSION=1.5.3.RELEASE
 
 function run_kafka() {
     local APP_JAVA_PATH=${CURRENT_DIR}/build/

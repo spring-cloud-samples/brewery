@@ -517,7 +517,7 @@ export USERNAME=${USERNAME}
 export PASSWORD=${PASSWORD}
 export BOOT_VERSION=${BOOT_VERSION}
 export VERBOSE=${VERBOSE}
-export CLI_VERSION=${CLI_VERSION:-1.2.3.RELEASE}
+export CLI_VERSION=${CLI_VERSION:-1.3.2.RELEASE}
 
 export -f login
 export -f app_domain
