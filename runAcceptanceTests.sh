@@ -700,9 +700,10 @@ else
             CURL_RESULT=$( curl -m 5 http://${DISCOVERY_HOST}/eureka/apps/ )
             echo "${CURL_RESULT}" | grep PRESENTING && PRESENTING_PRESENT="yes"
             echo "${CURL_RESULT}" | grep BREWING && BREWING_PRESENT="yes"
+            echo "${CURL_RESULT}" | grep ZUUL && ZUUL_PRESENT="yes"
             echo "${CURL_RESULT}" | grep INGREDIENTS && INGREDIENTS_PRESENT="yes"
             echo "${CURL_RESULT}" | grep REPORTING && REPORTING_PRESENT="yes"
-            if [[ "${PRESENTING_PRESENT}" == "yes" && "${BREWING_PRESENT}" == "yes" && "${INGREDIENTS_PRESENT}" == "yes" && "${REPORTING_PRESENT}" == "yes" ]]; then READY_FOR_TESTS="yes" && break; fi
+            if [[ "${PRESENTING_PRESENT}" == "yes" && "${BREWING_PRESENT}" == "yes" && "${INGREDIENTS_PRESENT}" == "yes" && "${REPORTING_PRESENT}" == "yes"  && "${ZUUL_PRESENT}" == "yes" ]]; then READY_FOR_TESTS="yes" && break; fi
             echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
         done
     fi
