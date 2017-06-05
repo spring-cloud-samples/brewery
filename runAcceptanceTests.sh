@@ -262,7 +262,7 @@ You can use the following options:
 
 GLOBAL:
 -t  |--whattotest  - define what you want to test (i.e. ZOOKEEPER, SLEUTH, SLEUTH_STREAM, EUREKA, CONSUL, SCS)
--v  |--version - which version of BOM do you want to use? Defaults to Dalston snapshot
+-v  |--version - which version of BOM do you want to use? Defaults to Edgware snapshot
 -sv |--scsversion - which version of BOM for Spring Cloud Services do you want to use? Defaults to 1.3.2.BUILD-SNAPSHOT
 -h  |--healthhost - what is your health host? where is docker? defaults to localhost
 -l  |--numberoflines - how many lines of logs of your app do you want to print? Defaults to 1000
@@ -304,7 +304,7 @@ else
 fi
 WAIT_TIME="${WAIT_TIME:-5}"
 RETRIES="${RETRIES:-70}"
-DEFAULT_VERSION="${DEFAULT_VERSION:-Dalston.BUILD-SNAPSHOT}"
+DEFAULT_VERSION="${DEFAULT_VERSION:-Edgware.BUILD-SNAPSHOT}"
 DEFAULT_HEALTH_HOST="${DEFAULT_HEALTH_HOST:-127.0.0.1}"
 DEFAULT_NUMBER_OF_LINES_TO_LOG="${DEFAULT_NUMBER_OF_LINES_TO_LOG:-1000}"
 SHOULD_START_RABBIT="${SHOULD_START_RABBIT:-yes}"
@@ -671,7 +671,7 @@ if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
             #         grep brewing | grep ingredients | grep reporting && READY_FOR_TESTS="yes" && break
             #     echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
             # done
-           
+
            if [[ "${WHAT_TO_TEST}" == "EUREKA" || "${WHAT_TO_TEST}" == "SLEUTH_STREAM" ]] ; then
                 echo -e "\n\nWaiting for [${SLEEP_TIME_FOR_EUREKA}] secs for the apps to register in Eureka!"
                 sleep ${SLEEP_TIME_FOR_EUREKA}
