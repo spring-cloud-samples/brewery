@@ -21,18 +21,17 @@ buildscript {
 
 def commonProject = project(':common')
 def commonZipkinProject = project(':common-zipkin')
-def commonZipkinProjectOld = project(':common-zipkin-old')
 def commonZipkinStreamProject = project(':common-zipkin-stream')
 def acceptanceTestsProject = project(':acceptance-tests')
 def zipkinServerProject = project(':zipkin-server')
 def eurekaProject = project(':eureka')
 def configServerProject = project(':config-server')
 def zookeeperServerProject = project(':zookeeper')
-def techProjects = [commonProject, commonZipkinProject, commonZipkinProjectOld, commonZipkinStreamProject, acceptanceTestsProject,
+def techProjects = [commonProject, commonZipkinProject, commonZipkinStreamProject, acceptanceTestsProject,
                     eurekaProject, zipkinServerProject, configServerProject,
                     zookeeperServerProject]
 def nonZipkinProjects = techProjects - zipkinServerProject
-def nonDockerProjects = [commonProject, commonZipkinProject, commonZipkinProjectOld, commonZipkinStreamProject, acceptanceTestsProject]
+def nonDockerProjects = [commonProject, commonZipkinProject, commonZipkinStreamProject, acceptanceTestsProject]
 def zipkinRelatedProjects = subprojects - nonZipkinProjects
 
 allprojects {
@@ -88,10 +87,6 @@ configure(subprojects) {
             if (!enabled) {
                 project.tasks*.enabled = false
             }
-        }
-        oldSleuthPresent = {
-            String bom = "$BOM_VERSION".toString()
-            return ["Brixton", "Camden"].any { bom.contains(it) }
         }
         buildNrLoc = project.hasProperty('buildNr') ? "${buildNr}" : "1.0.0"
     }
@@ -192,16 +187,12 @@ if (hasProperty("docker")) {
     }
 }
 
-configure(subprojects - techProjects - commonZipkinProject - commonZipkinProjectOld - commonZipkinStreamProject) {
+configure(subprojects - techProjects - commonZipkinProject - commonZipkinStreamProject) {
 
     dependencies {
         compile(commonProject)
         if (whatToTest('SLEUTH')) {
-            if (oldSleuthPresent()) {
-                compile commonZipkinProjectOld
-            } else {
-                compile commonZipkinProject
-            }
+            compile commonZipkinProject
         }
         if (whatToTest('SLEUTH_STREAM')) { compile commonZipkinStreamProject }
 

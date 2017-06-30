@@ -1,6 +1,0 @@
-moduleEnabled(whatToTest('SLEUTH') && oldSleuthPresent())
-
-dependencies {
-	compile "org.springframework.cloud:spring-cloud-starter-zipkin"
-	compile "org.springframework.boot:spring-boot-starter-web"
-}
