@@ -14,3 +14,4 @@ logs
 *~
 *.log
 .DS_STORE
+out

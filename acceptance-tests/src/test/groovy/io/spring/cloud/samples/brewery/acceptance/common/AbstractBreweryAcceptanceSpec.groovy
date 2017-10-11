@@ -71,6 +71,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 	@Value('${zipkin.query.port:9411}') Integer zipkinQueryPort
 	@Value('${LOCAL_URL:http://localhost}') String zipkinQueryUrl
 	@Value('${test.zipkin.dependencies:true}') boolean checkZipkinDependencies
+	@Value('${BOM_VERSION:Edgware.BUILD-SNAPSHOT}') String bomVersion
 
 	def setup() {
 		log.info("Starting test")
@@ -177,7 +178,9 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 	}
 
 	ResponseEntity<String> checkStateOfTheTraceId(String traceId) {
-		URI uri = URI.create("${wrapQueryWithProtocolIfPresent() ?: zipkinQueryUrl}:${zipkinQueryPort}/api/v1/trace/$traceId")
+		boolean olderVersions = ["Camden", "Dalston"].any { bomVersion.contains(it) }
+		String path = olderVersions ? "api/v1/trace" : "zipkin/api/v1/trace"
+		URI uri = URI.create("${wrapQueryWithProtocolIfPresent() ?: zipkinQueryUrl}:${zipkinQueryPort}/${path}/$traceId")
 		HttpHeaders headers = new HttpHeaders()
 		log.info("Sending request to the Zipkin query service [$uri]. Checking presence of trace id [$traceId]")
 		return new ExceptionLoggingRestTemplate().exchange(
