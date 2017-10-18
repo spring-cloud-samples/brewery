@@ -672,10 +672,8 @@ if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
             #     echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
             # done
 
-           if [[ "${WHAT_TO_TEST}" == "EUREKA" || "${WHAT_TO_TEST}" == "SLEUTH_STREAM" ]] ; then
-                echo -e "\n\nWaiting for [${SLEEP_TIME_FOR_EUREKA}] secs for the apps to register in Eureka!"
-                sleep ${SLEEP_TIME_FOR_EUREKA}
-            fi
+            echo -e "\n\nWaiting for [${SLEEP_TIME_FOR_EUREKA}] secs for the apps to register in service discovery!"
+            sleep ${SLEEP_TIME_FOR_EUREKA}
 
             #if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
             #    echo -e "\n\nThe apps failed to register in Service Discovery!"
