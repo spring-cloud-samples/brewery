@@ -649,7 +649,8 @@ if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
             echo -e "\n\nWaiting for the apps to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
             for i in $( seq 1 "${RETRIES}" ); do
                 sleep "${WAIT_TIME}"
-                curl -m 5 ${HEALTH_ENDPOINTS} | grep -v DOWN && APPS_ARE_RUNNING="yes" && break
+                curlResult="$( curl -m 5 ${HEALTH_ENDPOINTS} || echo "DOWN" )"
+                echo "${curlResult}" | grep -v DOWN && APPS_ARE_RUNNING="yes" && break
                 echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
             done
 
