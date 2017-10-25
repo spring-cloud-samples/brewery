@@ -23,17 +23,4 @@ public class Application {
         ExceptionUtils.setFail(true);
         new SpringApplication(Application.class).run(args);
     }
-
-
-}
-
-@Configuration
-@Profile("consul")
-class ConsulConfig {
-    // TODO: Remove this cause it should come from auto configuration
-    @Bean
-    @Primary
-    public CompositeDiscoveryClient compositeDiscoveryClient(List<DiscoveryClient> discoveryClients) {
-        return new CompositeDiscoveryClient(discoveryClients);
-    }
 }
