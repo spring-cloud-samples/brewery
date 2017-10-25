@@ -316,7 +316,7 @@ LOCALHOST="127.0.0.1"
 MEM_ARGS="-Xmx128m -Xss1024k"
 CLOUD_PREFIX="brewery"
 DEFAULT_SCS_VERSION="1.3.2.BUILD-SNAPSHOT"
-SLEEP_TIME_FOR_EUREKA="${SLEEP_TIME_FOR_EUREKA:-90}"
+SLEEP_TIME_FOR_DISCOVERY="${SLEEP_TIME_FOR_DISCOVERY:-90}"
 
 BOM_VERSION_PROP_NAME="BOM_VERSION"
 SCS_BOM_VERSION_PROP_NAME="SCS_VERSION"
@@ -659,28 +659,13 @@ if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
                 kill_all_apps_if_switch_on
                 exit 1
             fi
-
-            # TODO: Either fix this or remove it
-            # Wait for the apps to register in Service Discovery
-            #READY_FOR_TESTS="no"
-
-            #echo -e "\n\nChecking for the presence of all services in Service Discovery for [$(( WAIT_TIME * RETRIES ))] seconds"
-            #for i in $( seq 1 "${RETRIES}" ); do
-            #     sleep "${WAIT_TIME}"
-            #     curl -m 5 http://${LOCALHOST}:9991/health | grep presenting |
-            #         grep brewing | grep ingredients | grep reporting && READY_FOR_TESTS="yes" && break
-            #     echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
-            # done
-
-            echo -e "\n\nWaiting for [${SLEEP_TIME_FOR_EUREKA}] secs for the apps to register in service discovery!"
-            sleep ${SLEEP_TIME_FOR_EUREKA}
-
-            #if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
-            #    echo -e "\n\nThe apps failed to register in Service Discovery!"
-            #    print_logs
-            #    kill_all_apps_if_switch_on
-            #    exit 1
-            # fi
+            # legacy
+            export SLEEP_TIME_FOR_EUREKA="${SLEEP_TIME_FOR_EUREKA:-}"
+            if [[ "${SLEEP_TIME_FOR_EUREKA}" != "" ]]; then
+                SLEEP_TIME_FOR_DISCOVERY="${SLEEP_TIME_FOR_EUREKA}"
+            fi
+            echo -e "\n\nWaiting for [${SLEEP_TIME_FOR_DISCOVERY}] secs for the apps to register in service discovery!"
+            sleep ${SLEEP_TIME_FOR_DISCOVERY}
         else
             echo "Skipping deployment"
             READY_FOR_TESTS="yes"
