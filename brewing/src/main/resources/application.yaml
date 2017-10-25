@@ -20,3 +20,6 @@ spring.cloud.stream:
 
 
 endpoints.health.sensitive: false
+endpoints.default.web.enabled: true
+management.security.enabled: false
+management.context-path: /

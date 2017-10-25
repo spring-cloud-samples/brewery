@@ -315,9 +315,10 @@ fi
 LOCALHOST="127.0.0.1"
 MEM_ARGS="-Xmx128m -Xss1024k"
 CLOUD_PREFIX="brewery"
-DEFAULT_SCS_VERSION="1.3.2.BUILD-SNAPSHOT"
+DEFAULT_SCS_VERSION=""
 SLEEP_TIME_FOR_DISCOVERY="${SLEEP_TIME_FOR_DISCOVERY:-90}"
 
+BOOT_VERSION_PROP_NAME="BOOT_VERSION"
 BOM_VERSION_PROP_NAME="BOM_VERSION"
 SCS_BOM_VERSION_PROP_NAME="SCS_VERSION"
 BOOT_VERSION_PROP_NAME="BOOT_VERSION"
@@ -495,6 +496,7 @@ export SCS_VERSION=${SCS_VERSION}
 export HEALTH_HOST=${HEALTH_HOST}
 export WAIT_TIME=${WAIT_TIME}
 export RETRIES=${RETRIES}
+export BOOT_VERSION_PROP_NAME=${BOOT_VERSION_PROP_NAME}
 export BOM_VERSION_PROP_NAME=${BOM_VERSION_PROP_NAME}
 export SCS_BOM_VERSION_PROP_NAME=${SCS_BOM_VERSION_PROP_NAME}
 export NUMBER_OF_LINES_TO_LOG=${NUMBER_OF_LINES_TO_LOG}
@@ -564,16 +566,6 @@ fi
 CURRENT_DIR=`pwd`
 
 # ======================================= Building the apps =======================================
-echo -e "\nAppending if not present the following entry to gradle.properties\n"
-
-# Update the desired BOM version
-grep "${BOM_VERSION_PROP_NAME}=${VERSION}" gradle.properties || echo -e "\n${BOM_VERSION_PROP_NAME}=${VERSION}" >> gradle.properties
-# Update the desired SCS BOM version
-grep "${SCS_BOM_VERSION_PROP_NAME}=${SCS_VERSION}" gradle.properties || echo -e "\n${SCS_BOM_VERSION_PROP_NAME}=${SCS_VERSION}" >> gradle.properties
-if [[ "${BOOT_VERSION}" != "" ]] ; then
-    grep "${BOOT_VERSION_PROP_NAME}=${BOOT_VERSION}" gradle.properties || echo -e "\n${BOOT_VERSION_PROP_NAME}=${BOOT_VERSION}" >> gradle.properties
-fi
-
 echo -e "\n\nUsing the following gradle.properties"
 cat gradle.properties
 
@@ -583,23 +575,33 @@ echo -e "\n\n"
 APP_BUILDING_RETRIES=3
 APP_WAIT_TIME=1
 APP_FAILED="yes"
+
+PARAMS="--no-daemon --refresh-dependencies";
+if [[ "${BOOT_VERSION}" != "" ]] ; then
+    echo "Will use Boot in version [${BOOT_VERSION}]"
+    PARAMS="${PARAMS} -D${BOOT_VERSION_PROP_NAME}=${BOOT_VERSION}"
+fi
+if [[ "${VERSION}" != "" ]] ; then
+    echo "Will use BOM in version [${VERSION}]"
+    PARAMS="${PARAMS} -D${BOM_VERSION_PROP_NAME}=${VERSION}"
+fi
+if [[ "${SCS_VERSION}" != "" ]] ; then
+    echo "Will use SCS in version [${SCS_VERSION}]"
+    PARAMS="${PARAMS} -D${SCS_BOM_VERSION_PROP_NAME}=${SCS_VERSION}"
+fi
+echo -e "\n\nPassing following Gradle parameters [${PARAMS}]\n\n"
+
 if [[ -z "${SKIP_BUILDING}" ]] ; then
-    PARAMS="--no-daemon --refresh-dependencies";
     if [[ "${KAFKA}" == "yes" ]] ; then
         echo "Will use Kafka as a message broker"
         PARAMS="${PARAMS} -Pkafka"
     fi
-    if [[ "${BOOT_VERSION}" != "" ]] ; then
-        echo "Will use Boot in version [${BOOT_VERSION}]"
-        PARAMS="${PARAMS} -PBOOT_VERSION=${BOOT_VERSION}"
-    fi
     for i in $( seq 1 "${APP_BUILDING_RETRIES}" ); do
-          ./gradlew clean --parallel
+          ./gradlew clean ${PARAMS} --parallel
           if [[ "${VERBOSE}" == "yes" ]] ; then
             echo -e "\n\nPrinting the dependency tree for all projects\n\n"
             ./gradlew allDeps
           fi
-          echo -e "\n\nRunning the build with parameters [${PARAMS}]\n\n"
           ./gradlew build ${PARAMS} && APP_FAILED="no" && break
           echo "Fail #$i/${APP_BUILDING_RETRIES}... will try again in [${APP_WAIT_TIME}] seconds"
     done
@@ -712,7 +714,7 @@ fi
 if [[ "${READY_FOR_TESTS}" == "yes" ]] ; then
     echo -e "\n\nSuccessfully booted up all the apps. Proceeding with the acceptance tests"
     echo -e "\n\nRunning acceptance tests with the following parameters [-DWHAT_TO_TEST=${WHAT_TO_TEST} ${ACCEPTANCE_TEST_OPTS}]"
-    ./gradlew :acceptance-tests:acceptanceTests "-DWHAT_TO_TEST=${WHAT_TO_TEST}" ${ACCEPTANCE_TEST_OPTS} --stacktrace --no-daemon --configure-on-demand && TESTS_PASSED="yes"
+    ./gradlew ${PARAMS} :acceptance-tests:acceptanceTests "-DWHAT_TO_TEST=${WHAT_TO_TEST}" ${ACCEPTANCE_TEST_OPTS} --stacktrace --no-daemon --configure-on-demand && TESTS_PASSED="yes"
 fi
 
 if [[ "${TESTS_PASSED}" == "yes" ]] ; then

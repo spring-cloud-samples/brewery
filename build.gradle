@@ -13,8 +13,18 @@ buildscript {
         }
         jcenter()
     }
+
+    Closure<String> getProp = { String propName ->
+        return System.properties[propName] ?:
+                project.gradle.startParameter.systemPropertiesArgs.get(propName) ?:
+                        hasProperty(propName) ? getProperty(propName) : ""
+    }
+
+    String bootVersion = getProp("BOOT_VERSION") ?: "1.5.8.RELEASE"
+    logger.lifecycle("BOOT_VERSION is: [${bootVersion}]")
+
     dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:${hasProperty("BOOT_VERSION") ? "${project.property("BOOT_VERSION")}" : "1.5.8.RELEASE" }"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${bootVersion}"
         if (hasProperty("docker")) { classpath 'se.transmode.gradle:gradle-docker:1.2' }
     }
 }
@@ -44,6 +54,7 @@ configure(subprojects) {
     apply plugin: 'eclipse'
     apply plugin: 'idea'
     apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
 
     ext {
         dockerConfiguration = { int port ->
@@ -89,6 +100,10 @@ configure(subprojects) {
             }
         }
         buildNrLoc = project.hasProperty('buildNr') ? "${buildNr}" : "1.0.0"
+        isAtLeastFinchely = {
+            boolean oldTrain = ["Camden", "Dalston", "Edgware"].any { getProp("BOM_VERSION").contains(it) }
+            return !oldTrain
+        }
     }
 
     group = 'io.spring.cloud.samples.brewery'
@@ -127,12 +142,17 @@ configure(subprojects) {
 
     dependencyManagement {
         imports {
-            mavenBom "org.springframework.cloud:spring-cloud-dependencies:$BOM_VERSION"
-            if (hasProperty("BOOT_VERSION")) {
-                println "Using boot in version [${project.property("BOOT_VERSION")}]"
-                mavenBom "org.springframework.boot:spring-boot-dependencies:${project.property("BOOT_VERSION")}"
+            Closure<String> getProp = { String propName -> System.properties[propName] ?:
+                    project.gradle.startParameter.systemPropertiesArgs.get(propName) ?:
+                            hasProperty(propName) ? property(propName) :
+                                    System.getenv(propName) ?: ""
             }
-            if (ext.whatToTest('SCS')) mavenBom "io.pivotal.spring.cloud:spring-cloud-services-dependencies:$SCS_VERSION"
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${getProp("BOM_VERSION") ?: "Edgware.BUILD-SNAPSHOT" }"
+            if (getProp("BOOT_VERSION")) {
+                logger.lifecycle("Using boot in version [${getProp("BOOT_VERSION")}]")
+                mavenBom "org.springframework.boot:spring-boot-dependencies:${getProp("BOOT_VERSION")}"
+            }
+            if (ext.whatToTest('SCS')) mavenBom "io.pivotal.spring.cloud:spring-cloud-services-dependencies:${getProp("SCS_VERSION") ?: "1.3.2.BUILD-SNAPSHOT"}"
         }
     }
 
@@ -140,6 +160,7 @@ configure(subprojects) {
 }
 
 logger.lifecycle("WHAT_TO_TEST is: System prop: [${project.gradle.startParameter.systemPropertiesArgs.get("WHAT_TO_TEST")}] , Env prop: [${System.getenv("WHAT_TO_TEST")}]")
+logger.lifecycle("BOM_VERSION is: [${getProp("BOM_VERSION")}]")
 
 configure(subprojects - zipkinServerProject - acceptanceTestsProject - zookeeperServerProject - configServerProject) {
 
@@ -149,7 +170,7 @@ configure(subprojects - zipkinServerProject - acceptanceTestsProject - zookeeper
         if (!whatToTest('SCS')) compile "org.springframework.cloud:spring-cloud-starter-config"
         if (whatToTest('SCS')) compile("io.pivotal.spring.cloud:spring-cloud-services-starter-config-client")
         if (whatToTest('SCS')) compile("io.pivotal.spring.cloud:spring-cloud-services-starter-service-registry")
-        compile "org.springframework.cloud:spring-cloud-starter-hystrix"
+        compile "org.springframework.cloud:spring-cloud-starter-${isAtLeastFinchely() ? "netflix-" : ""}hystrix"
         compile "org.springframework.cloud:spring-cloud-starter-stream-${propOrSysEnvPresent('kafka') ? 'kafka' : 'rabbit'}"
         if (!whatToTest('SLEUTH')) { compile "org.springframework.cloud:spring-cloud-sleuth-stream" }
         compile "org.springframework.amqp:spring-amqp"
@@ -167,8 +188,17 @@ configure(zipkinRelatedProjects) {
 
 configure(nonDockerProjects) {
 
-    bootRepackage {
-        enabled = false
+    if (!isAtLeastFinchely()) {
+        bootRepackage {
+            enabled = false
+        }
+    } else {
+        bootJar {
+            enabled = false
+        }
+        jar {
+            enabled = true
+        }
     }
 
     bootRun {
@@ -187,10 +217,15 @@ if (hasProperty("docker")) {
     }
 }
 
+configure(subprojects - commonProject) {
+    dependencies {
+        compile(commonProject)
+    }
+}
+
 configure(subprojects - techProjects - commonZipkinProject - commonZipkinStreamProject) {
 
     dependencies {
-        compile(commonProject)
         if (whatToTest('SLEUTH')) {
             compile commonZipkinProject
         }
@@ -202,14 +237,20 @@ configure(subprojects - techProjects - commonZipkinProject - commonZipkinStreamP
             compile "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery"
         }
         if (whatToTest('CONSUL')) { compile "org.springframework.cloud:spring-cloud-starter-consul-discovery" }
-        if (whatToTest('EUREKA') || whatToTest('SLEUTH_STREAM')) { compile "org.springframework.cloud:spring-cloud-starter-eureka" }
-        compile "org.springframework.cloud:spring-cloud-starter-feign"
+        if (whatToTest('EUREKA') || whatToTest('SLEUTH_STREAM')) {
+            if (isAtLeastFinchely()) {
+                compile "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"
+            } else {
+                compile "org.springframework.cloud:spring-cloud-starter-eureka"
+            }
+        }
+        compile "org.springframework.cloud:spring-cloud-starter-${isAtLeastFinchely() ? "open" : ""}feign"
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonMapper"
         compile "org.codehaus.jackson:jackson-core-asl:$jacksonMapper"
         compile 'org.apache.commons:commons-lang3:3.4'
         compile 'com.jayway.jsonpath:json-path-assert:2.0.0'
         compile 'org.yaml:snakeyaml'
-        compile 'org.hibernate:hibernate-validator'
+//        compile 'org.hibernate:hibernate-validator'
         compile "org.aspectj:aspectjrt"
 
         runtime 'cglib:cglib-nodep:3.1'
@@ -218,7 +259,7 @@ configure(subprojects - techProjects - commonZipkinProject - commonZipkinStreamP
     }
 
     wrapper {
-        gradleVersion '3.5.1'
+        gradleVersion '4.2.1'
     }
 
     bootRun {
@@ -232,4 +273,11 @@ configure(subprojects - techProjects - commonZipkinProject - commonZipkinStreamP
             showStandardStreams = true
         }
     }
+}
+
+String getProp(String propName) {
+    return System.properties[propName] ?:
+            project.gradle.startParameter.systemPropertiesArgs.get(propName) ?:
+                    hasProperty(propName) ? property(propName) :
+                            System.getenv(propName) ?: ""
 }

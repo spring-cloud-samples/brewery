@@ -159,11 +159,11 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 					return acc
 				}
 				log.info("Presenting should be a parent of brewing.")
-				assert parentsAndChildren['presenting'].contains('brewing')
+				assert parentsAndChildren['presenting']?.contains('brewing')
 				log.info("Brewing should have 3 children - zuul, reporting and presenting")
-				assert parentsAndChildren['brewing'].containsAll(['zuul', 'reporting', 'presenting'])
+				assert parentsAndChildren['brewing']?.containsAll(['zuul', 'reporting', 'presenting'])
 				log.info("Zuul should be calling ingredients")
-				assert parentsAndChildren['zuul'].contains('ingredients')
+				assert parentsAndChildren['zuul']?.contains('ingredients')
 				log.info("Zipkin tracing is working! Sleuth is working! Let's be happy!")
 			}
 		})
