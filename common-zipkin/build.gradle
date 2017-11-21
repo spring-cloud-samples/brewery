@@ -1,6 +1,18 @@
 moduleEnabled(whatToTest('SLEUTH'))
 
 dependencies {
-	compile "org.springframework.cloud:spring-cloud-starter-zipkin"
+	if (getProp("BOM_VERSION").contains("Dalston") {
+		compile "org.springframework.cloud:spring-cloud-starter-zipkin"
+	} else {
+		compile "org.springframework.cloud:spring-cloud-starter-zipkin-legacy"
+	}
+	// TODO: update to Zipkin2, otherwise it won't work for Finchley
 	compile "org.springframework.boot:spring-boot-starter-web"
+}
+
+String getProp(String propName) {
+    return System.properties[propName] ?:
+            project.gradle.startParameter.systemPropertiesArgs.get(propName) ?:
+                    hasProperty(propName) ? property(propName) :
+                            System.getenv(propName) ?: ""
 }
