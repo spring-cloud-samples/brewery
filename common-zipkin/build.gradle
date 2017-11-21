@@ -1,7 +1,7 @@
 moduleEnabled(whatToTest('SLEUTH'))
 
 dependencies {
-	if (getProp("BOM_VERSION").contains("Dalston") {
+	if (getProp("BOM_VERSION").contains("Dalston")) {
 		compile "org.springframework.cloud:spring-cloud-starter-zipkin"
 	} else {
 		compile "org.springframework.cloud:spring-cloud-starter-zipkin-legacy"
