@@ -575,8 +575,12 @@ echo -e "\n\n"
 APP_BUILDING_RETRIES=3
 APP_WAIT_TIME=1
 APP_FAILED="yes"
+WORK_OFFLINE="${WORK_OFFLINE:-false}"
 
-PARAMS="--no-daemon --refresh-dependencies";
+PARAMS="--no-daemon";
+if [[ "${WORK_OFFLINE}" == "false" ]]; then
+    PARAMS="${PARAMS} --refresh-dependencies";
+fi
 if [[ "${BOOT_VERSION}" != "" ]] ; then
     echo "Will use Boot in version [${BOOT_VERSION}]"
     PARAMS="${PARAMS} -D${BOOT_VERSION_PROP_NAME}=${BOOT_VERSION}"
