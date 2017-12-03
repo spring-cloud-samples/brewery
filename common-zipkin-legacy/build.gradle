@@ -1,4 +1,4 @@
-moduleEnabled(whatToTest('SLEUTH') && !getProp("BOM_VERSION").contains("Dalston"))
+moduleEnabled(whatToTest('SLEUTH') && getProp("BOM_VERSION").contains("Dalston"))
 
 dependencies {
 	compile "org.springframework.cloud:spring-cloud-starter-zipkin"
