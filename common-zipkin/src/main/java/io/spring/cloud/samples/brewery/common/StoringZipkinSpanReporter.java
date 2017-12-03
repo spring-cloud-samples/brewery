@@ -40,7 +40,7 @@ public class StoringZipkinSpanReporter implements SpanReporter {
 	}
 }
 
-@RestController
+//@RestController
 class SpansController {
 
 	private final StoringZipkinSpanReporter reporter;
