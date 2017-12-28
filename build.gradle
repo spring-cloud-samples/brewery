@@ -20,7 +20,7 @@ buildscript {
                         hasProperty(propName) ? getProperty(propName) : ""
     }
 
-    String bootVersion = getProp("BOOT_VERSION") ?: "1.5.8.RELEASE"
+    String bootVersion = getProp("BOOT_VERSION") ?: "1.5.9.RELEASE"
     logger.lifecycle("BOOT_VERSION is: [${bootVersion}]")
 
     dependencies {
@@ -173,7 +173,7 @@ configure(subprojects - zipkinServerProject - acceptanceTestsProject - zookeeper
         if (whatToTest('SCS')) compile("io.pivotal.spring.cloud:spring-cloud-services-starter-service-registry")
         compile "org.springframework.cloud:spring-cloud-starter-${isAtLeastFinchely() ? "netflix-" : ""}hystrix"
         compile "org.springframework.cloud:spring-cloud-starter-stream-${propOrSysEnvPresent('kafka') ? 'kafka' : 'rabbit'}"
-        if (!whatToTest('SLEUTH')) { compile "org.springframework.cloud:spring-cloud-sleuth-stream" }
+        if (whatToTest('SLEUTH_STREAM')) { compile "org.springframework.cloud:spring-cloud-sleuth-stream" }
         compile "org.springframework.amqp:spring-amqp"
         compile "io.dropwizard.metrics:metrics-core"
         compile "io.dropwizard.metrics:metrics-graphite"
