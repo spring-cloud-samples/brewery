@@ -277,6 +277,7 @@ GLOBAL:
 -b  |--bootversion - Which version of Boot should be used? Defaults to 1.5.9.RELEASE for the plugin and to boot version used by libs
 -cli|--cliversion - which version of Spring Cloud CLI should be used (it's used to start Kafka)? Defaults to 1.2.3.RELEASE
 -ve |--verbose - Will print all library versions
+-br |--branch - Which repo branch of the brewery repo should be checked out. Defaults to "master"
 
 CLOUD FOUNDRY RELATED PROPERTIES:
 -c  |--usecloudfoundry - should run tests for cloud foundry? (works only for SLEUTH_STREAM) Defaults to "no"
@@ -296,7 +297,6 @@ EOF
 # ======================================= VARIABLES START =======================================
 CURRENT_DIR=`pwd`
 REPO_URL="${REPO_URL:-https://github.com/spring-cloud-samples/brewery.git}"
-REPO_BRANCH="${REPO_BRANCH:-master}"
 if [[ -d acceptance-tests ]]; then
   REPO_LOCAL="${REPO_LOCAL:-.}"
 else
@@ -422,6 +422,10 @@ case ${key} in
     CLI_VERSION="$2"
     shift
     ;;
+    -br|--branch)
+    REPO_BRANCH="$2"
+    shift
+    ;;
     -ve|--verbose)
     VERBOSE="yes"
     ;;
@@ -447,6 +451,7 @@ done
 [[ -z "${DOMAIN}" ]] && DOMAIN="run.pivotal.io"
 [[ -z "${CLOUD_SPACE}" ]] && CLOUD_SPACE="${DEFAULT_SPACE}"
 [[ -z "${CLOUD_ORG}" ]] && CLOUD_ORG="${DEFAULT_ORG}"
+[[ -z "${REPO_BRANCH}" ]] && REPO_BRANCH="master"
 
 CLOUD_DOMAIN=${DOMAIN}
 CLOUD_TARGET=api.${DOMAIN}
@@ -459,6 +464,7 @@ cat <<EOF
 
 Running tests with the following parameters
 
+REPO_BRANCH=${REPO_BRANCH}
 HEALTH_HOST=${HEALTH_HOST}
 WHAT_TO_TEST=${WHAT_TO_TEST}
 VERSION=${VERSION}
@@ -556,6 +562,7 @@ fi
 if [[ ! -e "${REPO_LOCAL}/.git" ]]; then
     git clone "${REPO_URL}" "${REPO_LOCAL}"
     cd "${REPO_LOCAL}"
+    git checkout "${REPO_BRANCH}"
 else
     cd "${REPO_LOCAL}"
     if [[ ${RESET} ]]; then
