@@ -9,8 +9,8 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.cloud.sleuth.Span;
-import org.springframework.cloud.sleuth.Tracer;
+import brave.Span;
+import brave.Tracer;
 import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -52,21 +52,24 @@ class BottlingWorker {
     }
 
     private void notifyPresentingService(String processId) {
-        Span scope = this.tracer.createSpan("calling_presenting");
-        switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
+        Span scope = this.tracer.nextSpan().name("calling_presenting");
+        try (Tracer.SpanInScope ws = tracer.withSpanInScope(scope)) {
+            switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
                 callPresentingViaFeign(processId);
                 break;
             default:
                 useRestTemplateToCallPresenting(processId);
+            }
+        } finally {
+            scope.finish();
         }
-        tracer.close(scope);
     }
 
     private void increaseBottles(Integer wortAmount, String processId) {
         log.info("Bottling beer...");
-        Span scope = tracer.createSpan("waiting_for_beer_bottling");
-        try {
+        Span scope = tracer.nextSpan().name("waiting_for_beer_bottling");
+        try (Tracer.SpanInScope ws = tracer.withSpanInScope(scope)) {
             State stateForProcess = PROCESS_STATE.getOrDefault(processId, new State());
             Integer bottled = stateForProcess.bottled;
             Integer bottles = stateForProcess.bottles;
@@ -83,7 +86,7 @@ class BottlingWorker {
             stateForProcess.setBottles(bottles);
             PROCESS_STATE.put(processId, stateForProcess);
         } finally {
-            tracer.close(scope);
+            scope.finish();
         }
     }
 

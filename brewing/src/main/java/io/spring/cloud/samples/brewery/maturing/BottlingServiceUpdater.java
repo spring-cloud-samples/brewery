@@ -2,8 +2,8 @@ package io.spring.cloud.samples.brewery.maturing;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
-import org.springframework.cloud.sleuth.Span;
-import org.springframework.cloud.sleuth.Tracer;
+import brave.Span;
+import brave.Tracer;
 import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.Assert;
@@ -47,8 +47,8 @@ class BottlingServiceUpdater {
 
     @Async
     public void updateBottlingServiceAboutBrewedBeer(final Ingredients ingredients, String processId, TestConfigurationHolder configurationHolder) {
-        Span trace = tracer.createSpan("inside_maturing");
-        try {
+        Span trace = tracer.nextSpan().name("inside_maturing");
+        try (Tracer.SpanInScope ws = tracer.withSpanInScope(trace)) {
             TestConfigurationHolder.TEST_CONFIG.set(configurationHolder);
             log.info("Updating bottling service. Current process id is equal [{}]", processId);
             notifyPresentingService(processId);
@@ -56,7 +56,7 @@ class BottlingServiceUpdater {
             eventGateway.emitEvent(Event.builder().eventType(EventType.BEER_MATURED).processId(processId).build());
             notifyBottlingService(ingredients, processId);
         } finally {
-            tracer.close(trace);
+            trace.finish();
         }
     }
 
@@ -72,15 +72,18 @@ class BottlingServiceUpdater {
 
     private void notifyPresentingService(String correlationId) {
         log.info("Calling presenting from maturing");
-        Span scope = this.tracer.createSpan("calling_presenting_from_maturing");
-        switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
+        Span scope = this.tracer.nextSpan().name("calling_presenting_from_maturing");
+        try (Tracer.SpanInScope ws = tracer.withSpanInScope(scope)) {
+            switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
                 callPresentingViaFeign(correlationId);
                 break;
             default:
                 useRestTemplateToCallPresenting(correlationId);
+            }
+        } finally {
+            scope.finish();
         }
-        tracer.close(scope);
     }
 
     private void callPresentingViaFeign(String correlationId) {
@@ -93,9 +96,12 @@ class BottlingServiceUpdater {
     @HystrixCommand
     public void notifyBottlingService(Ingredients ingredients, String correlationId) {
         log.info("Calling bottling from maturing");
-        Span scope = this.tracer.createSpan("calling_bottling_from_maturing");
-        bottlingService.bottle(new Wort(getQuantity(ingredients)), correlationId, FEIGN.name());
-        tracer.close(scope);
+        Span scope = this.tracer.nextSpan().name("calling_bottling_from_maturing");
+        try (Tracer.SpanInScope ws = tracer.withSpanInScope(scope)) {
+            bottlingService.bottle(new Wort(getQuantity(ingredients)), correlationId, FEIGN.name());
+        } finally {
+            scope.finish();
+        }
     }
 
     private void useRestTemplateToCallPresenting(String processId) {

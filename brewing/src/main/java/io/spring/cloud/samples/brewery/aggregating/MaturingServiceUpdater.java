@@ -17,16 +17,14 @@ class MaturingServiceUpdater {
     private final IngredientsProperties ingredientsProperties;
     private final IngredientWarehouse ingredientWarehouse;
     private final MaturingService maturingService;
-    private final RestTemplate restTemplate;
     private final EventGateway eventGateway;
 
     public MaturingServiceUpdater(IngredientsProperties ingredientsProperties,
                                   IngredientWarehouse ingredientWarehouse,
-                                  MaturingService maturingService, RestTemplate restTemplate, EventGateway eventGateway) {
+                                  MaturingService maturingService, EventGateway eventGateway) {
         this.ingredientsProperties = ingredientsProperties;
         this.ingredientWarehouse = ingredientWarehouse;
         this.maturingService = maturingService;
-        this.restTemplate = restTemplate;
         this.eventGateway = eventGateway;
     }
 

@@ -1,7 +1,7 @@
 package io.spring.cloud.samples.brewery.bottling;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.cloud.sleuth.Tracer;
+import brave.Tracer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

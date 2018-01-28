@@ -26,7 +26,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootContextLoader
-import org.springframework.cloud.sleuth.Span
+import brave.Span
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -47,8 +47,8 @@ import static java.util.concurrent.TimeUnit.SECONDS
 @ContextConfiguration(classes = TestConfiguration, loader = SpringBootContextLoader)
 abstract class AbstractBreweryAcceptanceSpec extends Specification {
 
-	public static final String TRACE_ID_HEADER_NAME = Span.TRACE_ID_NAME
-	public static final String SPAN_ID_HEADER_NAME = Span.SPAN_ID_NAME
+	public static final String TRACE_ID_HEADER_NAME = "X-B3-TraceId"
+	public static final String SPAN_ID_HEADER_NAME = "X-B3-SpanId"
 	public static final Logger log = LoggerFactory.getLogger(AbstractBreweryAcceptanceSpec)
 
 	private static final List<String> APP_NAMES = ['presenting', 'brewing', 'zuul']
@@ -71,7 +71,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 	@Value('${zipkin.query.port:9411}') Integer zipkinQueryPort
 	@Value('${LOCAL_URL:http://localhost}') String zipkinQueryUrl
 	@Value('${test.zipkin.dependencies:true}') boolean checkZipkinDependencies
-	@Value('${BOM_VERSION:Edgware.BUILD-SNAPSHOT}') String bomVersion
+	@Value('${BOM_VERSION:Finchley.BUILD-SNAPSHOT}') String bomVersion
 
 	def setup() {
 		log.info("Starting test")

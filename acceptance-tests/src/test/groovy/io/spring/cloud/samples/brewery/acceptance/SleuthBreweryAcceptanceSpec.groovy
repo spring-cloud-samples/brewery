@@ -15,9 +15,10 @@
  */
 package io.spring.cloud.samples.brewery.acceptance
 import io.spring.cloud.samples.brewery.acceptance.common.AbstractBreweryAcceptanceSpec
+import io.spring.cloud.samples.brewery.acceptance.common.SpanUtil
 import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConditions
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
-import org.springframework.cloud.sleuth.Span
+import brave.Span
 import org.springframework.http.RequestEntity
 import spock.lang.Requires
 import spock.lang.Unroll
@@ -42,7 +43,7 @@ class SleuthBreweryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 			dependency_graph_is_correct()
 		where:
 			communicationType << [CommunicationType.REST_TEMPLATE, CommunicationType.FEIGN]
-			referenceProcessId = Span.idToHex(new Random().nextLong())
+			referenceProcessId = SpanUtil.idToHex(new Random().nextLong())
 	}
 
 }

@@ -4,8 +4,8 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.spring.cloud.samples.brewery.common.model.Version;
 import io.spring.cloud.samples.brewery.common.model.Wort;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.sleuth.Span;
-import org.springframework.cloud.sleuth.Tracer;
+import brave.Span;
+import brave.Tracer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.web.client.AsyncRestTemplate;
@@ -41,12 +41,12 @@ class BottlerService {
     @HystrixCommand
     void bottle(Wort wort, String processId) {
         log.info("I'm inside bottling");
-        Span span = tracer.createSpan("inside_bottling");
-        try {
+        Span span = tracer.nextSpan().name("inside_bottling");
+        try (Tracer.SpanInScope ws = tracer.withSpanInScope(span)) {
             notifyPresenting(processId);
             bottlingWorker.bottleBeer(wort.getWort(), processId, TEST_CONFIG.get());
         } finally {
-            tracer.close(span);
+            span.finish();
         }
     }
 

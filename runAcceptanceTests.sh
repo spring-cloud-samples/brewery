@@ -262,7 +262,7 @@ You can use the following options:
 
 GLOBAL:
 -t  |--whattotest  - define what you want to test (i.e. ZOOKEEPER, SLEUTH, SLEUTH_STREAM, EUREKA, CONSUL, SCS)
--v  |--version - which version of BOM do you want to use? Defaults to Edgware snapshot
+-v  |--version - which version of BOM do you want to use? Defaults to Finchley snapshot
 -sv |--scsversion - which version of BOM for Spring Cloud Services do you want to use? Defaults to 1.3.2.BUILD-SNAPSHOT
 -h  |--healthhost - what is your health host? where is docker? defaults to localhost
 -l  |--numberoflines - how many lines of logs of your app do you want to print? Defaults to 1000
@@ -304,7 +304,7 @@ else
 fi
 WAIT_TIME="${WAIT_TIME:-5}"
 RETRIES="${RETRIES:-70}"
-DEFAULT_VERSION="${DEFAULT_VERSION:-Edgware.BUILD-SNAPSHOT}"
+DEFAULT_VERSION="${DEFAULT_VERSION:-Finchley.BUILD-SNAPSHOT}"
 DEFAULT_HEALTH_HOST="${DEFAULT_HEALTH_HOST:-127.0.0.1}"
 DEFAULT_NUMBER_OF_LINES_TO_LOG="${DEFAULT_NUMBER_OF_LINES_TO_LOG:-1000}"
 SHOULD_START_RABBIT="${SHOULD_START_RABBIT:-yes}"
@@ -587,6 +587,8 @@ WORK_OFFLINE="${WORK_OFFLINE:-false}"
 PARAMS="--no-daemon";
 if [[ "${WORK_OFFLINE}" == "false" ]]; then
     PARAMS="${PARAMS} --refresh-dependencies";
+else
+    PARAMS="${PARAMS} --offline";
 fi
 if [[ "${BOOT_VERSION}" != "" ]] ; then
     echo "Will use Boot in version [${BOOT_VERSION}]"

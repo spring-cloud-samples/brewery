@@ -20,7 +20,7 @@ buildscript {
                         hasProperty(propName) ? getProperty(propName) : ""
     }
 
-    String bootVersion = getProp("BOOT_VERSION") ?: "1.5.9.RELEASE"
+    String bootVersion = getProp("BOOT_VERSION") ?: "2.0.0.BUILD-SNAPSHOT"
     logger.lifecycle("BOOT_VERSION is: [${bootVersion}]")
 
     dependencies {
@@ -31,18 +31,15 @@ buildscript {
 
 def commonProject = project(':common')
 def commonZipkinProject = project(':common-zipkin')
-def commonZipkinProjectLegacy = project(':common-zipkin-legacy')
-def commonZipkinStreamProject = project(':common-zipkin-stream')
 def acceptanceTestsProject = project(':acceptance-tests')
-def zipkinServerProject = project(':zipkin-server')
 def eurekaProject = project(':eureka')
 def configServerProject = project(':config-server')
 def zookeeperServerProject = project(':zookeeper')
-def techProjects = [commonProject, commonZipkinProjectLegacy, commonZipkinProject, commonZipkinStreamProject, acceptanceTestsProject,
-                    eurekaProject, zipkinServerProject, configServerProject,
+def techProjects = [commonProject, commonZipkinProject, acceptanceTestsProject,
+                    eurekaProject, configServerProject,
                     zookeeperServerProject]
-def nonZipkinProjects = techProjects - zipkinServerProject
-def nonDockerProjects = [commonProject, commonZipkinProjectLegacy, commonZipkinProject, commonZipkinStreamProject, acceptanceTestsProject]
+def nonZipkinProjects = techProjects
+def nonDockerProjects = [commonProject, commonZipkinProject, acceptanceTestsProject]
 def zipkinRelatedProjects = subprojects - nonZipkinProjects
 
 allprojects {
@@ -148,7 +145,7 @@ configure(subprojects) {
                             hasProperty(propName) ? property(propName) :
                                     System.getenv(propName) ?: ""
             }
-            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${getProp("BOM_VERSION") ?: "Edgware.BUILD-SNAPSHOT" }"
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${getProp("BOM_VERSION") ?: "Finchley.BUILD-SNAPSHOT" }"
             if (getProp("BOOT_VERSION")) {
                 logger.lifecycle("Using boot in version [${getProp("BOOT_VERSION")}]")
                 mavenBom "org.springframework.boot:spring-boot-dependencies:${getProp("BOOT_VERSION")}"
@@ -163,7 +160,7 @@ configure(subprojects) {
 logger.lifecycle("WHAT_TO_TEST is: System prop: [${project.gradle.startParameter.systemPropertiesArgs.get("WHAT_TO_TEST")}] , Env prop: [${System.getenv("WHAT_TO_TEST")}]")
 logger.lifecycle("BOM_VERSION is: [${getProp("BOM_VERSION")}]")
 
-configure(subprojects - zipkinServerProject - acceptanceTestsProject - zookeeperServerProject - configServerProject) {
+configure(subprojects - acceptanceTestsProject - zookeeperServerProject - configServerProject) {
 
     dependencies {
         compile 'org.projectlombok:lombok:1.16.6'
@@ -173,7 +170,6 @@ configure(subprojects - zipkinServerProject - acceptanceTestsProject - zookeeper
         if (whatToTest('SCS')) compile("io.pivotal.spring.cloud:spring-cloud-services-starter-service-registry")
         compile "org.springframework.cloud:spring-cloud-starter-${isAtLeastFinchely() ? "netflix-" : ""}hystrix"
         compile "org.springframework.cloud:spring-cloud-starter-stream-${propOrSysEnvPresent('kafka') ? 'kafka' : 'rabbit'}"
-        if (whatToTest('SLEUTH_STREAM')) { compile "org.springframework.cloud:spring-cloud-sleuth-stream" }
         compile "org.springframework.amqp:spring-amqp"
         compile "io.dropwizard.metrics:metrics-core"
         compile "io.dropwizard.metrics:metrics-graphite"
@@ -224,25 +220,20 @@ configure(subprojects - commonProject) {
     }
 }
 
-configure(subprojects - techProjects - commonZipkinProject - commonZipkinProjectLegacy - commonZipkinStreamProject) {
+configure(subprojects - techProjects - commonZipkinProject) {
 
     dependencies {
         if (whatToTest('SLEUTH')) {
-            if (getProp("BOM_VERSION").contains("Dalston")) {
-                compile commonZipkinProjectLegacy
-            } else {
-                compile commonZipkinProject
-            }
+            compile commonZipkinProject
         }
-        if (whatToTest('SLEUTH_STREAM')) { compile commonZipkinStreamProject }
 
         compile "org.springframework.boot:spring-boot-starter-actuator"
         compile 'com.fasterxml.jackson.core:jackson-databind'
-        if (!whatToTest('CONSUL') && !whatToTest('EUREKA') && !whatToTest('SLEUTH_STREAM') && !whatToTest('SCS')) {
+        if (!whatToTest('CONSUL') && !whatToTest('EUREKA') && !whatToTest('SCS')) {
             compile "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery"
         }
         if (whatToTest('CONSUL')) { compile "org.springframework.cloud:spring-cloud-starter-consul-discovery" }
-        if (whatToTest('EUREKA') || whatToTest('SLEUTH_STREAM')) {
+        if (whatToTest('EUREKA')) {
             if (isAtLeastFinchely()) {
                 compile "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"
             } else {

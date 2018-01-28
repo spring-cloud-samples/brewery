@@ -35,10 +35,9 @@ class AggregationConfiguration {
 	MaturingServiceUpdater maturingServiceUpdater(IngredientsProperties ingredientsProperties,
 												  IngredientWarehouse ingredientWarehouse,
 												  MaturingService maturingService,
-												  @LoadBalanced RestTemplate restTemplate,
 												  EventGateway eventGateway) {
 		return new MaturingServiceUpdater(ingredientsProperties,
-				ingredientWarehouse, maturingService, restTemplate, eventGateway);
+				ingredientWarehouse, maturingService, eventGateway);
 	}
 
 	@Bean

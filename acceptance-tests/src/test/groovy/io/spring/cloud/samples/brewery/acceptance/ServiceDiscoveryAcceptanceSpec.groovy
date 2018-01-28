@@ -15,10 +15,11 @@
  */
 package io.spring.cloud.samples.brewery.acceptance
 import io.spring.cloud.samples.brewery.acceptance.common.AbstractBreweryAcceptanceSpec
+import io.spring.cloud.samples.brewery.acceptance.common.SpanUtil
 import io.spring.cloud.samples.brewery.acceptance.common.WhatToTest
 import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConditions
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
-import org.springframework.cloud.sleuth.Span
+import brave.Span
 import org.springframework.http.RequestEntity
 import spock.lang.Requires
 import spock.lang.Unroll
@@ -36,7 +37,7 @@ class ServiceDiscoveryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 			beer_has_been_brewed_for_process_id(referenceProcessId)
 		where:
 			communicationType << [CommunicationType.REST_TEMPLATE, CommunicationType.FEIGN]
-			referenceProcessId = Span.idToHex(new Random().nextLong())
+			referenceProcessId = SpanUtil.idToHex(new Random().nextLong())
 			serviceDiscovery = System.getProperty(WhatToTest.WHAT_TO_TEST_SYSTEM_PROP)
 	}
 

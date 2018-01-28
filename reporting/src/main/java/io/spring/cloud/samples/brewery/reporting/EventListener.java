@@ -4,8 +4,8 @@ import io.spring.cloud.samples.brewery.common.events.Event;
 import io.spring.cloud.samples.brewery.common.events.EventSink;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.sleuth.Span;
-import org.springframework.cloud.sleuth.Tracer;
+import brave.Span;
+import brave.Tracer;
 import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.messaging.handler.annotation.Headers;
@@ -28,10 +28,13 @@ class EventListener {
 	@ServiceActivator(inputChannel = EventSink.INPUT)
 	public void handleEvents(Event event, @Headers Map<String, Object> headers) throws InterruptedException {
 		log.info("Received the following message with headers [{}] and body [{}]", headers, event);
-		Span newSpan = tracer.createSpan("inside_reporting");
-		reportingRepository.createOrUpdate(event);
-		newSpan.logEvent("savedEvent");
-		log.info("Saved event to the db", headers, event);
-		tracer.close(newSpan);
+		Span newSpan = tracer.nextSpan().name("inside_reporting");
+		try (Tracer.SpanInScope ws = tracer.withSpanInScope(newSpan)) {
+			reportingRepository.createOrUpdate(event);
+			newSpan.annotate("savedEvent");
+			log.info("Saved event to the db", headers, event);
+		} finally {
+			newSpan.finish();
+		}
 	}
 }
