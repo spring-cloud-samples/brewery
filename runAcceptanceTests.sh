@@ -261,7 +261,7 @@ USAGE:
 You can use the following options:
 
 GLOBAL:
--t  |--whattotest  - define what you want to test (i.e. ZOOKEEPER, SLEUTH, SLEUTH_STREAM, EUREKA, CONSUL, SCS)
+-t  |--whattotest  - define what you want to test (i.e. ZOOKEEPER, SLEUTH, EUREKA, CONSUL, SCS)
 -v  |--version - which version of BOM do you want to use? Defaults to Finchley snapshot
 -sv |--scsversion - which version of BOM for Spring Cloud Services do you want to use? Defaults to 1.3.2.BUILD-SNAPSHOT
 -h  |--healthhost - what is your health host? where is docker? defaults to localhost
@@ -280,7 +280,7 @@ GLOBAL:
 -br |--branch - Which repo branch of the brewery repo should be checked out. Defaults to "master"
 
 CLOUD FOUNDRY RELATED PROPERTIES:
--c  |--usecloudfoundry - should run tests for cloud foundry? (works only for SLEUTH_STREAM) Defaults to "no"
+-c  |--usecloudfoundry - should run tests for cloud foundry? (works only for SLEUTH) Defaults to "no"
 -cd |--cloudfoundrydomain - what's the domain of your cloud foundry? Defaults to "run.pivotal.io"
 -cu |--username - username to log in with to CF
 -cp |--password - password to log in with to CF

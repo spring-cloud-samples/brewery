@@ -23,7 +23,7 @@ class TestConditions {
 
 	public static final Closure<Boolean> SLEUTH = {
 		return whatToTestSystemPropMatchesAny(
-				[WhatToTest.SLEUTH, WhatToTest.SLEUTH_STREAM]
+				[WhatToTest.SLEUTH]
 		)
 	}
 
