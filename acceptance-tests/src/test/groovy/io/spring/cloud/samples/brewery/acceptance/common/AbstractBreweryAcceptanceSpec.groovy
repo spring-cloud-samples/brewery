@@ -109,7 +109,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 				log.info("The following spans were not found in Zipkin $spanNamesNotFoundInZipkin")
 				assert serviceNamesNotFoundInZipkin.empty
 				assert spanNamesNotFoundInZipkin.empty
-				List<Span> messagingSpans = spans.findAll { it.annotations.find { it.value == "send:events" } }
+				def messagingSpans = spans.findAll { it.binaryAnnotations.find { it.value == "send:events".bytes } }
 				log.info("Found the folllowing messaging spans [{}]", messagingSpans)
 				assert !messagingSpans.empty
 				zipkin.Span spanByTag = findSpanByTag('beer', spans)
