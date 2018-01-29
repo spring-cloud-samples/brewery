@@ -32,6 +32,9 @@ if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
     exit 1
 fi
 
+echo -e "\n\nBooting up Zipkin stuff"
+docker-compose -f $dockerComposeFile up -d query mysql
+
 READY_FOR_TESTS="no"
 PORT_TO_CHECK=9411
 echo "Waiting for the Zipkin apps to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
