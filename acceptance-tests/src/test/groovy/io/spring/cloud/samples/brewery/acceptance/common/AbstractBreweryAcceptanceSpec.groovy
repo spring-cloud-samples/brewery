@@ -109,7 +109,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 				log.info("The following spans were not found in Zipkin $spanNamesNotFoundInZipkin")
 				assert serviceNamesNotFoundInZipkin.empty
 				assert spanNamesNotFoundInZipkin.empty
-				def messagingSpans = spans.findAll { it.binaryAnnotations.find { it.value == "send:events".bytes } }
+				def messagingSpans = spans.findAll { it.binaryAnnotations.find { it.value == "events".bytes } }
 				log.info("Found the folllowing messaging spans [{}]", messagingSpans)
 				assert !messagingSpans.empty
 				zipkin.Span spanByTag = findSpanByTag('beer', spans)
@@ -219,7 +219,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 		HttpHeaders headers = new HttpHeaders()
 		headers.add("PROCESS-ID", processId)
 		headers.add(TRACE_ID_HEADER_NAME, processId)
-		headers.add(SPAN_ID_HEADER_NAME, processId)
+		headers.add(SPAN_ID_HEADER_NAME, SpanUtil.idToHex(new Random().nextLong()))
 		headers.add("TEST-COMMUNICATION-TYPE", communicationType.name())
 		URI uri = URI.create("$presentingUrl/present/order")
 		Order allIngredients = allIngredients()
