@@ -44,7 +44,7 @@ class IngredientsController {
         tracer.currentSpan().tag("beer", "stout");
         tracer.currentSpan().annotate("ingredientsAggregationStarted");
         log.info("Starting beer brewing process for process id [{}]", processId);
-        Span span = tracer.nextSpan().name("inside_aggregating");
+        Span span = tracer.nextSpan().name("inside_aggregating").start();
         try (Tracer.SpanInScope ws = tracer.withSpanInScope(span)) {
             TestConfigurationHolder testConfigurationHolder = TestConfigurationHolder.TEST_CONFIG.get();
             return () -> ingredientsAggregator.fetchIngredients(order, processId, testConfigurationHolder);

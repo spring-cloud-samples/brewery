@@ -41,7 +41,7 @@ class BottlerService {
     @HystrixCommand
     void bottle(Wort wort, String processId) {
         log.info("I'm inside bottling");
-        Span span = tracer.nextSpan().name("inside_bottling");
+        Span span = tracer.nextSpan().name("inside_bottling").start();
         try (Tracer.SpanInScope ws = tracer.withSpanInScope(span)) {
             notifyPresenting(processId);
             bottlingWorker.bottleBeer(wort.getWort(), processId, TEST_CONFIG.get());

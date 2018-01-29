@@ -47,7 +47,7 @@ class BottlingServiceUpdater {
 
     @Async
     public void updateBottlingServiceAboutBrewedBeer(final Ingredients ingredients, String processId, TestConfigurationHolder configurationHolder) {
-        Span trace = tracer.nextSpan().name("inside_maturing");
+        Span trace = tracer.nextSpan().name("inside_maturing").start();
         try (Tracer.SpanInScope ws = tracer.withSpanInScope(trace)) {
             TestConfigurationHolder.TEST_CONFIG.set(configurationHolder);
             log.info("Updating bottling service. Current process id is equal [{}]", processId);
@@ -72,7 +72,7 @@ class BottlingServiceUpdater {
 
     private void notifyPresentingService(String correlationId) {
         log.info("Calling presenting from maturing");
-        Span scope = this.tracer.nextSpan().name("calling_presenting_from_maturing");
+        Span scope = this.tracer.nextSpan().name("calling_presenting_from_maturing").start();
         try (Tracer.SpanInScope ws = tracer.withSpanInScope(scope)) {
             switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
             case FEIGN:
@@ -96,7 +96,7 @@ class BottlingServiceUpdater {
     @HystrixCommand
     public void notifyBottlingService(Ingredients ingredients, String correlationId) {
         log.info("Calling bottling from maturing");
-        Span scope = this.tracer.nextSpan().name("calling_bottling_from_maturing");
+        Span scope = this.tracer.nextSpan().name("calling_bottling_from_maturing").start();
         try (Tracer.SpanInScope ws = tracer.withSpanInScope(scope)) {
             bottlingService.bottle(new Wort(getQuantity(ingredients)), correlationId, FEIGN.name());
         } finally {

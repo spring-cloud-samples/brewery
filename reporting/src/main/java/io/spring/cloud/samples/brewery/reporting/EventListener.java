@@ -28,7 +28,7 @@ class EventListener {
 	@ServiceActivator(inputChannel = EventSink.INPUT)
 	public void handleEvents(Event event, @Headers Map<String, Object> headers) throws InterruptedException {
 		log.info("Received the following message with headers [{}] and body [{}]", headers, event);
-		Span newSpan = tracer.nextSpan().name("inside_reporting");
+		Span newSpan = tracer.nextSpan().name("inside_reporting").start();
 		try (Tracer.SpanInScope ws = tracer.withSpanInScope(newSpan)) {
 			reportingRepository.createOrUpdate(event);
 			newSpan.annotate("savedEvent");

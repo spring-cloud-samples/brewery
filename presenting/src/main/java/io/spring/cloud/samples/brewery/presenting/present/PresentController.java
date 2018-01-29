@@ -54,7 +54,7 @@ class PresentController {
 				processIdFromHeaders :
 				new JdkIdGenerator().generateId().toString();
 		log.info("Making new order with [{}] and processid [{}].", body.getBody(), processId);
-		Span span = this.tracer.nextSpan().name("inside_presenting");
+		Span span = this.tracer.nextSpan().name("inside_presenting").start();
 		Tracer.SpanInScope ws = tracer.withSpanInScope(span);
 		try {
 			switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {

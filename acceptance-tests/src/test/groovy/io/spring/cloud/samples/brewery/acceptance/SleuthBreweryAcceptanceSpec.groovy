@@ -32,9 +32,9 @@ class SleuthBreweryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 		    RequestEntity requestEntity = an_order_for_all_ingredients_with_process_id(referenceProcessId, communicationType)
 		when: 'the presenting service has been called with all ingredients'
 			presenting_service_has_been_called(requestEntity)
-		and: 'another request is sent to ensure that there are no distortions in the graph'
-			requestEntity = an_order_for_all_ingredients_with_process_id(referenceProcessId, communicationType)
-			presenting_service_has_been_called(requestEntity)
+//		and: 'another request is sent to ensure that there are no distortions in the graph'
+//			requestEntity = an_order_for_all_ingredients_with_process_id(referenceProcessId, communicationType)
+//			presenting_service_has_been_called(requestEntity)
 		then: 'eventually beer will be brewed with same Trace-Id as the first request'
 			beer_has_been_brewed_for_process_id(referenceProcessId)
 		and: 'entry will be present in Zipkin'

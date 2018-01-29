@@ -40,7 +40,7 @@ class FeedController {
 			method = PUT)
 	public void maturing(@RequestHeader("PROCESS-ID") String processId) {
 		log.info("new maturing with process [{}]", processId);
-		Span span = tracer.nextSpan().name("inside_presenting_maturing_feed");
+		Span span = tracer.nextSpan().name("inside_presenting_maturing_feed").start();
 		Tracer.SpanInScope ws = tracer.withSpanInScope(span);
 		try {
 			feedRepository.addModifyProcess(processId, ProcessState.MATURING);
@@ -57,7 +57,7 @@ class FeedController {
 			method = PUT)
 	public void bottling(@RequestHeader("PROCESS-ID") String processId) {
 		log.info("new bottling process [{}]", processId);
-		Span span = tracer.nextSpan().name("inside_presenting_bottling_feed");
+		Span span = tracer.nextSpan().name("inside_presenting_bottling_feed").start();
 		try (Tracer.SpanInScope ws = tracer.withSpanInScope(span)){
 			feedRepository.addModifyProcess(processId, ProcessState.BOTTLING);
 		} finally {
