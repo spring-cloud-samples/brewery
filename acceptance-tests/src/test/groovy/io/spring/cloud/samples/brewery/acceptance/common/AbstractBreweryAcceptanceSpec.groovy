@@ -55,7 +55,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 	private static final List<String> SPAN_NAMES = [
 													'inside_presenting_maturing_feed',
 													'inside_presenting_bottling_feed',
-													'send:events',
+													'send',
 													'inside_aggregating',
 													'inside_maturing',
 													'inside_bottling',
@@ -109,6 +109,9 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 				log.info("The following spans were not found in Zipkin $spanNamesNotFoundInZipkin")
 				assert serviceNamesNotFoundInZipkin.empty
 				assert spanNamesNotFoundInZipkin.empty
+				List<Span> messagingSpans = spans.findAll { it.annotations.find { it.value == "send:events" } }
+				log.info("Found the folllowing messaging spans [{}]", messagingSpans)
+				assert !messagingSpans.empty
 				zipkin.Span spanByTag = findSpanByTag('beer', spans)
 				assert spanByTag.annotations.find { it.value == 'ingredientsAggregationStarted' }
 				log.info("Custom log [ingredientsAggregationStarted] found!")
