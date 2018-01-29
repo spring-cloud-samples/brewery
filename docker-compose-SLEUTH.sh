@@ -33,7 +33,7 @@ if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
 fi
 
 echo -e "\n\nBooting up Zipkin stuff"
-docker-compose -f $dockerComposeFile up -d
+docker-compose -f $dockerComposeFile up -d query mysql
 
 READY_FOR_TESTS="no"
 PORT_TO_CHECK=9411
@@ -59,4 +59,3 @@ fi
 
 echo -e "\n\nStarting brewery apps..."
 start_brewery_apps "$SYSTEM_PROPS"
-
