@@ -66,13 +66,3 @@ public class FeedRepository {
 	}
 }
 
-class Process {
-	String id;
-	ProcessState state;
-
-	public Process(String id, ProcessState state) {
-		this.id = id;
-		this.state = state;
-	}
-}
-
