@@ -62,6 +62,12 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
         ZQ_APP_NAME="${CLOUD_PREFIX}-$zq"
         cd $root/$zq
         reset $ZQ_APP_NAME
+        echo "Downloading Zipkin Server jar"
+        rm -rf build
+        mkdir build
+        cd build
+        curl -sSL https://zipkin.io/quickstart.sh | bash -s
+        cd ..
         cf d -f $ZQ_APP_NAME
         cd $root/zipkin-server
         cf push -f "manifest-${CLOUD_PREFIX}.yml" && READY_FOR_TESTS="yes"
