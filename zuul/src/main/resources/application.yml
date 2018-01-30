@@ -1,4 +1,9 @@
+spring:
+  application:
+    name: zuul
+
 logging:
+  level.com.netflix.zuul: DEBUG
   level.org.springframework.cloud: DEBUG
   level.org.springframework.cloud.sleuth: TRACE
   level.org.springframework.cloud.sleuth.log: DEBUG

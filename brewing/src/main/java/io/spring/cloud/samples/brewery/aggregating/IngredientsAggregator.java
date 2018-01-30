@@ -40,7 +40,7 @@ class IngredientsAggregator {
     // TODO: Consider simplifying the case by removing the DB (always matches threshold)
     public Ingredients fetchIngredients(Order order, String processId, TestConfigurationHolder testConfigurationHolder) throws Exception {
         TestConfigurationHolder.TEST_CONFIG.set(testConfigurationHolder);
-        log.info("Fetching ingredients for order [{}] , processId [{}], span [{}]", order, processId);
+        log.info("Fetching ingredients for order [{}] , processId [{}]", order, processId);
         /**
          * [SLEUTH] ParallelStreams won't work out of the box
          * - example of a completable future with our TraceableExecutorService
