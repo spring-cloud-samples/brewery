@@ -159,6 +159,7 @@ configure(subprojects) {
 }
 
 logger.lifecycle("WHAT_TO_TEST is: System prop: [${project.gradle.startParameter.systemPropertiesArgs.get("WHAT_TO_TEST")}] , Env prop: [${System.getenv("WHAT_TO_TEST")}]")
+logger.lifecycle("CLOUD_FOUDRY set: [${System.getenv("CLOUD_FOUNDRY")}]")
 logger.lifecycle("BOM_VERSION is: [${getProp("BOM_VERSION")}]")
 
 configure(subprojects - acceptanceTestsProject - zookeeperServerProject - configServerProject) {
