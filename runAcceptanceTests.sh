@@ -584,6 +584,10 @@ APP_WAIT_TIME=1
 APP_FAILED="yes"
 WORK_OFFLINE="${WORK_OFFLINE:-false}"
 
+if [[ "${CLOUD_FOUNDRY}" == "yes" ]] ; then
+    WHAT_TO_TEST="SLEUTH"
+fi
+
 PARAMS="--no-daemon";
 if [[ "${WORK_OFFLINE}" == "false" ]]; then
     PARAMS="${PARAMS} --refresh-dependencies";
