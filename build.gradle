@@ -91,8 +91,7 @@ configure(subprojects) {
 		}
 		cloudFoundrySet = {
 			String cloudFoundryProp = "CLOUD_FOUNDRY"
-			return "true".equalsIgnoreCase(project.gradle.startParameter.systemPropertiesArgs.get(cloudFoundryProp)) ?:
-					"true".equalsIgnoreCase(System.getenv(cloudFoundryProp))
+			return "true".equalsIgnoreCase(getProp(cloudFoundryProp))
 		}
 		propOrSysEnvPresent = { String propName ->
 			project.hasProperty(propName) || systemPropsFromGradleContains(propName) || System.getenv(propName.toUpperCase())
