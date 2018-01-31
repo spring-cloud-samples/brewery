@@ -379,7 +379,7 @@ case ${key} in
     SKIP_BUILDING="yes"
     ;;
     -c|--usecloudfoundry)
-    CLOUD_FOUNDRY="yes"
+    CLOUD_FOUNDRY="true"
     ;;
     -cd|--cloudfoundrydomain)
     DOMAIN="$2"
@@ -584,7 +584,7 @@ APP_WAIT_TIME=1
 APP_FAILED="yes"
 WORK_OFFLINE="${WORK_OFFLINE:-false}"
 
-if [[ "${CLOUD_FOUNDRY}" == "yes" ]] ; then
+if [[ "${CLOUD_FOUNDRY}" == "true" ]] ; then
     WHAT_TO_TEST="SLEUTH"
 fi
 
@@ -633,7 +633,7 @@ fi
 
 
 # ======================================= Deploying apps locally or to cloud foundry =======================================
-if [[ "${CLOUD_FOUNDRY}" == "yes" ]] ; then
+if [[ "${CLOUD_FOUNDRY}" == "true" ]] ; then
     login ${USERNAME} ${PASSWORD}
 fi
 
