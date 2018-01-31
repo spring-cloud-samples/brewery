@@ -6,11 +6,11 @@ applications:
   host: brewery-zipkin-server
   path: build/zipkin.jar
   services:
-    - brewery-rabbitmq
+#    - brewery-rabbitmq
     - brewery-mysql
   env:
     SPRING_PROFILES_ACTIVE: cloud
     DEBUG: "true"
     JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
-    RABBIT_ADDRESSES: ${vcap.services.brewery-rabbitmq.credentials.uri}
-    RABBIT_USE_SSL: true
+#    RABBIT_ADDRESSES: ${vcap.services.brewery-rabbitmq.credentials.uri}
+#    RABBIT_USE_SSL: true

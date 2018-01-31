@@ -222,7 +222,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 		HttpHeaders headers = new HttpHeaders()
 		headers.add("PROCESS-ID", processId)
 		headers.add(TRACE_ID_HEADER_NAME, processId)
-		headers.add(SPAN_ID_HEADER_NAME, processId)
+		headers.add(SPAN_ID_HEADER_NAME, SpanUtil.idToHex(new Random().nextLong()))
 		headers.add("TEST-COMMUNICATION-TYPE", communicationType.name())
 		URI uri = URI.create("$presentingUrl/present/order")
 		Order allIngredients = allIngredients()
