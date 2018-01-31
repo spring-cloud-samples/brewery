@@ -14,5 +14,5 @@ applications:
     spring.cloud.config.uri: http://docsbrewing-config-server.cfapps.io
     DEBUG: "true"
     JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
-    SPRING_ZIPKIN_SENDER_TYPE: WEB
+    SPRING_ZIPKIN_SENDER_TYPE: web
     SPRING_ZIPKIN_BASE_URL: http://docsbrewing-zipkin-server.cfapps.io
