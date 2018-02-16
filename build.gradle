@@ -165,6 +165,7 @@ configure(subprojects - acceptanceTestsProject - zookeeperServerProject - config
 
 	dependencies {
 		compile 'org.projectlombok:lombok:1.16.6'
+		compile "org.springframework.boot:spring-boot-starter-web"
 		compile "org.springframework.cloud:spring-cloud-starter-sleuth"
 		if (!whatToTest('SCS')) compile "org.springframework.cloud:spring-cloud-starter-config"
 		if (whatToTest('SCS')) compile("io.pivotal.spring.cloud:spring-cloud-services-starter-config-client")
