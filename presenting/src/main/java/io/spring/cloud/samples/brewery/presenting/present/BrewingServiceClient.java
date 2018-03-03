@@ -3,7 +3,7 @@ package io.spring.cloud.samples.brewery.presenting.present;
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.presenting.config.Collaborators;
 import io.spring.cloud.samples.brewery.presenting.config.Versions;
-import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
