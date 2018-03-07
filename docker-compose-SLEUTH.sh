@@ -38,7 +38,7 @@ docker-compose -f $dockerComposeFile up -d
 READY_FOR_TESTS="no"
 PORT_TO_CHECK=9411
 echo -e "\n\nWaiting for Zipkin to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
-curl_health_endpoint "${PORT_TO_CHECK}"
+curl_health_endpoint "${PORT_TO_CHECK}" && READY_FOR_TESTS="yes"
 
 if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
     echo "Zipkin failed to start..."
