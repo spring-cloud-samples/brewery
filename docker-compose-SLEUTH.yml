@@ -13,7 +13,7 @@ query:
     - ZIPKIN_LOG_LEVEL=DEBUG
   ports:
     - 9411:9411
-  links:
+  #links:
     #- mysql:storage
     #- rabbitmq:rabbitmq
 
