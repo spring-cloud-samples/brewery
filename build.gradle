@@ -247,7 +247,7 @@ configure(subprojects - techProjects - commonZipkinProject) {
 	}
 
 	wrapper {
-		gradleVersion '4.2.1'
+		gradleVersion '4.6'
 	}
 
 	bootRun {
