@@ -1,7 +1,7 @@
-mysql:
-  image: openzipkin/zipkin-mysql
-  ports:
-    - 3306:3306
+#mysql:
+#  image: openzipkin/zipkin-mysql
+#  ports:
+#    - 3306:3306
 
 query:
   image: openzipkin/zipkin

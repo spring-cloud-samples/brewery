@@ -33,12 +33,12 @@ if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
 fi
 
 echo -e "\n\nBooting up Zipkin stuff"
-docker-compose -f $dockerComposeFile up -d query mysql
+docker-compose -f $dockerComposeFile up -d
 
 READY_FOR_TESTS="no"
 PORT_TO_CHECK=9411
-echo "Waiting for the Zipkin apps to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
-netcat_port $PORT_TO_CHECK && READY_FOR_TESTS="yes"
+echo -e "\n\nWaiting for Zipkin to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
+curl_health_endpoint "${PORT_TO_CHECK}"
 
 if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
     echo "Zipkin failed to start..."
