@@ -101,6 +101,9 @@ function print_logs() {
               docker logs --tail=${NUMBER_OF_LINES_TO_LOG} -t ${field1}
             done < /tmp/containers.txt
     fi
+    echo -e "\n\nPrinting docker compose logs - start\n\n"
+    docker-compose -f "docker-compose-${WHAT_TO_TEST}.yml" logs || echo "Failed to print docker compose logs"
+    echo -e "\n\nPrinting docker compose logs - end\n\n"
     tail_log "brewing"
     tail_log "zuul"
     tail_log "presenting"
