@@ -9,13 +9,13 @@ query:
     # Remove TRANSPORT_TYPE to disable tracing
     - TRANSPORT_TYPE=http
     #- STORAGE_TYPE=mysql
-    - RABBIT_ADDRESSES=rabbitmq:5672
+    #- RABBIT_ADDRESSES=rabbitmq:5672
     - ZIPKIN_LOG_LEVEL=DEBUG
   ports:
     - 9411:9411
   links:
     #- mysql:storage
-    - rabbitmq:rabbitmq
+    #- rabbitmq:rabbitmq
 
 rabbitmq:
   image: rabbitmq:management
