@@ -36,10 +36,9 @@ if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
         echo -e "\nInstalling spring boot [${CLI_BOOT_VERSION}] and spring cloud [${CLI_VERSION}] plugins"
         yes | sdk use springboot "${CLI_BOOT_VERSION}"
         echo "Path to Spring CLI [${CLI_PATH}]"
-        rm ${HOME}/.sdkman/candidates/springboot/${CLI_BOOT_VERSION}/lib/ext/spring-cloud*
-        rm ${HOME}/.sdkman/candidates/springboot/${CLI_BOOT_VERSION}/lib/ext/.installed
+        rm ${HOME}/.sdkman/candidates/springboot/${CLI_BOOT_VERSION}/lib/ext/spring-cloud* || echo "Failed to remove spring cloud extenstion"
+        rm ${HOME}/.sdkman/candidates/springboot/${CLI_BOOT_VERSION}/lib/ext/.installed || echo "Failed to remove spring cloud extenstion"
         yes | ${CLI_PATH}spring install org.springframework.cloud:spring-cloud-cli:${CLI_VERSION}
-        yes |
         echo -e "\nPrinting versions"
         ${CLI_PATH}spring version
         ${CLI_PATH}spring cloud --version
