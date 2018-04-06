@@ -7,7 +7,7 @@ query:
   image: openzipkin/zipkin
   environment:
     # Remove TRANSPORT_TYPE to disable tracing
-    - TRANSPORT_TYPE=http
+    #- TRANSPORT_TYPE=http
     - STORAGE_TYPE=mysql
     - RABBIT_ADDRESSES=rabbitmq:5672
   ports:
@@ -21,4 +21,3 @@ rabbitmq:
   ports:
     - 9672:5672
     - 15672
-
