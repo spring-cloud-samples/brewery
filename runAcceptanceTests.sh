@@ -112,6 +112,8 @@ function print_logs() {
     tail_log "zookeeper"
     tail_log "zipkin-server"
     tail_log "kafka"
+    echo -e "\n\nPrinting docker compose logs\n\n"
+    docker-compose -f docker-compose-"${WHAT_TO_TEST}".yml logs --tail="all"
     echo -e "\n\nPrinting Kafka logs" && cat /tmp/spring-cloud-dataflow-*/launcher-*/launcher.kafka/* || echo "No kafka was running"
 }
 
