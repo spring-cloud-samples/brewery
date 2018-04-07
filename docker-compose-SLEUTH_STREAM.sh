@@ -1,5 +1,5 @@
 #!/bin/bash
-CLI_BOOT_VERSION=1.5.3.RELEASE
+CLI_BOOT_VERSION=1.5.11.RELEASE
 
 function run_kafka() {
     local APP_JAVA_PATH=${CURRENT_DIR}/build/

@@ -20,3 +20,5 @@ spring:
             - spanTraceId
             - spanName
             - messageSent
+
+spring.zipkin.sender.type: kafka
