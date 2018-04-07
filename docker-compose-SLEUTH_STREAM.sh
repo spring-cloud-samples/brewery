@@ -19,6 +19,7 @@ SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.rabbitmq.port=9672 -Dspring.
 dockerComposeRoot="docker-compose-${WHAT_TO_TEST}"
 dockerComposeFile="${dockerComposeRoot}.yml"
 docker-compose -f $dockerComposeFile kill
+docker-compose -f $dockerComposeFile pull
 docker-compose -f $dockerComposeFile build
 
 if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
