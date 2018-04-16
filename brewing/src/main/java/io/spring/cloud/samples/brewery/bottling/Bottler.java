@@ -6,7 +6,6 @@ import com.netflix.hystrix.HystrixCommandKey;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import brave.Tracer;
-import org.springframework.cloud.sleuth.TraceKeys;
 import org.springframework.cloud.sleuth.instrument.hystrix.TraceCommand;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +20,11 @@ class Bottler implements BottlingService {
 
     private final BottlerService bottlerService;
     private final Tracer tracer;
-    private final TraceKeys traceKeys;
 
     @Autowired
-    public Bottler(BottlerService bottlerService, Tracer tracer, TraceKeys traceKeys) {
+    public Bottler(BottlerService bottlerService, Tracer tracer) {
         this.bottlerService = bottlerService;
         this.tracer = tracer;
-        this.traceKeys = traceKeys;
     }
 
 	/**
@@ -43,7 +40,7 @@ class Bottler implements BottlingService {
                 .withGroupKey(HystrixCommandGroupKey.Factory.asKey(groupKey))
                 .andCommandKey(HystrixCommandKey.Factory.asKey(commandKey));
         TestConfigurationHolder testConfigurationHolder = TestConfigurationHolder.TEST_CONFIG.get();
-        new TraceCommand<Void>(tracer, traceKeys, setter) {
+        new TraceCommand<Void>(tracer, setter) {
             @Override
             public Void doRun() throws Exception {
                 TestConfigurationHolder.TEST_CONFIG.set(testConfigurationHolder);
