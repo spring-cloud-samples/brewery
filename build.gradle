@@ -225,7 +225,6 @@ configure(subprojects - techProjects - commonZipkinProject) {
 		compile 'com.fasterxml.jackson.core:jackson-databind'
 		if (!cloudFoundrySet() && !whatToTest('CONSUL') && !whatToTest('EUREKA') && !whatToTest('SCS')) {
 			compile "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery"
-			compile "org.apache.zookeeper:zookeeper"
 		}
 		if (whatToTest('CONSUL')) { compile "org.springframework.cloud:spring-cloud-starter-consul-discovery" }
 		if (whatToTest('EUREKA') || cloudFoundrySet()) {
