@@ -1,7 +1,7 @@
 moduleEnabled(!(whatToTest('EUREKA') || whatToTest('SLEUTH_STREAM') || whatToTest('CONSUL') || whatToTest('SCS')))
 
 dependencies {
-    compile "org.apache.curator:curator-test"
+    compile "org.apache.curator:curator-test:2.8.0"
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-actuator")
 }
