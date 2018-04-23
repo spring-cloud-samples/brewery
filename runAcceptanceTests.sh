@@ -664,7 +664,7 @@ if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
             echo -e "\n\nWaiting for the apps to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
             for i in $( seq 1 "${RETRIES}" ); do
                 sleep "${WAIT_TIME}"
-                curlResult="$( curl -m 5 ${HEALTH_ENDPOINTS} || echo "DOWN" )"
+                curlResult="$( curl --fail -m 5 ${HEALTH_ENDPOINTS} || echo "DOWN" )"
                 echo "${curlResult}" | grep -v DOWN && APPS_ARE_RUNNING="yes" && break
                 echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
             done
@@ -696,7 +696,7 @@ else
         echo -e "\n\nChecking for the presence of all services in Service Discovery for [$(( WAIT_TIME * RETRIES ))] seconds"
         for i in $( seq 1 "${RETRIES}" ); do
             sleep "${WAIT_TIME}"
-            CURL_RESULT=$( curl -m 5 http://${DISCOVERY_HOST}/eureka/apps/ )
+            CURL_RESULT=$( curl --fail -m 5 http://${DISCOVERY_HOST}/eureka/apps/ )
             echo "${CURL_RESULT}" | grep PRESENTING && PRESENTING_PRESENT="yes"
             echo "${CURL_RESULT}" | grep BREWING && BREWING_PRESENT="yes"
             echo "${CURL_RESULT}" | grep ZUUL && ZUUL_PRESENT="yes"
