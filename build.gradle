@@ -34,10 +34,8 @@ def commonZipkinProject = project(':common-zipkin')
 def acceptanceTestsProject = project(':acceptance-tests')
 def eurekaProject = project(':eureka')
 def configServerProject = project(':config-server')
-def zookeeperServerProject = project(':zookeeper')
 def techProjects = [commonProject, commonZipkinProject, acceptanceTestsProject,
-					eurekaProject, configServerProject,
-					zookeeperServerProject]
+					eurekaProject, configServerProject]
 def nonZipkinProjects = techProjects
 def nonDockerProjects = [commonProject, commonZipkinProject, acceptanceTestsProject]
 def zipkinRelatedProjects = subprojects - nonZipkinProjects
@@ -161,7 +159,7 @@ logger.lifecycle("WHAT_TO_TEST is: System prop: [${project.gradle.startParameter
 logger.lifecycle("CLOUD_FOUDRY set: [${System.getenv("CLOUD_FOUNDRY")}]")
 logger.lifecycle("BOM_VERSION is: [${getProp("BOM_VERSION")}]")
 
-configure(subprojects - acceptanceTestsProject - zookeeperServerProject - configServerProject) {
+configure(subprojects - acceptanceTestsProject - configServerProject) {
 
 	dependencies {
 		compile 'org.projectlombok:lombok:1.16.6'

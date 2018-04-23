@@ -25,7 +25,7 @@ fi
 READY_FOR_TESTS="no"
 PORT_TO_CHECK=2181
 echo "Waiting for Zookeeper to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
-java_jar "zookeeper"
+docker-compose -f $dockerComposeFile up -d zookeeper
 netcat_local_port $PORT_TO_CHECK && READY_FOR_TESTS="yes"
 
 if [[ "${READY_FOR_TESTS}" == "no" ]] ; then

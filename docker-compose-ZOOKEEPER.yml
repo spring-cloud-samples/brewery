@@ -1,3 +1,7 @@
+zookeeper:
+  image: zookeeper:3.5
+  ports:
+    - "2181:2181"
 rabbitmq:
   image: rabbitmq:management
   ports:
