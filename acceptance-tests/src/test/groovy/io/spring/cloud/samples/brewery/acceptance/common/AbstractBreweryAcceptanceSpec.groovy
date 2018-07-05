@@ -184,7 +184,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 	}
 
 	ResponseEntity<String> checkStateOfTheTraceId(String traceId) {
-		String path = "api/v1/trace"
+		String path = "api/v2/trace"
 		URI uri = URI.create("${wrapQueryWithProtocolIfPresent() ?: zipkinQueryUrl}:${zipkinQueryPort}/${path}/$traceId")
 		HttpHeaders headers = new HttpHeaders()
 		log.info("Sending request to the Zipkin query service [$uri]. Checking presence of trace id [$traceId]")
@@ -194,7 +194,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 	}
 
 	ResponseEntity<String> checkDependencies() {
-		URI uri = URI.create("${wrapQueryWithProtocolIfPresent() ?: zipkinQueryUrl}:${zipkinQueryPort}/api/v1/dependencies?endTs=${System.currentTimeMillis()}")
+		URI uri = URI.create("${wrapQueryWithProtocolIfPresent() ?: zipkinQueryUrl}:${zipkinQueryPort}/api/vw/dependencies?endTs=${System.currentTimeMillis()}")
 		HttpHeaders headers = new HttpHeaders()
 		log.info("Sending request to the Zipkin query service [$uri]. Checking the dependency graph")
 		return new ExceptionLoggingRestTemplate().exchange(
