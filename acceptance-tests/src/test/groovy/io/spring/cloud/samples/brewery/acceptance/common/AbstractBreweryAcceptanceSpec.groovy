@@ -16,6 +16,7 @@
 package io.spring.cloud.samples.brewery.acceptance.common
 
 import groovy.json.JsonSlurper
+import groovy.transform.CompileStatic
 import io.spring.cloud.samples.brewery.acceptance.common.tech.ExceptionLoggingRestTemplate
 import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConfiguration
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
@@ -36,7 +37,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
-import zipkin.Codec
 
 import static com.jayway.awaitility.Awaitility.await
 import static java.util.concurrent.TimeUnit.SECONDS
@@ -51,8 +51,8 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 	public static final String SPAN_ID_HEADER_NAME = Span.SPAN_ID_NAME
 	public static final Logger log = LoggerFactory.getLogger(AbstractBreweryAcceptanceSpec)
 
-	private static final List<String> APP_NAMES = ['presenting', 'brewing', 'zuul']
-	private static final List<String> SPAN_NAMES = [
+	protected static final List<String> APP_NAMES = ['presenting', 'brewing', 'zuul']
+	protected static final List<String> SPAN_NAMES = [
 													'inside_presenting_maturing_feed',
 													'inside_presenting_bottling_feed',
 													'message:events',
@@ -94,6 +94,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 		})
 	}
 
+	@CompileStatic
 	void entry_for_trace_id_is_present_in_Zipkin(String traceId) {
 		await().pollInterval(pollInterval, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
 			@Override
@@ -102,37 +103,35 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 				log.info("Response from the Zipkin query service about the trace id [$response] for trace with id [$traceId]")
 				assert response.statusCode == HttpStatus.OK
 				assert response.hasBody()
-				List<zipkin.Span> spans = Codec.JSON.readSpans(response.body.bytes)
+				List<zipkin2.Span> spans = zipkin2.codec.SpanBytesDecoder.JSON_V2.decodeList(response.body.bytes)
 				List<String> serviceNamesNotFoundInZipkin = serviceNamesNotFoundInZipkin(spans)
 				List<String> spanNamesNotFoundInZipkin = spanNamesNotFoundInZipkin(spans)
 				log.info("The following services were not found in Zipkin $serviceNamesNotFoundInZipkin")
 				log.info("The following spans were not found in Zipkin $spanNamesNotFoundInZipkin")
 				assert serviceNamesNotFoundInZipkin.empty
 				assert spanNamesNotFoundInZipkin.empty
-				zipkin.Span spanByTag = findSpanByTag('beer', spans)
-				assert spanByTag.annotations.find { it.value == 'ingredientsAggregationStarted' }
+				zipkin2.Span spanByTag = findSpanByTag('beer', spans)
+				assert spanByTag.annotations().find { it.value() == 'ingredientsAggregationStarted' }
 				log.info("Custom log [ingredientsAggregationStarted] found!")
-				assert spanByTag.binaryAnnotations.find { it.key == 'beer' && new String(it.value) == 'stout' }
+				assert spanByTag.tags().find { it.key == 'beer' && new String(it.value) == 'stout' }
 				log.info("Custom tag ['beer' -> 'stout'] found!")
 			}
 
-			private List<String> serviceNamesNotFoundInZipkin(List<zipkin.Span> spans) {
-				List<String> serviceNamesFoundInAnnotations = spans.collect {
-					it.annotations.endpoint.serviceName
-				}.flatten().unique()
-				List<String> serviceNamesFoundInBinaryAnnotations = spans.collect {
-					it.binaryAnnotations.endpoint.serviceName
-				}.flatten().unique()
-				return (APP_NAMES - serviceNamesFoundInAnnotations - serviceNamesFoundInBinaryAnnotations)
+			@CompileStatic
+			private List<String> serviceNamesNotFoundInZipkin(List<zipkin2.Span> spans) {
+				Set<String> serviceNamesFoundInAnnotations = spans.collect {
+					it.localServiceName()
+				}.flatten().unique() as Set<String>
+				return (APP_NAMES - serviceNamesFoundInAnnotations)
 			}
 
-			private zipkin.Span findSpanByTag(String tagKey, List<zipkin.Span> spans) {
-				return spans.find { it.binaryAnnotations.find { it.key == tagKey} }
+			private zipkin2.Span findSpanByTag(String tagKey, List<zipkin2.Span> spans) {
+				return spans.find { it.tags().find { it.key == tagKey} }
 			}
 
-			private List<String> spanNamesNotFoundInZipkin(List<zipkin.Span> spans) {
+			private List<String> spanNamesNotFoundInZipkin(List<zipkin2.Span> spans) {
 				List<String> spanNamesFoundInAnnotations = spans.collect {
-					it.name
+					it.name()
 				}.flatten().unique()
 				return (SPAN_NAMES - spanNamesFoundInAnnotations)
 			}
