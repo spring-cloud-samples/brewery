@@ -110,8 +110,8 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 				log.info("The following spans were not found in Zipkin $spanNamesNotFoundInZipkin")
 				assert serviceNamesNotFoundInZipkin.empty
 				assert spanNamesNotFoundInZipkin.empty
-				def messagingSpans = spans.findAll { it.tags().find { it.value() == "events".bytes } }
-				log.info("Found the folllowing messaging spans [{}]", messagingSpans)
+				def messagingSpans = spans.findAll { it.tags().find { it.value == "events" } }
+				log.info("Found the following messaging spans [{}]", messagingSpans)
 				assert !messagingSpans.empty
 				zipkin2.Span spanByTag = findSpanByTag('beer', spans)
 				assert spanByTag.annotations().find { it.value() == 'ingredientsAggregationStarted' }
@@ -193,7 +193,7 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 	}
 
 	ResponseEntity<String> checkDependencies() {
-		URI uri = URI.create("${wrapQueryWithProtocolIfPresent() ?: zipkinQueryUrl}:${zipkinQueryPort}/api/vw/dependencies?endTs=${System.currentTimeMillis()}")
+		URI uri = URI.create("${wrapQueryWithProtocolIfPresent() ?: zipkinQueryUrl}:${zipkinQueryPort}/api/v2/dependencies?endTs=${System.currentTimeMillis()}")
 		HttpHeaders headers = new HttpHeaders()
 		log.info("Sending request to the Zipkin query service [$uri]. Checking the dependency graph")
 		return new ExceptionLoggingRestTemplate().exchange(
