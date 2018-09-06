@@ -224,7 +224,7 @@ function kill_all_apps() {
             kill_all_apps_with_port
             pkill_app "rabbit"
             if [[ "${HUDSON_URL}" != "" ]]; then
-                killall "java"
+                pkill_app "java" || echo "Failed to kill all apps"
             fi
             if [[ -z "${KILL_NOW_APPS}" ]] ; then
                 kill_docker
