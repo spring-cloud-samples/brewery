@@ -179,6 +179,10 @@ function start_brewery_apps() {
 
 function kill_and_log() {
     kill -9 $(cat "$1"/build/libs/app.pid) && echo "Killed $1" || echo "Can't find $1 in running processes"
+    pkill_app "$1"
+}
+
+function pkill_app() {
     pkill -f "$1" && echo "Killed $1 via pkill" ||  echo "Can't find $1 in running processes (tried with pkill)"
 }
 
@@ -218,6 +222,10 @@ function kill_all_apps() {
             kill_and_log "zookeeper"
             kill_and_log "zipkin-server"
             kill_all_apps_with_port
+            pkill_app "rabbit"
+            if [[ "${HUDSON_URL}" != "" ]]; then
+                killall "java"
+            fi
             if [[ -z "${KILL_NOW_APPS}" ]] ; then
                 kill_docker
             fi
