@@ -20,7 +20,7 @@ buildscript {
 						hasProperty(propName) ? getProperty(propName) : ""
 	}
 
-	String bootVersion = getProp("BOOT_VERSION") ?: "2.0.3.RELEASE"
+	String bootVersion = getProp("BOOT_VERSION") ?: "2.1.0.M2"
 	logger.lifecycle("BOOT_VERSION is: [${bootVersion}]")
 
 	dependencies {
