@@ -3,6 +3,7 @@
 SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.rabbitmq.port=9672 -Dspring.zipkin.enabled=false -Dspring.profiles.active=deps"
 
 dockerComposeFile="docker-compose-${WHAT_TO_TEST}.yml"
+kill_docker
 docker-compose -f $dockerComposeFile kill
 docker-compose -f $dockerComposeFile pull
 docker-compose -f $dockerComposeFile build
