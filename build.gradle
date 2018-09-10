@@ -144,7 +144,7 @@ configure(subprojects) {
 							hasProperty(propName) ? property(propName) :
 									System.getenv(propName) ?: ""
 			}
-			mavenBom "org.springframework.cloud:spring-cloud-dependencies:${getProp("BOM_VERSION") ?: "Finchley.BUILD-SNAPSHOT" }"
+			mavenBom "org.springframework.cloud:spring-cloud-dependencies:${getProp("BOM_VERSION") ?: "Greenwich.BUILD-SNAPSHOT" }"
 			if (getProp("BOOT_VERSION")) {
 				logger.lifecycle("Using boot in version [${getProp("BOOT_VERSION")}]")
 				mavenBom "org.springframework.boot:spring-boot-dependencies:${getProp("BOOT_VERSION")}"
@@ -232,8 +232,8 @@ configure(subprojects - techProjects - commonZipkinProject) {
 			compile "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"
 		}
 		compile "org.springframework.cloud:spring-cloud-starter-openfeign"
-		compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonMapper"
-		compile "org.codehaus.jackson:jackson-core-asl:$jacksonMapper"
+		compile "org.codehaus.jackson:jackson-mapper-asl"
+		compile "org.codehaus.jackson:jackson-core-asl"
 		compile 'org.apache.commons:commons-lang3:3.4'
 		compile 'com.jayway.jsonpath:json-path-assert:2.0.0'
 		compile 'org.yaml:snakeyaml'
