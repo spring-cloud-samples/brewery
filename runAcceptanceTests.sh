@@ -245,7 +245,7 @@ function kill_all_apps() {
 
 # Kills all docker related elements
 function kill_docker() {
-    docker kill $(docker ps -q) || echo "No running docker containers are left"
+    docker ps -a -q | xargs -n 1 -P 8 -I {} docker stop {} || echo "No running docker containers are left"
 }
 
 # Kills all started aps if the switch is on
@@ -555,6 +555,8 @@ export -f kill_and_log
 export -f kill_all_apps_with_port
 export -f kill_app_with_port
 export -f kill_docker
+
+trap "{ kill_all_apps_if_switch_on; }" EXIT
 
 # ======================================= EXPORTING VARS END =======================================
 
