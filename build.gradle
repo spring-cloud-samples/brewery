@@ -209,7 +209,7 @@ if (hasProperty("docker")) {
 	}
 }
 
-configure(subprojects - commonProject) {
+configure(subprojects - commonProject - servers) {
 	dependencies {
 		compile(commonProject)
 	}
