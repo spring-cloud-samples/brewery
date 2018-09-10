@@ -647,6 +647,9 @@ if [[ "${CLOUD_FOUNDRY}" == "true" ]] ; then
     login ${USERNAME} ${PASSWORD}
 fi
 
+echo -e "Killing docker"
+kill_docker
+
 INITIALIZATION_FAILED="yes"
 if [[ -z "${CLOUD_FOUNDRY}" &&  "${WHAT_TO_TEST}" == "SCS" ]] ; then
     echo -e "You have to pass the CF flag (-c) - you can't test SCS without it"
