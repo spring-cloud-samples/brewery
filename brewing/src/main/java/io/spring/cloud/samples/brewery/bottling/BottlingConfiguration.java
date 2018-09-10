@@ -20,10 +20,10 @@ class BottlingConfiguration {
     @Bean
     BottlerService bottlingService(BottlingWorker bottlingWorker,
                                    PresentingClient presentingClient,
-                                   @LoadBalanced RestTemplate restTemplate,
-                                   AsyncRestTemplate asyncRestTemplate,
+                                   @LoadBalanced RestTemplate restTemplate
                                    Tracer tracer) {
-        return new BottlerService(bottlingWorker, presentingClient, restTemplate, asyncRestTemplate, tracer);
+        return new BottlerService(bottlingWorker, presentingClient,
+            restTemplate, bottlingAsyncRestTemplate(restTemplate), tracer);
     }
 
     @Bean

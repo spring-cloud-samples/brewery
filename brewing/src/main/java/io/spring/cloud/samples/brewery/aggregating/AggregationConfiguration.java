@@ -22,7 +22,6 @@ class AggregationConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
 	AsyncRestTemplate aggregationAsyncRestTemplate() {
 		return new AsyncRestTemplate();
 	}
