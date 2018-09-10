@@ -20,7 +20,7 @@ class BottlingConfiguration {
     @Bean
     BottlerService bottlingService(BottlingWorker bottlingWorker,
                                    PresentingClient presentingClient,
-                                   @LoadBalanced RestTemplate restTemplate
+                                   @LoadBalanced RestTemplate restTemplate,
                                    Tracer tracer) {
         return new BottlerService(bottlingWorker, presentingClient,
             restTemplate, bottlingAsyncRestTemplate(restTemplate), tracer);
