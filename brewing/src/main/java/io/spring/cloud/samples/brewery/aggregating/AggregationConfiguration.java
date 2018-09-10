@@ -21,13 +21,13 @@ class AggregationConfiguration {
 	}
 
 	@Bean
-	AsyncRestTemplate asyncRestTemplate() {
+	AsyncRestTemplate aggregationAsyncRestTemplate() {
 		return new AsyncRestTemplate();
 	}
 
 	@Bean
 	@LoadBalanced
-	public RestTemplate loadBalancedRestTemplate() {
+	public RestTemplate aggregationLoadBalancedRestTemplate() {
 		return new RestTemplate();
 	}
 
@@ -46,4 +46,3 @@ class AggregationConfiguration {
 		return new IngredientsCollector(restTemplate, ingredientsProxy);
 	}
 }
-

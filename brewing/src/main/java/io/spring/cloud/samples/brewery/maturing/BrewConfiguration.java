@@ -16,7 +16,7 @@ class BrewConfiguration {
 
     @Bean
     @LoadBalanced
-    public RestTemplate loadBalancedRestTemplate() {
+    public RestTemplate brewLoadBalancedRestTemplate() {
         return new RestTemplate();
     }
 
@@ -35,4 +35,3 @@ class BrewConfiguration {
     }
 
 }
-

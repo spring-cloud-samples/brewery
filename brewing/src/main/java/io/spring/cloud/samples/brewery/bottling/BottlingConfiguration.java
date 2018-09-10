@@ -27,23 +27,21 @@ class BottlingConfiguration {
 
     @Bean
     @LoadBalanced
-    public RestTemplate loadBalancedRestTemplate() {
+    public RestTemplate bottlingLoadBalancedRestTemplate() {
         return new RestTemplate();
     }
 
-
     @Bean
-    AsyncRestTemplate asyncRestTemplate(@LoadBalanced RestTemplate restTemplate) {
+    AsyncRestTemplate bottlingAsyncRestTemplate(@LoadBalanced RestTemplate restTemplate) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setTaskExecutor(threadPoolTaskScheduler());
+        requestFactory.setTaskExecutor(bottlingThreadPoolTaskScheduler());
         return new AsyncRestTemplate(requestFactory, restTemplate);
     }
 
     @Bean(destroyMethod = "shutdown")
-    ThreadPoolTaskScheduler threadPoolTaskScheduler() {
+    ThreadPoolTaskScheduler bottlingThreadPoolTaskScheduler() {
         ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
         threadPoolTaskScheduler.initialize();
         return threadPoolTaskScheduler;
     }
 }
-
