@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 
 @Configuration
 @Import(TestConfiguration.class)
@@ -16,6 +17,7 @@ class BrewConfiguration {
 
     @Bean
     @LoadBalanced
+    @ConditionalOnMissingBean
     public RestTemplate brewLoadBalancedRestTemplate() {
         return new RestTemplate();
     }

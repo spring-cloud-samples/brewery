@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 
 import io.spring.cloud.samples.brewery.common.TestConfiguration;
 
@@ -21,12 +22,14 @@ class AggregationConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	AsyncRestTemplate aggregationAsyncRestTemplate() {
 		return new AsyncRestTemplate();
 	}
 
 	@Bean
 	@LoadBalanced
+	@ConditionalOnMissingBean
 	public RestTemplate aggregationLoadBalancedRestTemplate() {
 		return new RestTemplate();
 	}

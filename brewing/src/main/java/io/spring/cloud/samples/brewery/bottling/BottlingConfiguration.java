@@ -9,6 +9,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 
 import io.spring.cloud.samples.brewery.common.TestConfiguration;
 
@@ -27,6 +28,7 @@ class BottlingConfiguration {
 
     @Bean
     @LoadBalanced
+    @ConditionalOnMissingBean
     public RestTemplate bottlingLoadBalancedRestTemplate() {
         return new RestTemplate();
     }
