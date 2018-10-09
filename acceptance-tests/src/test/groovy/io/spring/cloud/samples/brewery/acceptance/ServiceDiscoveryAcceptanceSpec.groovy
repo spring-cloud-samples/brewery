@@ -34,7 +34,7 @@ class ServiceDiscoveryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 		when: 'the presenting service has been called with all ingredients'
 			presenting_service_has_been_called(requestEntity)
 		then: 'eventually beer for that process id will be brewed'
-			beer_has_been_brewed_for_process_id(referenceProcessId)
+			beer_has_been_brewed_for_pGroovyTemplateAutoConfigurationrocess_id(referenceProcessId)
 		where:
 			communicationType << [CommunicationType.REST_TEMPLATE, CommunicationType.FEIGN]
 			referenceProcessId = SpanUtil.idToHex(new Random().nextLong())

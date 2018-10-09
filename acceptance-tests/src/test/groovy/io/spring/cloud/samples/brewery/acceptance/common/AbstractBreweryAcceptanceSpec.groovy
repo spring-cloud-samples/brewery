@@ -44,7 +44,8 @@ import static java.util.concurrent.TimeUnit.SECONDS
 /**
  *  TODO: Split responsibilities
  */
-@ContextConfiguration(classes = TestConfiguration, loader = SpringBootContextLoader)
+@ContextConfiguration(classes = TestConfiguration,
+		loader = SpringBootContextLoader)
 abstract class AbstractBreweryAcceptanceSpec extends Specification {
 
 	public static final String TRACE_ID_HEADER_NAME = "X-B3-TraceId"
