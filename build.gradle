@@ -20,7 +20,7 @@ buildscript {
 						hasProperty(propName) ? getProperty(propName) : ""
 	}
 
-	String bootVersion = getProp("BOOT_VERSION") ?: "2.1.0.M2"
+	String bootVersion = getProp("BOOT_VERSION") ?: "2.1.0.M4"
 	logger.lifecycle("BOOT_VERSION is: [${bootVersion}]")
 
 	dependencies {
@@ -163,7 +163,7 @@ logger.lifecycle("BOM_VERSION is: [${getProp("BOM_VERSION")}]")
 configure(subprojects - acceptanceTestsProject - servers) {
 
 	dependencies {
-		compile 'org.projectlombok:lombok:1.16.6'
+		compile 'org.projectlombok:lombok:1.18.2'
 		compile "org.springframework.boot:spring-boot-starter-web"
 		compile "org.springframework.cloud:spring-cloud-starter-sleuth"
 		if (!whatToTest('SCS')) compile "org.springframework.cloud:spring-cloud-starter-config"
@@ -244,7 +244,7 @@ configure(subprojects - techProjects - commonZipkinProject) {
 	}
 
 	wrapper {
-		gradleVersion '4.6'
+		gradleVersion '4.10.2'
 	}
 
 	bootRun {
