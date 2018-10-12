@@ -1,7 +1,7 @@
 apply plugin: 'groovy'
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.4.5'
+    compile 'org.codehaus.groovy:groovy-all:2.4.15'
 
     testCompile 'com.jayway.awaitility:awaitility:1.6.5'
     testCompile "org.springframework.boot:spring-boot-starter-test"
@@ -9,10 +9,6 @@ dependencies {
     testCompile "org.springframework.boot:spring-boot-starter-web"
     testCompile "org.springframework.cloud:spring-cloud-starter-sleuth"
     testCompile "io.zipkin.java:zipkin:2.10.0"
-    testCompile( 'com.athaydes:spock-reports:1.2.7' ) {
-        transitive = false // this avoids affecting your version of Groovy/Spock
-    }
-    testCompile "org.spockframework:spock-spring:1.0-groovy-2.4"
 }
 
 test {

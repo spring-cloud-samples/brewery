@@ -647,8 +647,10 @@ if [[ "${CLOUD_FOUNDRY}" == "true" ]] ; then
     login ${USERNAME} ${PASSWORD}
 fi
 
-echo -e "Killing docker"
-kill_docker
+if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
+    echo -e "Killing docker"
+    kill_docker
+fi
 
 INITIALIZATION_FAILED="yes"
 if [[ -z "${CLOUD_FOUNDRY}" &&  "${WHAT_TO_TEST}" == "SCS" ]] ; then
@@ -682,7 +684,17 @@ if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
             for i in $( seq 1 "${RETRIES}" ); do
                 sleep "${WAIT_TIME}"
                 curlResult="$( curl --fail -m 5 ${HEALTH_ENDPOINTS} || echo "DOWN" )"
-                echo "${curlResult}" | grep -v DOWN && APPS_ARE_RUNNING="yes" && break
+                countOfUps="$( echo "${curlResult}" | tr '}' '\n'  | grep "UP" | wc -w | xargs )"
+                countOfDowns="$( echo "${curlResult}" | tr '}' '\n'  | grep "DOWN" | wc -w | xargs )"
+                if [[ "${countOfUps}" == "5" ]]; then
+                     APPS_ARE_RUNNING="yes"
+                     echo "The apps are running!"
+                     break;
+                else
+                     echo "Received [${curlResult}] from curl"
+                     echo "Count of UPs is [${countOfUps}]"
+                     echo "Count of DOWNs is [${countOfDowns}]"
+                fi
                 echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
             done
 

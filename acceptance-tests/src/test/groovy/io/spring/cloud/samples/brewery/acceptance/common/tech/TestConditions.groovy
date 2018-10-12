@@ -1,6 +1,7 @@
 package io.spring.cloud.samples.brewery.acceptance.common.tech
 
 import io.spring.cloud.samples.brewery.acceptance.common.WhatToTest
+import org.junit.Assume
 
 class TestConditions {
 
@@ -29,6 +30,24 @@ class TestConditions {
 
 	public static final Closure<Boolean> SYSTEM_PROP_IS_VALID = {
 		return whatToTestSystemPropMatchesAny(WhatToTest.values().toList())
+	}
+
+	static void assumeServiceDiscovery() {
+		assumeSystemPropIsValid()
+		Assume.assumeTrue(SERVICE_DISCOVERY())
+	}
+
+	static void assumeSleuth() {
+		assumeSystemPropIsValid()
+		Assume.assumeTrue(SLEUTH())
+	}
+
+	static void assumeSystemPropIsValid() {
+		Assume.assumeTrue(whatToTestSystemPropMatchesAny(WhatToTest.values ().toList()))
+	}
+
+	static void assumeSystemPropIsInValid() {
+		Assume.assumeFalse(whatToTestSystemPropMatchesAny(WhatToTest.values ().toList()))
 	}
 
 	private static boolean whatToTestSystemPropMatchesAny(List<WhatToTest> whatToTest) {

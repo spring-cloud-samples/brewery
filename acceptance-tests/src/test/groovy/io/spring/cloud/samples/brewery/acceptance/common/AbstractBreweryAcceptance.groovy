@@ -16,6 +16,7 @@
 package io.spring.cloud.samples.brewery.acceptance.common
 
 import groovy.json.JsonSlurper
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import io.spring.cloud.samples.brewery.acceptance.common.tech.ExceptionLoggingRestTemplate
 import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConfiguration
@@ -23,34 +24,30 @@ import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
 import io.spring.cloud.samples.brewery.acceptance.model.IngredientType
 import io.spring.cloud.samples.brewery.acceptance.model.Order
 import io.spring.cloud.samples.brewery.acceptance.model.ProcessState
+import org.junit.runner.RunWith
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.context.SpringBootContextLoader
-import brave.Span
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
-import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.web.client.RestTemplate
-import spock.lang.Specification
 
 import static com.jayway.awaitility.Awaitility.await
 import static java.util.concurrent.TimeUnit.SECONDS
 
-/**
- *  TODO: Split responsibilities
- */
-@ContextConfiguration(classes = TestConfiguration,
-		loader = SpringBootContextLoader)
-abstract class AbstractBreweryAcceptanceSpec extends Specification {
+@RunWith(SpringRunner)
+@SpringBootTest(classes = TestConfiguration)
+abstract class AbstractBreweryAcceptance {
 
 	public static final String TRACE_ID_HEADER_NAME = "X-B3-TraceId"
 	public static final String SPAN_ID_HEADER_NAME = "X-B3-SpanId"
-	public static final Logger log = LoggerFactory.getLogger(AbstractBreweryAcceptanceSpec)
+	public static final Logger log = LoggerFactory.getLogger(AbstractBreweryAcceptance)
 
 	protected static final List<String> APP_NAMES = ['presenting', 'brewing', 'zuul']
 	protected static final List<String> SPAN_NAMES = [
@@ -95,7 +92,6 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 		})
 	}
 
-	@CompileStatic
 	void entry_for_trace_id_is_present_in_Zipkin(String traceId) {
 		await().pollInterval(pollInterval, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
 			@Override
