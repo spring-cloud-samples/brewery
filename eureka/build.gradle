@@ -3,6 +3,11 @@ moduleEnabled(whatToTest('EUREKA') || cloudFoundrySet())
 dependencies {
     compile "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server"
     compile "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"
+    if (JavaVersion.current().isJava11Compatible()) {
+        compile("javax.xml.bind:jaxb-api")
+        compile("javax.activation:javax.activation-api")
+        compile("org.glassfish.jaxb:jaxb-runtime")
+    }
 }
 
 createDockerTaskWithPort(8761)
