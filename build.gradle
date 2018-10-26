@@ -17,10 +17,11 @@ buildscript {
 	Closure<String> getProp = { String propName ->
 		return System.properties[propName] ?:
 				project.gradle.startParameter.systemPropertiesArgs.get(propName) ?:
-						hasProperty(propName) ? getProperty(propName) : ""
+						hasProperty(propName) ? getProperty(propName) :
+						project.getProperty(propName) ?: ""
 	}
 
-	String bootVersion = getProp("BOOT_VERSION") ?: "2.1.0.BUILD-SNAPSHOT"
+	String bootVersion = getProp("BOOT_VERSION")
 	logger.lifecycle("BOOT_VERSION is: [${bootVersion}]")
 
 	dependencies {
@@ -142,14 +143,14 @@ configure(subprojects) {
 			Closure<String> getProp = { String propName -> System.properties[propName] ?:
 					project.gradle.startParameter.systemPropertiesArgs.get(propName) ?:
 							hasProperty(propName) ? property(propName) :
-									System.getenv(propName) ?: ""
+									System.getenv(propName) ?: project.getProperty(propName) ?: ""
 			}
-			mavenBom "org.springframework.cloud:spring-cloud-dependencies:${getProp("BOM_VERSION") ?: "Greenwich.BUILD-SNAPSHOT" }"
+			mavenBom "org.springframework.cloud:spring-cloud-dependencies:${getProp("BOM_VERSION") }"
 			if (getProp("BOOT_VERSION")) {
 				logger.lifecycle("Using boot in version [${getProp("BOOT_VERSION")}]")
 				mavenBom "org.springframework.boot:spring-boot-dependencies:${getProp("BOOT_VERSION")}"
 			}
-			if (ext.whatToTest('SCS')) mavenBom "io.pivotal.spring.cloud:spring-cloud-services-dependencies:${getProp("SCS_VERSION") ?: "1.3.2.BUILD-SNAPSHOT"}"
+			if (ext.whatToTest('SCS')) mavenBom "io.pivotal.spring.cloud:spring-cloud-services-dependencies:${getProp("SCS_VERSION")}"
 		}
 	}
 
