@@ -171,6 +171,7 @@ function start_brewery_apps() {
     local REMOTE_DEBUG="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address"
     java_jar "presenting" "$1 $REMOTE_DEBUG=8991"
     java_jar "brewing" "$1 $REMOTE_DEBUG=8992"
+    java_jar "gateway" "$1 $REMOTE_DEBUG=8881"
     java_jar "zuul" "$1 $REMOTE_DEBUG=8993"
     java_jar "ingredients" "$1 $REMOTE_DEBUG=8994"
     java_jar "reporting" "$1 $REMOTE_DEBUG=8995"
@@ -213,6 +214,7 @@ function kill_all_apps() {
     if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
             echo `pwd`
             kill_and_log "brewing"
+            kill_and_log "gateway"
             kill_and_log "zuul"
             kill_and_log "presenting"
             kill_and_log "ingredients"
@@ -229,6 +231,7 @@ function kill_all_apps() {
             pkill -15 -f JarLauncher || echo "No kafka was running"
         else
             reset "${CLOUD_PREFIX}-brewing" || echo "Failed to kill the app"
+            reset "${CLOUD_PREFIX}-gateway" || echo "Failed to kill the app"
             reset "${CLOUD_PREFIX}-zuul" || echo "Failed to kill the app"
             reset "${CLOUD_PREFIX}-presenting" || echo "Failed to kill the app"
             reset "${CLOUD_PREFIX}-ingredients" || echo "Failed to kill the app"
@@ -728,6 +731,7 @@ else
             CURL_RESULT=$( curl --fail -m 5 http://${DISCOVERY_HOST}/eureka/apps/ || echo "failed to reach discovery server" )
             echo "${CURL_RESULT}" | grep PRESENTING && PRESENTING_PRESENT="yes"
             echo "${CURL_RESULT}" | grep BREWING && BREWING_PRESENT="yes"
+            echo "${CURL_RESULT}" | grep GATEWAY && GATEWAY_PRESENT="yes"
             echo "${CURL_RESULT}" | grep ZUUL && ZUUL_PRESENT="yes"
             echo "${CURL_RESULT}" | grep INGREDIENTS && INGREDIENTS_PRESENT="yes"
             echo "${CURL_RESULT}" | grep REPORTING && REPORTING_PRESENT="yes"

@@ -4,3 +4,5 @@ spring.cloud.zookeeper:
       path: dependency/presenting
     zuul:
       path: technical/zuul
+    gateway:
+      path: technical/gateway
