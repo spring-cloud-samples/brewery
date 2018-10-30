@@ -35,6 +35,7 @@ def commonZipkinProject = project(':common-zipkin')
 def acceptanceTestsProject = project(':acceptance-tests')
 def eurekaProject = project(':eureka')
 def configServerProject = project(':config-server')
+def gateway = project(':gateway')
 def servers = [eurekaProject, configServerProject]
 def techProjects = [commonProject, commonZipkinProject, acceptanceTestsProject,
 					eurekaProject, configServerProject]
@@ -161,7 +162,7 @@ logger.lifecycle("WHAT_TO_TEST is: System prop: [${project.gradle.startParameter
 logger.lifecycle("CLOUD_FOUDRY set: [${System.getenv("CLOUD_FOUNDRY")}]")
 logger.lifecycle("BOM_VERSION is: [${getProp("BOM_VERSION")}]")
 
-configure(subprojects - acceptanceTestsProject - servers) {
+configure(subprojects - gateway - acceptanceTestsProject - servers) {
 
 	dependencies {
 		compile 'org.projectlombok:lombok:1.18.2'
@@ -178,7 +179,7 @@ configure(subprojects - acceptanceTestsProject - servers) {
 	}
 }
 
-configure(zipkinRelatedProjects) {
+configure(zipkinRelatedProjects - gateway) {
 
 	dependencies {
 		if (whatToTest('SLEUTH')) { compile "org.springframework.cloud:spring-cloud-starter-zipkin" }
@@ -210,19 +211,22 @@ if (hasProperty("docker")) {
 	}
 }
 
-configure(subprojects - commonProject - servers) {
+configure(subprojects - commonProject - servers - gateway) {
 	dependencies {
 		compile(commonProject)
 	}
 }
 
-configure(subprojects - techProjects - commonZipkinProject) {
-
+configure(subprojects - techProjects - commonZipkinProject - gateway) {
 	dependencies {
 		if (whatToTest('SLEUTH')) {
 			compile commonZipkinProject
 		}
+	}
+}
 
+configure(subprojects - techProjects - commonZipkinProject) {
+	dependencies {
 		compile "org.springframework.boot:spring-boot-starter-actuator"
 		compile 'com.fasterxml.jackson.core:jackson-databind'
 		if (!cloudFoundrySet() && !whatToTest('CONSUL') && !whatToTest('EUREKA') && !whatToTest('SCS')) {

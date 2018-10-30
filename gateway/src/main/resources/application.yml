@@ -4,26 +4,32 @@ spring:
   cloud:
     gateway:
       routes:
-      - id: after_route
-          uri: lb://ingredients
+      - id: ingredients
+        uri: lb://ingredients
         predicates:
-        - Path=/ingredients/**
+        - Path=//ingredients/**
         filters:
+        - StripPrefix=1
         - name: Retry
           args:
             retries: 3
 
 logging:
-  level.org.springframework.cloud.gateway: DEBUG
-  level.org.springframework.cloud: DEBUG
-  level.org.springframework.cloud.sleuth: TRACE
-  level.org.springframework.cloud.sleuth.log: DEBUG
-  level.org.springframework.cloud.sleuth.trace: DEBUG
-  level.org.springframework.cloud.sleuth.instrument.rxjava: DEBUG
+  level:
+      org.springframework.cloud.gateway: TRACE
+      org.springframework.cloud: DEBUG
+      org.springframework.cloud.sleuth: TRACE
+      org.springframework.cloud.sleuth.log: DEBUG
+      org.springframework.cloud.sleuth.trace: DEBUG
+      org.springframework.cloud.sleuth.instrument.rxjava: DEBUG
+      io.netty.channel.unix: DEBUG
+      org.springframework.http.server.reactive: DEBUG
+      org.springframework.web.reactive: DEBUG
+      reactor.ipc.netty: DEBUG
 
 logging.file: build/gateway.log
 
-server.port: ${PORT:8881}
+server.port: ${PORT:9997}
 
 spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 

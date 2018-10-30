@@ -55,15 +55,17 @@ class IngredientsCollector {
 				.collect(Collectors.toList());
 	}
 
+	// FIXME
 	private Ingredient callZuul(String processId, String name) {
 		return restTemplate.exchange(requestEntity()
 				.processId(processId)
-				.serviceName(Collaborators.ZUUL)
+				.serviceName(Collaborators.GATEWAY)
 				.url("/ingredients/" + name)
 				.httpMethod(HttpMethod.POST)
 				.build(), Ingredient.class).getBody();
 	}
 
+	// FIXME
 	private Object callZuulAtNonExistentUrl(Callable<Object> runnable) {
 		try {
 			return runnable.call();

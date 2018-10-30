@@ -105,7 +105,7 @@ function print_logs() {
     docker-compose -f "docker-compose-${WHAT_TO_TEST}.yml" logs || echo "Failed to print docker compose logs"
     echo -e "\n\nPrinting docker compose logs - end\n\n"
     tail_log "brewing"
-    tail_log "zuul"
+#    tail_log "zuul"
     tail_log "presenting"
     tail_log "reporting"
     tail_log "ingredients"
@@ -171,8 +171,8 @@ function start_brewery_apps() {
     local REMOTE_DEBUG="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address"
     java_jar "presenting" "$1 $REMOTE_DEBUG=8991"
     java_jar "brewing" "$1 $REMOTE_DEBUG=8992"
-    java_jar "gateway" "$1 $REMOTE_DEBUG=8881"
-    java_jar "zuul" "$1 $REMOTE_DEBUG=8993"
+    java_jar "gateway" "$1 $REMOTE_DEBUG=8996"
+#    java_jar "zuul" "$1 $REMOTE_DEBUG=8993"
     java_jar "ingredients" "$1 $REMOTE_DEBUG=8994"
     java_jar "reporting" "$1 $REMOTE_DEBUG=8995"
     return 0
@@ -215,7 +215,7 @@ function kill_all_apps() {
             echo `pwd`
             kill_and_log "brewing"
             kill_and_log "gateway"
-            kill_and_log "zuul"
+#            kill_and_log "zuul"
             kill_and_log "presenting"
             kill_and_log "ingredients"
             kill_and_log "reporting"
@@ -232,7 +232,7 @@ function kill_all_apps() {
         else
             reset "${CLOUD_PREFIX}-brewing" || echo "Failed to kill the app"
             reset "${CLOUD_PREFIX}-gateway" || echo "Failed to kill the app"
-            reset "${CLOUD_PREFIX}-zuul" || echo "Failed to kill the app"
+#            reset "${CLOUD_PREFIX}-zuul" || echo "Failed to kill the app"
             reset "${CLOUD_PREFIX}-presenting" || echo "Failed to kill the app"
             reset "${CLOUD_PREFIX}-ingredients" || echo "Failed to kill the app"
             reset "${CLOUD_PREFIX}-reporting" || echo "Failed to kill the app"
@@ -467,7 +467,7 @@ done
 CLOUD_DOMAIN=${DOMAIN}
 CLOUD_TARGET=api.${DOMAIN}
 
-HEALTH_PORTS=('9991' '9992' '9993' '9994' '9995')
+HEALTH_PORTS=('9991' '9992' '9997' '9994' '9995')
 HEALTH_ENDPOINTS="$( printf "http://${LOCALHOST}:%s/health " "${HEALTH_PORTS[@]}" )"
 ACCEPTANCE_TEST_OPTS="${ACCEPTANCE_TEST_OPTS:--DLOCAL_URL=http://${HEALTH_HOST}}"
 
@@ -732,10 +732,10 @@ else
             echo "${CURL_RESULT}" | grep PRESENTING && PRESENTING_PRESENT="yes"
             echo "${CURL_RESULT}" | grep BREWING && BREWING_PRESENT="yes"
             echo "${CURL_RESULT}" | grep GATEWAY && GATEWAY_PRESENT="yes"
-            echo "${CURL_RESULT}" | grep ZUUL && ZUUL_PRESENT="yes"
+#            echo "${CURL_RESULT}" | grep ZUUL && ZUUL_PRESENT="yes"
             echo "${CURL_RESULT}" | grep INGREDIENTS && INGREDIENTS_PRESENT="yes"
             echo "${CURL_RESULT}" | grep REPORTING && REPORTING_PRESENT="yes"
-            if [[ "${PRESENTING_PRESENT}" == "yes" && "${BREWING_PRESENT}" == "yes" && "${INGREDIENTS_PRESENT}" == "yes" && "${REPORTING_PRESENT}" == "yes"  && "${ZUUL_PRESENT}" == "yes" ]]; then READY_FOR_TESTS="yes" && break; fi
+            if [[ "${PRESENTING_PRESENT}" == "yes" && "${BREWING_PRESENT}" == "yes" && "${INGREDIENTS_PRESENT}" == "yes" && "${REPORTING_PRESENT}" == "yes"  && "${GATEWAY_PRESENT}" == "yes" ]]; then READY_FOR_TESTS="yes" && break; fi
             echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
         done
     fi
