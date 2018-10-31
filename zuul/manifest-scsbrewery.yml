@@ -2,8 +2,8 @@
 instances: 1
 memory: 1024M
 applications:
-- name: scsbrewery-zuul
-  host: scsbrewery-zuul
+- name: scsbrewery-proxy
+  host: scsbrewery-proxy
   path: build/libs/zuul-1.0.0.jar
   services:
     - scsbrewery-rabbitmq

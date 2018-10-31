@@ -49,7 +49,7 @@ abstract class AbstractBreweryAcceptance {
 	public static final String SPAN_ID_HEADER_NAME = "X-B3-SpanId"
 	public static final Logger log = LoggerFactory.getLogger(AbstractBreweryAcceptance)
 
-	protected static final List<String> APP_NAMES = ['presenting', 'brewing', 'zuul']
+	protected static final List<String> APP_NAMES = ['presenting', 'brewing', 'proxy']
 	protected static final List<String> SPAN_NAMES = [
 													'inside_presenting_maturing_feed',
 													'inside_presenting_bottling_feed',
@@ -159,13 +159,13 @@ abstract class AbstractBreweryAcceptance {
 				}
 				log.info("Presenting should be a parent of brewing.")
 				assert parentsAndChildren['presenting']?.contains('brewing')
-//				log.info("Brewing should have 3 children - zuul, reporting and presenting")
-//				assert parentsAndChildren['brewing']?.containsAll(['zuul', 'reporting', 'presenting'])
+//				log.info("Brewing should have 3 children - proxy, reporting and presenting")
+//				assert parentsAndChildren['brewing']?.containsAll(['proxy', 'reporting', 'presenting'])
 				// TODO: FIX THIS!!
-				log.info("Brewing should have 3 children - zuul, reporting and presenting but has only 2 for now")
-				assert parentsAndChildren['brewing']?.containsAll(['zuul', 'presenting'])
-				log.info("Zuul should be calling ingredients")
-				assert parentsAndChildren['zuul']?.contains('ingredients')
+				log.info("Brewing should have 3 children - proxy, reporting and presenting but has only 2 for now")
+				assert parentsAndChildren['brewing']?.containsAll(['proxy', 'presenting'])
+				log.info("Proxy should be calling ingredients")
+				assert parentsAndChildren['proxy']?.contains('ingredients')
 				log.info("Zipkin tracing is working! Sleuth is working! Let's be happy!")
 			}
 		})

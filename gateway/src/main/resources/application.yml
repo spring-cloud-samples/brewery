@@ -1,6 +1,6 @@
 spring:
   application:
-    name: gateway
+    name: proxy
   cloud:
     gateway:
       routes:
@@ -10,6 +10,15 @@ spring:
         - Path=//ingredients/**
         filters:
         - StripPrefix=1
+        - name: Retry
+          args:
+            retries: 3
+      - id: ingredients_feign
+        uri: lb://ingredients
+        predicates:
+        - Path=/ingredients/{segment}
+        filters:
+        - SetPath=/{segment}
         - name: Retry
           args:
             retries: 3
@@ -27,9 +36,9 @@ logging:
       org.springframework.web.reactive: DEBUG
       reactor.ipc.netty: DEBUG
 
-logging.file: build/gateway.log
+logging.file: build/proxy.log
 
-server.port: ${PORT:9997}
+server.port: ${PORT:9993}
 
 spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 

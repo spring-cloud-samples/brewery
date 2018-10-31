@@ -4,6 +4,12 @@ set -e
 
 root=`pwd`
 
+if [[ "${WHAT_TO_TEST}" == "SLEUTH" ]] ; then
+    export PROXY_DIR="gateway"
+else
+    export PROXY_DIR="zuul"
+fi
+
 if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
     # ====================================================
     if [[ -z "${DEPLOY_ONLY_APPS}" ]] ; then
@@ -107,8 +113,8 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
     deploy_app_with_name "presenting" "${CLOUD_PREFIX}-presenting" &
     echo "Starting brewing"
     deploy_app_with_name "brewing" "${CLOUD_PREFIX}-brewing" &
-    echo "Starting zuul"
-    deploy_app_with_name "zuul" "${CLOUD_PREFIX}-zuul" &
+     echo "Starting proxy"
+    deploy_app_with_name "${PROXY_DIR}" "${CLOUD_PREFIX}-proxy" &
     echo "Starting ingredients"
     deploy_app_with_name "ingredients" "${CLOUD_PREFIX}-ingredients" &
     echo "Starting reporting"
