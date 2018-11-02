@@ -38,7 +38,7 @@ class IngredientsCollector {
 	}
 
 	private List<Ingredient> callViaFeign(Order order, String processId) {
-		callZuulAtNonExistentUrl( () -> ingredientsProxy.nonExistentIngredients(processId, FEIGN.name()));
+		callProxyAtNonExistentUrl( () -> ingredientsProxy.nonExistentIngredients(processId, FEIGN.name()));
 		return order.getItems()
 				.stream()
 				.map(item -> ingredientsProxy.ingredients(item, processId, FEIGN.name()))
@@ -46,29 +46,29 @@ class IngredientsCollector {
 	}
 
 	private List<Ingredient> callViaRestTemplate(Order order, String processId) {
-		callZuulAtNonExistentUrl( () -> callZuul(processId, "api/someNonExistentUrl"));
+		callProxyAtNonExistentUrl( () -> callProxy(processId, "api/someNonExistentUrl"));
 		return order.getItems()
 				.stream()
 				.map(item ->
-						callZuul(processId, item.name())
+						callProxy(processId, item.name())
 				)
 				.collect(Collectors.toList());
 	}
 
-	private Ingredient callZuul(String processId, String name) {
+	private Ingredient callProxy(String processId, String name) {
 		return restTemplate.exchange(requestEntity()
 				.processId(processId)
-				.serviceName(Collaborators.ZUUL)
+				.serviceName(Collaborators.PROXY)
 				.url("/ingredients/" + name)
 				.httpMethod(HttpMethod.POST)
 				.build(), Ingredient.class).getBody();
 	}
 
-	private Object callZuulAtNonExistentUrl(Callable<Object> runnable) {
+	private Object callProxyAtNonExistentUrl(Callable<Object> runnable) {
 		try {
 			return runnable.call();
 		} catch (Exception e) {
-			log.error("Exception occurred while trying to call Zuul. We're doing it deliberately!", e);
+			log.error("Exception occurred while trying to call Proxy. We're doing it deliberately!", e);
 			return "";
 		}
 	}

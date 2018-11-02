@@ -2,5 +2,5 @@ spring.cloud.zookeeper:
   dependencies:
     presenting:
       path: dependency/presenting
-    zuul:
-      path: technical/zuul
+    proxy:
+      path: technical/proxy

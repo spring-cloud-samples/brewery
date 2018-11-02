@@ -1,6 +1,6 @@
 spring:
   application:
-    name: zuul
+    name: proxy
 
 logging:
   level.com.netflix.zuul: DEBUG
@@ -10,14 +10,11 @@ logging:
   level.org.springframework.cloud.sleuth.trace: DEBUG
   level.org.springframework.cloud.sleuth.instrument.rxjava: DEBUG
 
-logging.file: build/zuul.log
+logging.file: build/proxy.log
 
 server.port: ${PORT:9993}
 
 spring.rabbitmq.host: ${RABBIT_HOST:localhost}
-
-# TODO: Not working?
-#zuul.route.ingredients: /
 
 zuul:
   ignoredPatterns: /health,/error

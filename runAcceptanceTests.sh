@@ -171,7 +171,11 @@ function start_brewery_apps() {
     local REMOTE_DEBUG="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address"
     java_jar "presenting" "$1 $REMOTE_DEBUG=8991"
     java_jar "brewing" "$1 $REMOTE_DEBUG=8992"
+    if [[ "${WHAT_TO_TEST}" == "SLEUTH" ]] ; then
+    java_jar "gateway" "$1 $REMOTE_DEBUG=8993"
+    else
     java_jar "zuul" "$1 $REMOTE_DEBUG=8993"
+    fi
     java_jar "ingredients" "$1 $REMOTE_DEBUG=8994"
     java_jar "reporting" "$1 $REMOTE_DEBUG=8995"
     return 0
@@ -213,7 +217,7 @@ function kill_all_apps() {
     if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
             echo `pwd`
             kill_and_log "brewing"
-            kill_and_log "zuul"
+            kill_and_log "proxy"
             kill_and_log "presenting"
             kill_and_log "ingredients"
             kill_and_log "reporting"
@@ -229,7 +233,7 @@ function kill_all_apps() {
             pkill -15 -f JarLauncher || echo "No kafka was running"
         else
             reset "${CLOUD_PREFIX}-brewing" || echo "Failed to kill the app"
-            reset "${CLOUD_PREFIX}-zuul" || echo "Failed to kill the app"
+            reset "${CLOUD_PREFIX}-proxy" || echo "Failed to kill the app"
             reset "${CLOUD_PREFIX}-presenting" || echo "Failed to kill the app"
             reset "${CLOUD_PREFIX}-ingredients" || echo "Failed to kill the app"
             reset "${CLOUD_PREFIX}-reporting" || echo "Failed to kill the app"
@@ -728,10 +732,10 @@ else
             CURL_RESULT=$( curl --fail -m 5 http://${DISCOVERY_HOST}/eureka/apps/ || echo "failed to reach discovery server" )
             echo "${CURL_RESULT}" | grep PRESENTING && PRESENTING_PRESENT="yes"
             echo "${CURL_RESULT}" | grep BREWING && BREWING_PRESENT="yes"
-            echo "${CURL_RESULT}" | grep ZUUL && ZUUL_PRESENT="yes"
+            echo "${CURL_RESULT}" | grep PROXY && PROXY_PRESENT="yes"
             echo "${CURL_RESULT}" | grep INGREDIENTS && INGREDIENTS_PRESENT="yes"
             echo "${CURL_RESULT}" | grep REPORTING && REPORTING_PRESENT="yes"
-            if [[ "${PRESENTING_PRESENT}" == "yes" && "${BREWING_PRESENT}" == "yes" && "${INGREDIENTS_PRESENT}" == "yes" && "${REPORTING_PRESENT}" == "yes"  && "${ZUUL_PRESENT}" == "yes" ]]; then READY_FOR_TESTS="yes" && break; fi
+            if [[ "${PRESENTING_PRESENT}" == "yes" && "${BREWING_PRESENT}" == "yes" && "${INGREDIENTS_PRESENT}" == "yes" && "${REPORTING_PRESENT}" == "yes"  && "${PROXY_PRESENT}" == "yes" ]]; then READY_FOR_TESTS="yes" && break; fi
             echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
         done
     fi

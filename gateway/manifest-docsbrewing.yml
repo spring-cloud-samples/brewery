@@ -4,7 +4,7 @@ applications:
   memory: 1024M
   instances: 1
   host: docsbrewing-proxy
-  path: build/libs/zuul-1.0.0.jar
+  path: build/libs/gateway-1.0.0.jar
   services:
     - docsbrewing-rabbitmq
     - docsbrewing-discovery

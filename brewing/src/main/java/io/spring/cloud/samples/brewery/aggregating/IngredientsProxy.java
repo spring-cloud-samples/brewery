@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TEST_COMMUNICATION_TYPE_HEADER_NAME;
 
-@FeignClient(Collaborators.ZUUL)
+@FeignClient(Collaborators.PROXY)
 interface IngredientsProxy {
 
 	@RequestMapping(value = "/ingredients/{ingredient}", method = RequestMethod.POST)

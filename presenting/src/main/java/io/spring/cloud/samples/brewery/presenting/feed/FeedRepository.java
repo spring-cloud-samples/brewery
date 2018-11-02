@@ -1,18 +1,20 @@
 package io.spring.cloud.samples.brewery.presenting.feed;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-
 /**
  * @author Marcin Grzejszczak
  */
+@Slf4j
 @Component
 public class FeedRepository {
 	final Set<Process> processes = Collections.synchronizedSet(new HashSet<>());
@@ -26,6 +28,7 @@ public class FeedRepository {
 			if (optional.isPresent()) {
 				optional.get().state = newState;
 			} else {
+				log.info("Adding process: {} with state: {}", id, newState);
 				processes.add(new Process(id, newState));
 			}
 		}
