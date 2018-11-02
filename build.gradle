@@ -179,7 +179,7 @@ configure(subprojects - gateway - acceptanceTestsProject - servers) {
 	}
 }
 
-configure(zipkinRelatedProjects - gateway) {
+configure(zipkinRelatedProjects) {
 
 	dependencies {
 		if (whatToTest('SLEUTH')) { compile "org.springframework.cloud:spring-cloud-starter-zipkin" }
