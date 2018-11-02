@@ -22,6 +22,11 @@ buildscript {
 	}
 
 	String bootVersion = getProp("BOOT_VERSION")
+	String bomVersion = getProp("BOM_VERSION")
+	if (bomVersion.toLowerCase().startsWith("finchley")) {
+		bootVersion = "2.0.6.RELEASE"
+		logger.lifecycle("Overriding boot for Finchley")
+	}
 	logger.lifecycle("BOOT_VERSION is: [${bootVersion}]")
 
 	dependencies {
