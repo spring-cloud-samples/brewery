@@ -41,7 +41,8 @@ Brewing service contains the following functionalities:
 #### Aggregating
 
 - Service contains a warehouse ("database") where is stores the ingredients
-- Basing on the order placed it will contact the Zuul proxy to fetch ingredients **(3)**
+- Basing on the order placed it will contact a proxy to fetch ingredients. If `whattotest` flag is set to `SLEUTH`, 
+  Spring Cloud Gateway will be used as proxy. If not, Zuul will be used **(3)**
 - Once the ingredients have been received an event is emitted **(7)**
 - You have to have all 4 ingredients reach their threshold (1000) to start maturing the beer 
 - Once the brewing has been started an event is emitted **(7)**
@@ -70,12 +71,13 @@ Brewing service contains the following functionalities:
 
 - Listens to events and stores them in the "database"
 
-### Zuul proxy
+### Proxy (Spring Cloud Gateway or Zuul)
 
 - Proxy over the "adapters" to external world to fetch ingredients
 - Routes all requests to the respective "ingredient adapter" **(4)**
 - For simplicity we have one ingredient adapter called "ingredients" that returns a stubbed quantity
 - Returns back the ingredients to the aggregating **(6)**
+- If `whattotest` flag is set to `SLEUTH`, Spring Cloud Gateway will be used as proxy. If not, Zuul will be used
 
 ## Project structure
 
@@ -94,7 +96,7 @@ Brewing service contains the following functionalities:
 ├── reporting        (service that listens to events)
 ├── zipkin-server    (Zipkin Server for Sleuth Stream tests)
 ├── zookeeper        (embedded zookeeper)
-└── zuul             (Zuul proxy that forwards requests to ingredients)
+└── proxy            (Spring Cloud Gateway or Zuul proxy that forwards requests to ingredients)
 ```
 
 ## How to build it?

@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 @Component
 public class FeedRepository {
-
 	final Set<Process> processes = Collections.synchronizedSet(new HashSet<>());
 
 	private AtomicInteger bottles = new AtomicInteger(0);

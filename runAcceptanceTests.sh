@@ -217,8 +217,7 @@ function kill_all_apps() {
     if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
             echo `pwd`
             kill_and_log "brewing"
-            kill_and_log "gateway"
-            kill_and_log "zuul"
+            kill_and_log "proxy"
             kill_and_log "presenting"
             kill_and_log "ingredients"
             kill_and_log "reporting"
@@ -234,8 +233,7 @@ function kill_all_apps() {
             pkill -15 -f JarLauncher || echo "No kafka was running"
         else
             reset "${CLOUD_PREFIX}-brewing" || echo "Failed to kill the app"
-            reset "${CLOUD_PREFIX}-gateway" || echo "Failed to kill the app"
-            reset "${CLOUD_PREFIX}-zuul" || echo "Failed to kill the app"
+            reset "${CLOUD_PREFIX}-proxy" || echo "Failed to kill the app"
             reset "${CLOUD_PREFIX}-presenting" || echo "Failed to kill the app"
             reset "${CLOUD_PREFIX}-ingredients" || echo "Failed to kill the app"
             reset "${CLOUD_PREFIX}-reporting" || echo "Failed to kill the app"
@@ -734,11 +732,7 @@ else
             CURL_RESULT=$( curl --fail -m 5 http://${DISCOVERY_HOST}/eureka/apps/ || echo "failed to reach discovery server" )
             echo "${CURL_RESULT}" | grep PRESENTING && PRESENTING_PRESENT="yes"
             echo "${CURL_RESULT}" | grep BREWING && BREWING_PRESENT="yes"
-            if [[ "${WHAT_TO_TEST}" == "SLEUTH" ]] ; then
-            echo "${CURL_RESULT}" | grep GATEWAY && PROXY_PRESENT="yes"
-            else
-            echo "${CURL_RESULT}" | grep ZUUL && PROXY_PRESENT="yes"
-            fi
+            echo "${CURL_RESULT}" | grep PROXY && PROXY_PRESENT="yes"
             echo "${CURL_RESULT}" | grep INGREDIENTS && INGREDIENTS_PRESENT="yes"
             echo "${CURL_RESULT}" | grep REPORTING && REPORTING_PRESENT="yes"
             if [[ "${PRESENTING_PRESENT}" == "yes" && "${BREWING_PRESENT}" == "yes" && "${INGREDIENTS_PRESENT}" == "yes" && "${REPORTING_PRESENT}" == "yes"  && "${PROXY_PRESENT}" == "yes" ]]; then READY_FOR_TESTS="yes" && break; fi
