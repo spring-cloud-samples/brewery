@@ -153,8 +153,14 @@ configure(subprojects) {
 			}
 			mavenBom "org.springframework.cloud:spring-cloud-dependencies:${getProp("BOM_VERSION") }"
 			if (getProp("BOOT_VERSION")) {
-				logger.lifecycle("Using boot in version [${getProp("BOOT_VERSION")}]")
-				mavenBom "org.springframework.boot:spring-boot-dependencies:${getProp("BOOT_VERSION")}"
+				String bootVersion = getProp("BOOT_VERSION")
+				String bomVersion = getProp("BOM_VERSION")
+				if (bomVersion.toLowerCase().startsWith("finchley")) {
+					bootVersion = "2.0.6.RELEASE"
+					logger.lifecycle("Overriding boot for Finchley")
+				}
+				logger.lifecycle("Using boot in version [${bootVersion)}]")
+				mavenBom "org.springframework.boot:spring-boot-dependencies:${bootVersion}"
 			}
 			if (ext.whatToTest('SCS')) mavenBom "io.pivotal.spring.cloud:spring-cloud-services-dependencies:${getProp("SCS_VERSION")}"
 		}
