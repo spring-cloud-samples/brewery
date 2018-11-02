@@ -26,7 +26,7 @@ public class ServiceDiscoveryAcceptanceTests extends AbstractBreweryAcceptance {
 		// when:
 		presenting_service_has_been_called(requestEntity);
 		// then:
-		beer_has_been_brewed_for_process_id(SpanUtil.idToHex(new Random().nextLong()));
+		beer_has_been_brewed_for_process_id(referenceProcessId);
 	}
 
 	@Test
