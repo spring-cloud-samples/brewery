@@ -21,7 +21,7 @@ buildscript {
     							System.getenv(propName) ?: ""
     }
 
-    String bootVersion = getProp("BOOT_VERSION")
+    String bootVersion = getProp("BOOT_VERSION") ?: "1.5.16.RELEASE"
     logger.lifecycle("BOOT_VERSION is: [${bootVersion}]")
 
     dependencies {
