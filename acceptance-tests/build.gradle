@@ -19,7 +19,9 @@ sourceSets.main.java.srcDirs = []
 sourceSets.main.groovy.srcDirs += ["src/main/java"]
 
 task acceptanceTests(type: Test) {
-    jvmArgs systemPropsFromGradle()
+    jvmArgs systemPropsFromGradle() + getProp("BOM_VERSION")
+    .toLowerCase().startsWith("finchley") ?
+    '-Dtest.zipkin.dependencies=false' : ''
     testLogging {
         exceptionFormat = 'full'
         showStandardStreams = true

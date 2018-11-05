@@ -159,11 +159,10 @@ abstract class AbstractBreweryAcceptance {
 				}
 				log.info("Presenting should be a parent of brewing.")
 				assert parentsAndChildren['presenting']?.contains('brewing')
-//				log.info("Brewing should have 3 children - proxy, reporting and presenting")
-//				assert parentsAndChildren['brewing']?.containsAll(['proxy', 'reporting', 'presenting'])
-				// TODO: FIX THIS!!
-				log.info("Brewing should have 3 children - proxy, reporting and presenting but has only 2 for now")
-				assert parentsAndChildren['brewing']?.containsAll(['proxy', 'presenting'])
+				log.info("Brewing should have 3 children: proxy, broker, presenting")
+				assert parentsAndChildren['brewing']?.containsAll(['proxy', 'broker', 'presenting'])
+				log.info("Broker should be a parent for reporting")
+				assert parentsAndChildren['broker']?.contains('reporting')
 				log.info("Proxy should be calling ingredients")
 				assert parentsAndChildren['proxy']?.contains('ingredients')
 				log.info("Zipkin tracing is working! Sleuth is working! Let's be happy!")
