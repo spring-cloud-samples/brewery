@@ -145,10 +145,10 @@ configure(subprojects) {
                             hasProperty(propName) ? property(propName) :
                                     System.getenv(propName) ?: ""
             }
-            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${getProp("BOM_VERSION") }"
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${getProp("BOM_VERSION") ?: "Edgware.BUILD-SNAPSHOT" }"
             if (getProp("BOOT_VERSION")) {
                 logger.lifecycle("Using boot in version [${getProp("BOOT_VERSION")}]")
-                mavenBom "org.springframework.boot:spring-boot-dependencies:${getProp("BOOT_VERSION")}"
+                mavenBom "org.springframework.boot:spring-boot-dependencies:${getProp("BOOT_VERSION") ?: "Edgware.BUILD-SNAPSHOT"}"
             }
             if (ext.whatToTest('SCS')) mavenBom "io.pivotal.spring.cloud:spring-cloud-services-dependencies:${getProp("SCS_VERSION")}"
         }
@@ -185,6 +185,8 @@ configure(zipkinRelatedProjects) {
 }
 
 configure(nonDockerProjects) {
+    bootRepackage.enabled = false
+
     jar {
         enabled = true
     }
