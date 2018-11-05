@@ -1,13 +1,8 @@
 moduleEnabled(whatToTest('EUREKA') || whatToTest('SLEUTH_STREAM'))
 
 dependencies {
-    if (isAtLeastFinchely()) {
-        compile "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server"
-        compile "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"
-    } else {
-        compile "org.springframework.cloud:spring-cloud-starter-eureka"
-        compile "org.springframework.cloud:spring-cloud-starter-eureka-server"
-    }
+    compile "org.springframework.cloud:spring-cloud-starter-eureka"
+    compile "org.springframework.cloud:spring-cloud-starter-eureka-server"
 }
 
 createDockerTaskWithPort(8761)

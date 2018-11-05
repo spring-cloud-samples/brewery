@@ -16,8 +16,9 @@ buildscript {
 
     Closure<String> getProp = { String propName ->
         return System.properties[propName] ?:
-                project.gradle.startParameter.systemPropertiesArgs.get(propName) ?:
-                        hasProperty(propName) ? getProperty(propName) : ""
+    			project.gradle.startParameter.systemPropertiesArgs.get(propName) ?:
+    					hasProperty(propName) ? property(propName) :
+    							System.getenv(propName) ?: ""
     }
 
     String bootVersion = getProp("BOOT_VERSION")
@@ -184,9 +185,6 @@ configure(zipkinRelatedProjects) {
 }
 
 configure(nonDockerProjects) {
-    bootJar {
-        enabled = false
-    }
     jar {
         enabled = true
     }

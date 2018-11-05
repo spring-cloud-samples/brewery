@@ -1,5 +1,5 @@
 dependencies {
-    compile "org.springframework.cloud:spring-cloud-starter-${isAtLeastFinchely() ? "netflix-" : ""}zuul"
+    compile "org.springframework.cloud:spring-cloud-starter-zuul"
 }
 
 createDockerTaskWithPort(9993)
