@@ -106,6 +106,7 @@ function print_logs() {
     echo -e "\n\nPrinting docker compose logs - end\n\n"
     tail_log "brewing"
     tail_log "zuul"
+    tail_log "gateway"
     tail_log "presenting"
     tail_log "reporting"
     tail_log "ingredients"
@@ -172,9 +173,9 @@ function start_brewery_apps() {
     java_jar "presenting" "$1 $REMOTE_DEBUG=8991"
     java_jar "brewing" "$1 $REMOTE_DEBUG=8992"
     if [[ "${WHAT_TO_TEST}" == "SLEUTH" ]] ; then
-    java_jar "gateway" "$1 $REMOTE_DEBUG=8993"
+        java_jar "gateway" "$1 $REMOTE_DEBUG=8993"
     else
-    java_jar "zuul" "$1 $REMOTE_DEBUG=8993"
+        java_jar "zuul" "$1 $REMOTE_DEBUG=8993"
     fi
     java_jar "ingredients" "$1 $REMOTE_DEBUG=8994"
     java_jar "reporting" "$1 $REMOTE_DEBUG=8995"
