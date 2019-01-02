@@ -16,7 +16,6 @@
 package io.spring.cloud.samples.brewery.acceptance.common
 
 import groovy.json.JsonSlurper
-import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import io.spring.cloud.samples.brewery.acceptance.common.tech.ExceptionLoggingRestTemplate
 import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConfiguration
@@ -27,6 +26,7 @@ import io.spring.cloud.samples.brewery.acceptance.model.ProcessState
 import org.junit.runner.RunWith
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpEntity
@@ -73,6 +73,7 @@ abstract class AbstractBreweryAcceptance {
 
 	def setup() {
 		log.info("Starting test")
+		log.info("Zipkin URL [${this.zipkinQueryUrl}], Zipkin port [${this.zipkinQueryPort}], Presenting URL [${this.presentingUrl}]")
 	}
 
 	def cleanup() {
