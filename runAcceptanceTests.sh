@@ -724,6 +724,7 @@ else
     if [[ "${WHAT_TO_TEST}" == "SCS" ]] ; then
         READY_FOR_TESTS="yes"
     else
+        READY_FOR_TESTS="no"
         DISCOVERY_HOST_NAME="${CLOUD_PREFIX}-discovery"
         DISCOVERY_HOST=`app_domain ${DISCOVERY_HOST_NAME}`
         echo "Resolved discovery host for discovery with name [${DISCOVERY_HOST_NAME}] is [${DISCOVERY_HOST}]"
