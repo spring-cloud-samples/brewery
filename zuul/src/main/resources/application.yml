@@ -1,7 +1,3 @@
-spring:
-  application:
-    name: proxy
-
 logging:
   level.com.netflix.zuul: DEBUG
   level.org.springframework.cloud: DEBUG
