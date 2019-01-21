@@ -69,7 +69,7 @@ abstract class AbstractBreweryAcceptance {
 	@Value('${zipkin.query.port:9411}') Integer zipkinQueryPort
 	@Value('${LOCAL_URL:http://localhost}') String zipkinQueryUrl
 	@Value('${test.zipkin.dependencies:true}') boolean checkZipkinDependencies
-	@Value('${BOM_VERSION:Finchley.BUILD-SNAPSHOT}') String bomVersion
+	@Value('${BOM_VERSION:Greenwich.BUILD-SNAPSHOT}') String bomVersion
 
 	def setup() {
 		log.info("Starting test")

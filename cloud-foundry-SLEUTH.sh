@@ -134,4 +134,6 @@ echo -e "Presenting host is [${PRESENTING_HOST}]"
 echo -e "Zikpin server host is [${ZIPKIN_SERVER_HOST}]"
 
 ACCEPTANCE_TEST_OPTS="-DLOCAL_URL=http://${ZIPKIN_SERVER_HOST} -Dpresenting.url=http://${PRESENTING_HOST} -Dzipkin.query.port=80"
+export LOCAL_URL="http://${ZIPKIN_SERVER_HOST}"
+export PRESENTING_URL="http://${PRESENTING_HOST}"
 echo -e "\n\nSetting test opts for sleuth stream to call ${ACCEPTANCE_TEST_OPTS}"
