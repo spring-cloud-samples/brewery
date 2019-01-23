@@ -248,4 +248,12 @@ abstract class AbstractBreweryAcceptance {
 		return new ExceptionLoggingRestTemplate()
 	}
 
+	void warm_up_the_environment(Runnable runnable) {
+		try {
+			runnable.run()
+		} catch (Throwable throwable) {
+			log.error("Exception occurred while trying to warm up the environment", throwable)
+		}
+	}
+
 }

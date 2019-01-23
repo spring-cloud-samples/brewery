@@ -19,6 +19,8 @@ public class SleuthBreweryAcceptanceTests extends AbstractBreweryAcceptance {
 
 	@Test
 	public void should_successfully_pass_Trace_Id_via_rest_template() {
+		// setup:
+		warm_up_the_environment(this::should_successfully_pass_Trace_Id_via_feign);
 		// given:
 		CommunicationType communicationType = CommunicationType.REST_TEMPLATE;
 		String referenceProcessId = SpanUtil.idToHex(new Random().nextLong());
@@ -38,6 +40,8 @@ public class SleuthBreweryAcceptanceTests extends AbstractBreweryAcceptance {
 
 	@Test
 	public void should_successfully_pass_Trace_Id_via_feign() {
+		// setup:
+		warm_up_the_environment(this::should_successfully_pass_Trace_Id_via_rest_template);
 		// given:
 		CommunicationType communicationType = CommunicationType.FEIGN;
 		String referenceProcessId = SpanUtil.idToHex(new Random().nextLong());
