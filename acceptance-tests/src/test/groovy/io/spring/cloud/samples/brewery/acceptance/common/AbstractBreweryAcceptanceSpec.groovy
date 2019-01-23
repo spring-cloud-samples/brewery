@@ -245,4 +245,16 @@ abstract class AbstractBreweryAcceptanceSpec extends Specification {
 		return new ExceptionLoggingRestTemplate()
 	}
 
+	void warm_up_the_environment() {
+		try {
+			log.info("Warming up the env... Please wait...")
+			String referenceProcessId = Span.idToHex(new Random().nextLong())
+			RequestEntity requestEntity = an_order_for_all_ingredients_with_process_id(referenceProcessId,
+					CommunicationType.FEIGN)
+			presenting_service_has_been_called(requestEntity)
+			log.info("Successfully warmed up the env")
+		} catch(Throwable throwable) {
+			log.error("Exception occurred while trying to warm up the env", throwable)
+		}
+	}
 }

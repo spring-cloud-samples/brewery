@@ -25,6 +25,10 @@ import spock.lang.Unroll
 @Requires({ TestConditions.SLEUTH() })
 class SleuthBreweryAcceptanceSpec extends AbstractBreweryAcceptanceSpec {
 
+	def setup() {
+		warm_up_the_environment()
+	}
+
 	@Unroll
 	def 'should successfully pass Trace Id via [#communicationType] and processId [#referenceProcessId]'() {
 		given:
