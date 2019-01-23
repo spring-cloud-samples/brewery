@@ -7,7 +7,7 @@ spring:
       - id: ingredients
         uri: lb://ingredients
         predicates:
-        - Path=//ingredients/**
+        - Path=/ingredients/**
         filters:
         - StripPrefix=1
         - name: Retry

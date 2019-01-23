@@ -62,7 +62,7 @@ public class TestRequestEntityBuilder {
 		headers.add(PROCESS_ID_HEADER, processId);
 		headers.add(CONTENT_TYPE_HEADER, version);
 		headers.add(TestConfigurationHolder.TEST_COMMUNICATION_TYPE_HEADER_NAME, getCommunicationTypeHeader());
-		URI uri = URI.create("http://" + serviceName + "/" + url);
+		URI uri = URI.create("http://" + serviceName + "/" + (url.startsWith("/") ? url.substring(1) : url));
 		return new RequestEntity<>(body, headers, httpMethod, uri);
 	}
 
