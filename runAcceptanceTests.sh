@@ -107,6 +107,7 @@ function print_logs() {
     tail_log "brewing"
     tail_log "zuul"
     tail_log "gateway"
+    tail_log "proxy"
     tail_log "presenting"
     tail_log "reporting"
     tail_log "ingredients"
