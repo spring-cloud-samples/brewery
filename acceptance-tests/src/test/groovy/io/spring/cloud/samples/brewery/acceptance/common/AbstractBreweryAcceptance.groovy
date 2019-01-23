@@ -250,7 +250,9 @@ abstract class AbstractBreweryAcceptance {
 
 	void warm_up_the_environment(Runnable runnable) {
 		try {
+			log.info("Will warm up the environment... Please wait until it's finished")
 			runnable.run()
+			log.info("Warming up finished!")
 		} catch (Throwable throwable) {
 			log.error("Exception occurred while trying to warm up the environment", throwable)
 		}
