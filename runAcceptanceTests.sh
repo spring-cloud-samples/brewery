@@ -504,10 +504,10 @@ CLOUD FOUNDRY PROPS:
 SCS_VERSION=${SCS_VERSION}
 CLOUD_FOUNDRY=${CLOUD_FOUNDRY}
 CLOUD_PREFIX=${CLOUD_PREFIX}
-CLO--skiptests
-CLO--skiptests
+CLOUD_ORG=${CLOUD_ORG}
+CLOUD_SPACE=${CLOUD_SPACE}
 
-EOF--skiptests
+EOF
 
 # ======================================= PARSING ARGS END =======================================
 
