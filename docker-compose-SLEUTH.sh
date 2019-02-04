@@ -34,20 +34,22 @@ if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
     exit 1
 fi
 
-echo -e "\n\nBooting up Zipkin stuff"
-docker-compose -f $dockerComposeFile up -d
+if [[ "${START_ZIPKIN}" == "true" ]]; then
+    echo -e "\n\nBooting up Zipkin stuff"
+    docker-compose -f $dockerComposeFile up -d
 
-READY_FOR_TESTS="no"
-PORT_TO_CHECK=9411
-echo -e "\n\nWaiting for Zipkin to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
-curl_health_endpoint "${PORT_TO_CHECK}" && READY_FOR_TESTS="yes"
+    READY_FOR_TESTS="no"
+    PORT_TO_CHECK=9411
+    echo -e "\n\nWaiting for Zipkin to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
+    curl_health_endpoint "${PORT_TO_CHECK}" && READY_FOR_TESTS="yes"
 
-if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
-    echo "Zipkin failed to start..."
-    echo -e "\n\nPrinting docker compose logs - start\n\n"
-    docker-compose -f "docker-compose-${WHAT_TO_TEST}.yml" logs || echo "Failed to print docker compose logs"
-    echo -e "\n\nPrinting docker compose logs - end\n\n"
-    exit 1
+    if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
+        echo "Zipkin failed to start..."
+        echo -e "\n\nPrinting docker compose logs - start\n\n"
+        docker-compose -f "docker-compose-${WHAT_TO_TEST}.yml" logs || echo "Failed to print docker compose logs"
+        echo -e "\n\nPrinting docker compose logs - end\n\n"
+        exit 1
+    fi
 fi
 
 # Boot config-server
