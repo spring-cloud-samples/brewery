@@ -77,7 +77,7 @@ class BottlerService {
                 .url("feed/bottling")
                 .httpMethod(HttpMethod.PUT)
                 .build();
-        URI uri = URI.create("http://presenting/feed/bottling");
+        URI uri = URI.create("https://presenting/feed/bottling");
         asyncRestTemplate.put(uri, requestEntity);
     }
 }
