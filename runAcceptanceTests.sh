@@ -5,6 +5,7 @@ set -o errexit
 # ======================================= FUNCTIONS START =======================================
 
 # CLOUD FOUNDRY -- START
+CLOUD_FOUNDRY_STACK="cflinuxfs3"
 
 # can have 2 params , username and password
 function login(){
@@ -35,7 +36,7 @@ function deploy_zookeeper_app(){
     APP_DIR=$1
     APP_NAME=$1
     cd ${APP_DIR}
-    cf push ${APP_NAME} --no-start
+    cf push ${APP_NAME} --no-start -s "${CLOUD_FOUNDRY_STACK}"
     APPLICATION_DOMAIN=`app_domain ${APP_NAME}`
     echo determined that application_domain for ${APP_NAME} is ${APPLICATION_DOMAIN}.
     cf env ${APP_NAME} | grep APPLICATION_DOMAIN || cf set-env ${APP_NAME} APPLICATION_DOMAIN ${APPLICATION_DOMAIN}
@@ -48,7 +49,7 @@ function deploy_app_with_name(){
     APP_DIR=$1
     APP_NAME=$2
     cd ${APP_DIR}
-    cf push ${APP_NAME} --no-start -f "manifest-${CLOUD_PREFIX}.yml" -b https://github.com/cloudfoundry/java-buildpack.git#v3.8.1
+    cf push ${APP_NAME} --no-start -f "manifest-${CLOUD_PREFIX}.yml" -b https://github.com/cloudfoundry/java-buildpack.git#v3.8.1 -s "${CLOUD_FOUNDRY_STACK}"
     APPLICATION_DOMAIN=`app_domain ${APP_NAME}`
     echo -e "\n\nDetermined that application_domain for $APP_NAME is $APPLICATION_DOMAIN\n\n"
     cf env ${APP_NAME} | grep APPLICATION_DOMAIN || cf set-env ${APP_NAME} APPLICATION_DOMAIN ${APPLICATION_DOMAIN}
