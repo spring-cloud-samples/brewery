@@ -12,4 +12,4 @@ applications:
     DEBUG: "true"
     JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
     SPRING_ZIPKIN_SENDER_TYPE: web
-    SPRING_ZIPKIN_BASE_URL: http://brewery-zipkin-server.cfapps.io
+    SPRING_ZIPKIN_BASE_URL: https://brewery-zipkin-server.cfapps.io

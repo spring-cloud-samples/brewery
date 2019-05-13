@@ -30,7 +30,7 @@ Here is the UI
 
 ![UI](img/Brewery_UI.png)
 
-- Go to the presenting service (http://localhost:9991 or to http://brewery-presenting.${PCF_DOMAIN}) and order ingredients. `PCF_DOMAIN` is the domain set to your CF installation. If you deploy to Pivotal Web Services it will default to `cfapps.io` (so the link for PWS will be http://brewery-presenting.cfapps.io) **(1)**
+- Go to the presenting service (http://localhost:9991 or to https://brewery-presenting.${PCF_DOMAIN}) and order ingredients. `PCF_DOMAIN` is the domain set to your CF installation. If you deploy to Pivotal Web Services it will default to `cfapps.io` (so the link for PWS will be https://brewery-presenting.cfapps.io) **(1)**
 - A request from the presenting service is sent to the aggregating service when order is placed **(2)**
 - A "PROCESS-ID" header is set and will be passed through each part of beer brewing
 

@@ -54,7 +54,7 @@ from that enum. E.g.
 In addition to this you can provide a couple of more parameters:
 
 ```
-# will point to the desired URL to find the all services (e.g. http://192.168.99.100), Useful when working
+# will point to the desired URL to find the all services (e.g. https://192.168.99.100), Useful when working
 # with docker-machine
--DLOCAL_URL=http://192.168.99.100
+-DLOCAL_URL=https://192.168.99.100
 ```

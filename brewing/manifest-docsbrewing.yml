@@ -11,8 +11,8 @@ applications:
     - docsbrewing-config-server
   env:
     SPRING_PROFILES_ACTIVE: cloud,cloud-docsbrewing
-    spring.cloud.config.uri: http://docsbrewing-config-server.cfapps.io
+    spring.cloud.config.uri: https://docsbrewing-config-server.cfapps.io
     DEBUG: "true"
     JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
     SPRING_ZIPKIN_SENDER_TYPE: web
-    SPRING_ZIPKIN_BASE_URL: http://docsbrewing-zipkin-server.cfapps.io
+    SPRING_ZIPKIN_BASE_URL: https://docsbrewing-zipkin-server.cfapps.io
