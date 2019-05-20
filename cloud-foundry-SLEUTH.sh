@@ -72,7 +72,7 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
         rm -rf build
         mkdir build
         cd build
-        curl -sSL https://zipkin.io/quickstart.sh | bash -s
+        curl -sSL https://zipkin.apache.org/quickstart.sh | bash -s
         cd ..
         cf d -f $ZQ_APP_NAME
         cd $root/zipkin-server
