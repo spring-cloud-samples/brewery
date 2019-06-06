@@ -97,5 +97,5 @@ fi
 PRESENTING_HOST=`app_domain ${CLOUD_PREFIX}-presenting`
 echo -e "Presenting host is [${PRESENTING_HOST}]"
 
-ACCEPTANCE_TEST_OPTS="-Dpresenting.url=http://${PRESENTING_HOST}"
+ACCEPTANCE_TEST_OPTS="-Dpresenting.url=https://${PRESENTING_HOST}"
 echo -e "\n\nSetting test opts for sleuth stream to call ${ACCEPTANCE_TEST_OPTS}"
