@@ -1,21 +1,22 @@
 package io.spring.cloud.samples.brewery.reporting;
 
-import io.spring.cloud.samples.brewery.common.events.Event;
-import io.spring.cloud.samples.brewery.common.events.EventSink;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Map;
+
 import brave.Span;
 import brave.Tracer;
+import io.spring.cloud.samples.brewery.common.events.Event;
+import io.spring.cloud.samples.brewery.common.events.EventSink;
+import org.slf4j.Logger;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.messaging.handler.annotation.Headers;
 
-import java.util.Map;
-
 @MessageEndpoint
-@Slf4j
 class EventListener {
 
+	private static final Logger log = org.slf4j.LoggerFactory.getLogger(EventListener.class);
 	private final ReportingRepository reportingRepository;
 	private final Tracer tracer;
 

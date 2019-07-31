@@ -1,23 +1,22 @@
 package io.spring.cloud.samples.brewery.bottling;
 
+import brave.Tracer;
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import brave.Tracer;
-import org.springframework.cloud.sleuth.instrument.hystrix.TraceCommand;
-import org.springframework.stereotype.Service;
-
 import io.spring.cloud.samples.brewery.common.BottlingService;
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.model.Wort;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.sleuth.instrument.hystrix.TraceCommand;
+import org.springframework.stereotype.Service;
 
 @Service
-@Slf4j
 class Bottler implements BottlingService {
 
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(Bottler.class);
     private final BottlerService bottlerService;
     private final Tracer tracer;
 

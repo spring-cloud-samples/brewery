@@ -7,7 +7,8 @@ import io.spring.cloud.samples.brewery.presenting.config.Collaborators;
 import io.spring.cloud.samples.brewery.presenting.config.Versions;
 import io.spring.cloud.samples.brewery.presenting.feed.FeedRepository;
 import io.spring.cloud.samples.brewery.presenting.feed.ProcessState;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.http.HttpEntity;
@@ -25,11 +26,11 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 /**
  * @author Marcin Grzejszczak
  */
-@Slf4j
 @RestController
 @RequestMapping("/present")
 class PresentController {
 	public static final String PROCESS_ID_HEADER_NAME = "PROCESS-ID";
+	private static final Logger log = org.slf4j.LoggerFactory.getLogger(PresentController.class);
 
 	private final FeedRepository feedRepository;
 	private final Tracer tracer;

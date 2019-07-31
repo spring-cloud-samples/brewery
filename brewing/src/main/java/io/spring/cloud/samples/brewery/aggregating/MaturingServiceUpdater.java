@@ -1,19 +1,18 @@
 package io.spring.cloud.samples.brewery.aggregating;
 
 import io.spring.cloud.samples.brewery.common.MaturingService;
-import io.spring.cloud.samples.brewery.common.model.IngredientType;
-import io.spring.cloud.samples.brewery.common.model.Ingredients;
 import io.spring.cloud.samples.brewery.common.events.Event;
 import io.spring.cloud.samples.brewery.common.events.EventGateway;
 import io.spring.cloud.samples.brewery.common.events.EventType;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.client.RestTemplate;
+import io.spring.cloud.samples.brewery.common.model.IngredientType;
+import io.spring.cloud.samples.brewery.common.model.Ingredients;
+import org.slf4j.Logger;
 
 import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
 
-@Slf4j
 class MaturingServiceUpdater {
 
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(MaturingServiceUpdater.class);
     private final IngredientsProperties ingredientsProperties;
     private final IngredientWarehouse ingredientWarehouse;
     private final MaturingService maturingService;

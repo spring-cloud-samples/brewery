@@ -1,13 +1,16 @@
 package io.spring.cloud.samples.brewery.aggregating;
 
+import java.util.concurrent.Callable;
+
+import brave.Span;
+import brave.Tracer;
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.model.Ingredients;
 import io.spring.cloud.samples.brewery.common.model.Order;
 import io.spring.cloud.samples.brewery.common.model.Version;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import brave.Span;
-import brave.Tracer;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -15,13 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.concurrent.Callable;
-
 @RestController
 @RequestMapping(value = "/ingredients", consumes = Version.BREWING_V1, produces = MediaType.APPLICATION_JSON_VALUE)
-@Slf4j
 class IngredientsController {
 
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(IngredientsController.class);
     private final IngredientsAggregator ingredientsAggregator;
     private final Tracer tracer;
 

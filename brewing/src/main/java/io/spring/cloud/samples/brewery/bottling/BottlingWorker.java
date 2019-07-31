@@ -1,32 +1,32 @@
 package io.spring.cloud.samples.brewery.bottling;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import brave.Span;
+import brave.Tracer;
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.events.Event;
 import io.spring.cloud.samples.brewery.common.events.EventGateway;
 import io.spring.cloud.samples.brewery.common.events.EventType;
 import io.spring.cloud.samples.brewery.common.model.Version;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import brave.Span;
-import brave.Tracer;
 import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
 import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
 
 @Component
-@Slf4j
 class BottlingWorker {
 
 
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(BottlingWorker.class);
     private Map<String, State> PROCESS_STATE = new ConcurrentHashMap<>();
     private final Tracer tracer;
     private final PresentingClient presentingClient;
@@ -104,9 +104,59 @@ class BottlingWorker {
                 .build(), String.class);
     }
 
-    @Data
     private static class State {
         private Integer bottles = 0;
         private Integer bottled = 0;
+
+        public State() {
+        }
+
+        public Integer getBottles() {
+            return this.bottles;
+        }
+
+        public Integer getBottled() {
+            return this.bottled;
+        }
+
+        public void setBottles(Integer bottles) {
+            this.bottles = bottles;
+        }
+
+        public void setBottled(Integer bottled) {
+            this.bottled = bottled;
+        }
+
+        public boolean equals(final Object o) {
+            if (o == this) return true;
+            if (!(o instanceof State)) return false;
+            final State other = (State) o;
+            if (!other.canEqual((Object) this)) return false;
+            final Object this$bottles = this.getBottles();
+            final Object other$bottles = other.getBottles();
+            if (this$bottles == null ? other$bottles != null : !this$bottles.equals(other$bottles)) return false;
+            final Object this$bottled = this.getBottled();
+            final Object other$bottled = other.getBottled();
+            if (this$bottled == null ? other$bottled != null : !this$bottled.equals(other$bottled)) return false;
+            return true;
+        }
+
+        protected boolean canEqual(final Object other) {
+            return other instanceof State;
+        }
+
+        public int hashCode() {
+            final int PRIME = 59;
+            int result = 1;
+            final Object $bottles = this.getBottles();
+            result = result * PRIME + ($bottles == null ? 43 : $bottles.hashCode());
+            final Object $bottled = this.getBottled();
+            result = result * PRIME + ($bottled == null ? 43 : $bottled.hashCode());
+            return result;
+        }
+
+        public String toString() {
+            return "BottlingWorker.State(bottles=" + this.getBottles() + ", bottled=" + this.getBottled() + ")";
+        }
     }
 }

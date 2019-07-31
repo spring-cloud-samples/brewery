@@ -4,7 +4,8 @@ import java.util.Set;
 
 import brave.Span;
 import brave.Tracer;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 /**
  * @author Marcin Grzejszczak
  */
-@Slf4j
 @RestController
 @RequestMapping("/feed")
 class FeedController {
+	private static final Logger log = org.slf4j.LoggerFactory.getLogger(FeedController.class);
 	private final FeedRepository feedRepository;
 	private final Tracer tracer;
 

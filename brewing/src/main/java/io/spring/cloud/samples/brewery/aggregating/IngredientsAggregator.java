@@ -10,16 +10,17 @@ import io.spring.cloud.samples.brewery.common.events.EventType;
 import io.spring.cloud.samples.brewery.common.model.Ingredient;
 import io.spring.cloud.samples.brewery.common.model.Ingredients;
 import io.spring.cloud.samples.brewery.common.model.Order;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.instrument.async.TraceableExecutorService;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
 class IngredientsAggregator {
 
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(IngredientsAggregator.class);
     private final MaturingServiceUpdater maturingUpdater;
     private final IngredientWarehouse ingredientWarehouse;
     private final IngredientsCollector ingredientsCollector;

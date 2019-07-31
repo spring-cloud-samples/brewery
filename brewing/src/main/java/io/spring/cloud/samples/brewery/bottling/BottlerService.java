@@ -1,25 +1,26 @@
 package io.spring.cloud.samples.brewery.bottling;
 
+import java.net.URI;
+
+import brave.Span;
+import brave.Tracer;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.spring.cloud.samples.brewery.common.model.Version;
 import io.spring.cloud.samples.brewery.common.model.Wort;
-import lombok.extern.slf4j.Slf4j;
-import brave.Span;
-import brave.Tracer;
+import org.slf4j.Logger;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
-
 import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TEST_CONFIG;
 import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
 import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
 
-@Slf4j
 class BottlerService {
 
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(BottlerService.class);
     private final BottlingWorker bottlingWorker;
     private final PresentingClient presentingClient;
     private final RestTemplate restTemplate;

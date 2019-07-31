@@ -1,10 +1,9 @@
 package io.spring.cloud.samples.brewery.common.model;
 
-import com.google.common.collect.Lists;
 import java.util.List;
-import lombok.ToString;
 
-@ToString
+import com.google.common.collect.Lists;
+
 public class Ingredients {
 
     public Ingredients() {
@@ -16,4 +15,7 @@ public class Ingredients {
 
     public List<Ingredient> ingredients = Lists.newArrayList();
 
+    public String toString() {
+        return "Ingredients(ingredients=" + this.ingredients + ")";
+    }
 }

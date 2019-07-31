@@ -1,14 +1,8 @@
 package io.spring.cloud.samples.brewery.maturing;
 
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-
 import brave.Span;
 import brave.Tracer;
-import org.springframework.http.HttpMethod;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.util.Assert;
-import org.springframework.web.client.RestTemplate;
-
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.spring.cloud.samples.brewery.common.BottlingService;
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.events.Event;
@@ -17,14 +11,19 @@ import io.spring.cloud.samples.brewery.common.events.EventType;
 import io.spring.cloud.samples.brewery.common.model.Ingredients;
 import io.spring.cloud.samples.brewery.common.model.Version;
 import io.spring.cloud.samples.brewery.common.model.Wort;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+
+import org.springframework.http.HttpMethod;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.util.Assert;
+import org.springframework.web.client.RestTemplate;
 
 import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
 import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
 
-@Slf4j
 class BottlingServiceUpdater {
 
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(BottlingServiceUpdater.class);
     private final BrewProperties brewProperties;
     private final Tracer tracer;
     private final PresentingServiceClient presentingServiceClient;

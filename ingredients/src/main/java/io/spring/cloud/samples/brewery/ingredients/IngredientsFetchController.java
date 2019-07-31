@@ -5,18 +5,19 @@ import brave.Tracer;
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.model.Ingredient;
 import io.spring.cloud.samples.brewery.common.model.IngredientType;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import reactor.core.publisher.Mono;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 @RestController
-@Slf4j
 class IngredientsFetchController {
+	private static final Logger log = org.slf4j.LoggerFactory.getLogger(IngredientsFetchController.class);
 	private final StubbedIngredientsProperties stubbedIngredientsProperties;
 	private final Tracer tracer;
 

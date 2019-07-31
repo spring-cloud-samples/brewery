@@ -176,7 +176,6 @@ logger.lifecycle("BOM_VERSION is: [${getProp("BOM_VERSION")}]")
 configure(subprojects - gateway - acceptanceTestsProject - servers) {
 
 	dependencies {
-		compile 'org.projectlombok:lombok:1.18.2'
 		compile "org.springframework.boot:spring-boot-starter-web"
 		compile "org.springframework.cloud:spring-cloud-starter-sleuth"
 		if (!whatToTest('SCS')) compile "org.springframework.cloud:spring-cloud-starter-config"
