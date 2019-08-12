@@ -227,7 +227,7 @@ configure(subprojects - commonProject - servers - gateway) {
 	}
 }
 
-configure(subprojects - techProjects - commonZipkinProject - gateway) {
+configure(subprojects - techProjects - commonZipkinProject) {
 	dependencies {
 		if (whatToTest('SLEUTH')) {
 			compile commonZipkinProject
