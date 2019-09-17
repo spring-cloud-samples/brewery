@@ -12,6 +12,6 @@ applications:
   env:
     SPRING_PROFILES_ACTIVE: cloud,cloud-docsbrewing
     DEBUG: "true"
-    JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
+    JAVA_OPTS: -Djava.security.egd=file:///dev/urandom -Djavax.net.debug=all
     SPRING_ZIPKIN_SENDER_TYPE: web
     SPRING_ZIPKIN_BASE_URL: https://docsbrewing-zipkin-server.cfapps.io
