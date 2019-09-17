@@ -26,6 +26,7 @@ spring:
 logging:
   level:
       org.springframework.cloud.gateway: TRACE
+      zipkin2: TRACE
       org.springframework.cloud: DEBUG
       org.springframework.cloud.sleuth: TRACE
       org.springframework.cloud.sleuth.log: DEBUG

@@ -258,10 +258,6 @@ configure(subprojects - techProjects - commonZipkinProject) {
 		runtime 'org.aspectj:aspectjweaver'
 	}
 
-	wrapper {
-		gradleVersion '4.10.2'
-	}
-
 	bootRun {
 		jvmArgs = systemPropsFromGradle()
 	}
