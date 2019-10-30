@@ -22,6 +22,9 @@ spring:
         - name: Retry
           args:
             retries: 3
+  sleuth:
+    reactor:
+      decorate-on-each: false
 
 logging:
   level:
