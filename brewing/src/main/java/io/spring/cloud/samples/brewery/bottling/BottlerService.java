@@ -5,10 +5,12 @@ import java.net.URI;
 import brave.Span;
 import brave.Tracer;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.model.Version;
 import io.spring.cloud.samples.brewery.common.model.Wort;
 import org.slf4j.Logger;
 
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.web.client.AsyncRestTemplate;
@@ -26,14 +28,16 @@ class BottlerService {
     private final RestTemplate restTemplate;
     private final AsyncRestTemplate asyncRestTemplate;
     private final Tracer tracer;
+    private final CircuitBreakerFactory factory;
 
     public BottlerService(BottlingWorker bottlingWorker, PresentingClient presentingClient,
-                          RestTemplate restTemplate, AsyncRestTemplate asyncRestTemplate, Tracer tracer) {
+                          RestTemplate restTemplate, AsyncRestTemplate asyncRestTemplate, Tracer tracer, CircuitBreakerFactory factory) {
         this.bottlingWorker = bottlingWorker;
         this.presentingClient = presentingClient;
         this.restTemplate = restTemplate;
         this.asyncRestTemplate = asyncRestTemplate;
         this.tracer = tracer;
+        this.factory = factory;
     }
 
     /**
@@ -44,8 +48,24 @@ class BottlerService {
         log.info("I'm inside bottling");
         Span span = tracer.nextSpan().name("inside_bottling").start();
         try (Tracer.SpanInScope ws = tracer.withSpanInScope(span)) {
+           bottleWithCircuitBreaker(wort, processId);
+        } finally {
+            span.finish();
+        }
+    }
+
+    /**
+     * [SLEUTH] CircuitBreaker integration
+     */
+    void bottleWithCircuitBreaker(Wort wort, String processId) {
+        Span span = tracer.nextSpan().name("inside_bottling_circuitbreaker").start();
+        TestConfigurationHolder testConfigurationHolder = TEST_CONFIG.get();
+        try (Tracer.SpanInScope ws = tracer.withSpanInScope(span)) {
             notifyPresenting(processId);
-            bottlingWorker.bottleBeer(wort.getWort(), processId, TEST_CONFIG.get());
+            factory.create("circuitbreaker").run(() -> {
+                bottlingWorker.bottleBeer(wort.getWort(), processId, testConfigurationHolder);
+                return null;
+            });
         } finally {
             span.finish();
         }

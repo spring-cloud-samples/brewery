@@ -278,7 +278,7 @@ You can use the following options:
 
 GLOBAL:
 -t  |--whattotest  - define what you want to test (i.e. ZOOKEEPER, SLEUTH, EUREKA, CONSUL, SCS)
--v  |--version - which version of BOM do you want to use? Defaults to Finchley snapshot
+-v  |--version - which version of BOM do you want to use? Defaults to current release train snapshot
 -sv |--scsversion - which version of BOM for Spring Cloud Services do you want to use? Defaults to 1.3.2.BUILD-SNAPSHOT
 -h  |--healthhost - what is your health host? where is docker? defaults to localhost
 -l  |--numberoflines - how many lines of logs of your app do you want to print? Defaults to 1000
@@ -290,8 +290,8 @@ GLOBAL:
 -k  |--kafka - uses Kafka instead of RabbitMQ
 -d  |--skipdeployment - should skip deployment of apps? Defaults to "no"
 -a  |--deployonlyapps - should deploy only the brewery business apps instead of the infra too? Defaults to "no"
--b  |--bootversion - Which version of Boot should be used? Defaults to 1.5.9.RELEASE for the plugin and to boot version used by libs
--cli|--cliversion - which version of Spring Cloud CLI should be used (it's used to start Kafka)? Defaults to 1.2.3.RELEASE
+-b  |--bootversion - Which version of Boot should be used?
+-cli|--cliversion - which version of Spring Cloud CLI should be used (it's used to start Kafka)?
 -ve |--verbose - Will print all library versions
 -br |--branch - Which repo branch of the brewery repo should be checked out. Defaults to "master"
 

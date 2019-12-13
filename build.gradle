@@ -22,11 +22,6 @@ buildscript {
 	}
 
 	String bootVersion = getProp("BOOT_VERSION")
-	String bomVersion = getProp("BOM_VERSION")
-	if (bomVersion.toLowerCase().startsWith("finchley")) {
-		bootVersion = "2.0.6.RELEASE"
-		logger.lifecycle("Overriding boot for Finchley")
-	}
 	logger.lifecycle("BOOT_VERSION is: [${bootVersion}]")
 
 	dependencies {
@@ -155,10 +150,6 @@ configure(subprojects) {
 			if (getProp("BOOT_VERSION")) {
 				String bootVersion = getProp("BOOT_VERSION")
 				String bomVersion = getProp("BOM_VERSION")
-				if (bomVersion.toLowerCase().startsWith("finchley")) {
-					bootVersion = "2.0.6.RELEASE"
-					logger.lifecycle("Overriding boot for Finchley")
-				}
 				logger.lifecycle("Using boot in version [${bootVersion}]")
 				mavenBom "org.springframework.boot:spring-boot-dependencies:${bootVersion}"
 			}
@@ -182,6 +173,7 @@ configure(subprojects - gateway - acceptanceTestsProject - servers) {
 		if (whatToTest('SCS')) compile("io.pivotal.spring.cloud:spring-cloud-services-starter-config-client")
 		if (whatToTest('SCS')) compile("io.pivotal.spring.cloud:spring-cloud-services-starter-service-registry")
 		compile "org.springframework.cloud:spring-cloud-starter-netflix-hystrix"
+		compile "org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j"
 		compile "org.springframework.cloud:spring-cloud-starter-stream-${propOrSysEnvPresent('kafka') ? 'kafka' : 'rabbit'}"
 		compile "org.springframework.amqp:spring-amqp"
 		compile "io.dropwizard.metrics:metrics-core"

@@ -48,13 +48,13 @@ class BottlingWorker {
         TestConfigurationHolder.TEST_CONFIG.set(configurationHolder);
         increaseBottles(wortAmount, processId);
         eventGateway.emitEvent(Event.builder().eventType(EventType.BEER_BOTTLED).processId(processId).build());
-        notifyPresentingService(processId);
+        notifyPresentingService(processId, configurationHolder);
     }
 
-    private void notifyPresentingService(String processId) {
+    private void notifyPresentingService(String processId, TestConfigurationHolder configurationHolder) {
         Span scope = this.tracer.nextSpan().name("calling_presenting").start();
         try (Tracer.SpanInScope ws = tracer.withSpanInScope(scope)) {
-            switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
+            switch (configurationHolder.getTestCommunicationType()) {
             case FEIGN:
                 callPresentingViaFeign(processId);
                 break;

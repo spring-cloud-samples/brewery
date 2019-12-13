@@ -4,6 +4,8 @@ import brave.Tracer;
 import io.spring.cloud.samples.brewery.common.TestConfiguration;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JCircuitBreakerFactory;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,9 +24,14 @@ class BottlingConfiguration {
     BottlerService bottlingService(BottlingWorker bottlingWorker,
                                    PresentingClient presentingClient,
                                    @LoadBalanced RestTemplate restTemplate,
-                                   Tracer tracer) {
+                                   Tracer tracer, CircuitBreakerFactory circuitBreakerFactory) {
         return new BottlerService(bottlingWorker, presentingClient,
-            restTemplate, bottlingAsyncRestTemplate(restTemplate), tracer);
+            restTemplate, bottlingAsyncRestTemplate(restTemplate), tracer, circuitBreakerFactory);
+    }
+
+    @Bean
+    Resilience4JCircuitBreakerFactory resilience4JCircuitBreakerFactory() {
+        return new Resilience4JCircuitBreakerFactory();
     }
 
     @Bean
