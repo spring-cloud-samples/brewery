@@ -46,9 +46,9 @@ server.port: ${PORT:9993}
 
 spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 
-
-hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
-
 management.endpoints.web.base-path: /
 
 spring.zipkin.sender.type: web
+
+spring.cloud.function.definition: events
+spring.cloud.stream.bindings.events-out-0.destination: events

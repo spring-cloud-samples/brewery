@@ -8,5 +8,4 @@ include 'brewing',
 		'acceptance-tests',
 		'eureka',
 		'config-server',
-		'zuul',
 		'gateway'

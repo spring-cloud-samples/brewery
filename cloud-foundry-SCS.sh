@@ -5,11 +5,7 @@ set -e
 root=`pwd`
 export CLOUD_PREFIX="scsbrewery"
 
-if [[ "${WHAT_TO_TEST}" == "SLEUTH" ]] ; then
-    export PROXY_DIR="gateway"
-else
-    export PROXY_DIR="zuul"
-fi
+export PROXY_DIR="gateway"
 
 if [[ -z "${SKIP_DEPLOYMENT}" ]] ; then
     # ====================================================

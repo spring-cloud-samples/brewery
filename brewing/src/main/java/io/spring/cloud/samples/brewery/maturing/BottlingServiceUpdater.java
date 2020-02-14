@@ -2,7 +2,6 @@ package io.spring.cloud.samples.brewery.maturing;
 
 import brave.Span;
 import brave.Tracer;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.spring.cloud.samples.brewery.common.BottlingService;
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.events.Event;
@@ -13,6 +12,7 @@ import io.spring.cloud.samples.brewery.common.model.Version;
 import io.spring.cloud.samples.brewery.common.model.Wort;
 import org.slf4j.Logger;
 
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.Assert;
@@ -30,18 +30,20 @@ class BottlingServiceUpdater {
     private final BottlingService bottlingService;
     private final RestTemplate restTemplate;
     private final EventGateway eventGateway;
+    private final CircuitBreakerFactory circuitBreakerFactory;
 
     public BottlingServiceUpdater(BrewProperties brewProperties,
-                                  Tracer tracer,
-                                  PresentingServiceClient presentingServiceClient,
-                                  BottlingService bottlingService,
-                                  RestTemplate restTemplate, EventGateway eventGateway) {
+            Tracer tracer,
+            PresentingServiceClient presentingServiceClient,
+            BottlingService bottlingService,
+            RestTemplate restTemplate, EventGateway eventGateway, CircuitBreakerFactory circuitBreakerFactory) {
         this.brewProperties = brewProperties;
         this.tracer = tracer;
         this.presentingServiceClient = presentingServiceClient;
         this.bottlingService = bottlingService;
         this.restTemplate = restTemplate;
         this.eventGateway = eventGateway;
+        this.circuitBreakerFactory = circuitBreakerFactory;
     }
 
     @Async
@@ -92,15 +94,17 @@ class BottlingServiceUpdater {
 	/**
      * [SLEUTH] HystrixCommand - Javanica integration
      */
-    @HystrixCommand
     public void notifyBottlingService(Ingredients ingredients, String correlationId) {
-        log.info("Calling bottling from maturing");
-        Span scope = this.tracer.nextSpan().name("calling_bottling_from_maturing").start();
-        try (Tracer.SpanInScope ws = tracer.withSpanInScope(scope)) {
-            bottlingService.bottle(new Wort(getQuantity(ingredients)), correlationId, FEIGN.name());
-        } finally {
-            scope.finish();
-        }
+        circuitBreakerFactory.create("notifyBottlingService").run(() -> {
+            log.info("Calling bottling from maturing");
+            Span scope = this.tracer.nextSpan().name("calling_bottling_from_maturing").start();
+            try (Tracer.SpanInScope ws = tracer.withSpanInScope(scope)) {
+                bottlingService.bottle(new Wort(getQuantity(ingredients)), correlationId, FEIGN.name());
+            } finally {
+                scope.finish();
+            }
+            return null;
+        });
     }
 
     private void useRestTemplateToCallPresenting(String processId) {
@@ -115,7 +119,7 @@ class BottlingServiceUpdater {
     }
 
     private Integer getQuantity(Ingredients ingredients) {
-        Assert.notEmpty(ingredients.ingredients);
+        Assert.notEmpty(ingredients.ingredients, "Ingredients can't be null");
         return ingredients.ingredients.get(0).getQuantity();
     }
 

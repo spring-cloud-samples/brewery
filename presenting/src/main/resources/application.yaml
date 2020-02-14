@@ -14,12 +14,12 @@ spring.sleuth.web.skipPattern: /api-docs.*|/autoconfig|/health|/configprops|/dum
 
 logging.file: build/presenting.log
 
-hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
-
-
 endpoints.health.sensitive: false
 endpoints.default.web.enabled: true
 management.security.enabled: false
 management.endpoints.web.base-path: /
 
 spring.zipkin.sender.type: web
+
+spring.cloud.function.definition: events
+spring.cloud.stream.bindings.events-out-0.destination: events

@@ -4,7 +4,6 @@ import java.net.URI;
 
 import brave.Span;
 import brave.Tracer;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.model.Version;
 import io.spring.cloud.samples.brewery.common.model.Wort;
@@ -16,7 +15,6 @@ import org.springframework.http.RequestEntity;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
 
-import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TEST_CONFIG;
 import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
 import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
 
@@ -40,30 +38,28 @@ class BottlerService {
         this.factory = factory;
     }
 
-    /**
-     * [SLEUTH] HystrixCommand - Javanica integration
-     */
-    @HystrixCommand
-    void bottle(Wort wort, String processId) {
-        log.info("I'm inside bottling");
-        Span span = tracer.nextSpan().name("inside_bottling").start();
-        try (Tracer.SpanInScope ws = tracer.withSpanInScope(span)) {
-           bottleWithCircuitBreaker(wort, processId);
-        } finally {
-            span.finish();
-        }
+    void bottle(Wort wort, String processId, TestConfigurationHolder holder) {
+        factory.create("bottle").run(() -> {
+            log.info("I'm inside bottling");
+            Span span = tracer.nextSpan().name("inside_bottling").start();
+            try (Tracer.SpanInScope ws = tracer.withSpanInScope(span)) {
+                bottleWithCircuitBreaker(holder.getTestCommunicationType(), wort, processId);
+            } finally {
+                span.finish();
+            }
+            return null;
+        });
     }
 
     /**
      * [SLEUTH] CircuitBreaker integration
      */
-    void bottleWithCircuitBreaker(Wort wort, String processId) {
+    void bottleWithCircuitBreaker(TestConfigurationHolder.TestCommunicationType type, Wort wort, String processId) {
         Span span = tracer.nextSpan().name("inside_bottling_circuitbreaker").start();
-        TestConfigurationHolder testConfigurationHolder = TEST_CONFIG.get();
         try (Tracer.SpanInScope ws = tracer.withSpanInScope(span)) {
-            notifyPresenting(processId);
+            notifyPresenting(processId, type);
             factory.create("circuitbreaker").run(() -> {
-                bottlingWorker.bottleBeer(wort.getWort(), processId, testConfigurationHolder);
+                bottlingWorker.bottleBeer(wort.getWort(), processId, type);
                 return null;
             });
         } finally {
@@ -71,14 +67,13 @@ class BottlerService {
         }
     }
 
-    void notifyPresenting(String processId) {
+    void notifyPresenting(String processId, TestConfigurationHolder.TestCommunicationType type) {
         log.info("I'm inside bottling. Notifying presenting");
-        switch (TEST_CONFIG.get().getTestCommunicationType()) {
-            case FEIGN:
-                callPresentingViaFeign(processId);
-                break;
-            default:
-                useRestTemplateToCallPresenting(processId);
+        if (type == FEIGN) {
+            callPresentingViaFeign(processId);
+        }
+        else {
+            useRestTemplateToCallPresenting(processId);
         }
     }
 

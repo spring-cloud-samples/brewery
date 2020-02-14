@@ -44,21 +44,19 @@ class BottlingWorker {
     }
 
     @Async
-    public void bottleBeer(Integer wortAmount, String processId, TestConfigurationHolder configurationHolder) {
-        TestConfigurationHolder.TEST_CONFIG.set(configurationHolder);
+    public void bottleBeer(Integer wortAmount, String processId, TestConfigurationHolder.TestCommunicationType configurationHolder) {
         increaseBottles(wortAmount, processId);
         eventGateway.emitEvent(Event.builder().eventType(EventType.BEER_BOTTLED).processId(processId).build());
         notifyPresentingService(processId, configurationHolder);
     }
 
-    private void notifyPresentingService(String processId, TestConfigurationHolder configurationHolder) {
+    private void notifyPresentingService(String processId, TestConfigurationHolder.TestCommunicationType configurationHolder) {
         Span scope = this.tracer.nextSpan().name("calling_presenting").start();
         try (Tracer.SpanInScope ws = tracer.withSpanInScope(scope)) {
-            switch (configurationHolder.getTestCommunicationType()) {
-            case FEIGN:
+            if (configurationHolder == FEIGN) {
                 callPresentingViaFeign(processId);
-                break;
-            default:
+            }
+            else {
                 useRestTemplateToCallPresenting(processId);
             }
         } finally {
