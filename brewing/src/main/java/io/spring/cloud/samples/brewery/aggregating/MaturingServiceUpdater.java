@@ -8,8 +8,6 @@ import io.spring.cloud.samples.brewery.common.model.IngredientType;
 import io.spring.cloud.samples.brewery.common.model.Ingredients;
 import org.slf4j.Logger;
 
-import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
-
 class MaturingServiceUpdater {
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(MaturingServiceUpdater.class);
@@ -53,6 +51,6 @@ class MaturingServiceUpdater {
     }
 
     private void notifyMaturingService(Ingredients ingredients, String processId) {
-        maturingService.distributeIngredients(ingredients, processId, FEIGN.name());
+        maturingService.distributeIngredients(ingredients, processId, "FEIGN");
     }
 }

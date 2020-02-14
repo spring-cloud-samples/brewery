@@ -1,7 +1,6 @@
 package io.spring.cloud.samples.brewery.bottling;
 
 import io.spring.cloud.samples.brewery.common.BottlingService;
-import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.model.Wort;
 import org.slf4j.Logger;
 
@@ -29,10 +28,9 @@ class Bottler implements BottlingService {
     public void bottle(Wort wort, String processId, String testCommunicationType) {
         log.info("I'm in the bottling service");
         log.info("Process ID from headers {}", processId);
-        TestConfigurationHolder testConfigurationHolder = TestConfigurationHolder.TEST_CONFIG.get();
         circuitBreakerFactory.create("bottle").run(() -> {
             log.info("Sending info to bottling service about process id [{}]", processId);
-            bottlerService.bottle(wort, processId, testConfigurationHolder);
+            bottlerService.bottle(wort, processId);
             return null;
         });
     }

@@ -1,18 +1,18 @@
 package io.spring.cloud.samples.brewery.aggregating;
 
-import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
-import io.spring.cloud.samples.brewery.common.model.Ingredient;
-import io.spring.cloud.samples.brewery.common.model.Order;
-import org.slf4j.Logger;
-import org.springframework.http.HttpMethod;
-import org.springframework.web.client.RestTemplate;
-
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
-import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
+import brave.propagation.ExtraFieldPropagation;
+import io.spring.cloud.samples.brewery.common.model.Ingredient;
+import io.spring.cloud.samples.brewery.common.model.Order;
+import org.slf4j.Logger;
+
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestTemplate;
+
 import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -29,8 +29,10 @@ class IngredientsCollector {
 	}
 
 	List<Ingredient> collectIngredients(Order order, String processId) {
-		switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
-			case FEIGN:
+		String testCommunicationType = ExtraFieldPropagation.get("TEST-COMMUNICATION-TYPE");
+		log.info("Found the following communication type [{}]", testCommunicationType);
+		switch (testCommunicationType) {
+			case "FEIGN":
 				return callViaFeign(order, processId);
 			default:
 				return callViaRestTemplate(order, processId);
@@ -38,10 +40,10 @@ class IngredientsCollector {
 	}
 
 	private List<Ingredient> callViaFeign(Order order, String processId) {
-		callProxyAtNonExistentUrl( () -> ingredientsProxy.nonExistentIngredients(processId, FEIGN.name()));
+		callProxyAtNonExistentUrl( () -> ingredientsProxy.nonExistentIngredients(processId, "FEIGN"));
 		return order.getItems()
 				.stream()
-				.map(item -> ingredientsProxy.ingredients(item, processId, FEIGN.name()))
+				.map(item -> ingredientsProxy.ingredients(item, processId, "FEIGN"))
 				.collect(Collectors.toList());
 	}
 

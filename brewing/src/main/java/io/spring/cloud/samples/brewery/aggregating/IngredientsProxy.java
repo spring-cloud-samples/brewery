@@ -8,17 +8,15 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TEST_COMMUNICATION_TYPE_HEADER_NAME;
-
 @FeignClient(Collaborators.PROXY)
 interface IngredientsProxy {
 
 	@RequestMapping(value = "/ingredients/{ingredient}", method = RequestMethod.POST)
 	Ingredient ingredients(@PathVariable("ingredient") IngredientType ingredientType,
 						   @RequestHeader("PROCESS-ID") String processId,
-						   @RequestHeader(TEST_COMMUNICATION_TYPE_HEADER_NAME) String testCommunicationType);
+						   @RequestHeader("TEST_COMMUNICATION_TYPE") String testCommunicationType);
 
 	@RequestMapping(value = "/ingredients/api/nonExistentUrl/", method = RequestMethod.POST)
 	Ingredient nonExistentIngredients(@RequestHeader("PROCESS-ID") String processId,
-						   @RequestHeader(TEST_COMMUNICATION_TYPE_HEADER_NAME) String testCommunicationType);
+						   @RequestHeader("TEST_COMMUNICATION_TYPE") String testCommunicationType);
 }

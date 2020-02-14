@@ -1,1 +1,4 @@
 createDockerTaskWithPort(9992)
+dependencies {
+	implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+}

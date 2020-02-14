@@ -2,8 +2,8 @@ package io.spring.cloud.samples.brewery.maturing;
 
 import brave.Span;
 import brave.Tracer;
+import brave.propagation.ExtraFieldPropagation;
 import io.spring.cloud.samples.brewery.common.BottlingService;
-import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.events.Event;
 import io.spring.cloud.samples.brewery.common.events.EventGateway;
 import io.spring.cloud.samples.brewery.common.events.EventType;
@@ -18,7 +18,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
-import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
 import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
 
 class BottlingServiceUpdater {
@@ -47,10 +46,9 @@ class BottlingServiceUpdater {
     }
 
     @Async
-    public void updateBottlingServiceAboutBrewedBeer(final Ingredients ingredients, String processId, TestConfigurationHolder configurationHolder) {
+    public void updateBottlingServiceAboutBrewedBeer(final Ingredients ingredients, String processId) {
         Span trace = tracer.nextSpan().name("inside_maturing").start();
         try (Tracer.SpanInScope ws = tracer.withSpanInScope(trace)) {
-            TestConfigurationHolder.TEST_CONFIG.set(configurationHolder);
             log.info("Updating bottling service. Current process id is equal [{}]", processId);
             notifyPresentingService(processId);
             brewBeer();
@@ -75,8 +73,10 @@ class BottlingServiceUpdater {
         log.info("Calling presenting from maturing");
         Span scope = this.tracer.nextSpan().name("calling_presenting_from_maturing").start();
         try (Tracer.SpanInScope ws = tracer.withSpanInScope(scope)) {
-            switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
-            case FEIGN:
+            String testCommunicationType = ExtraFieldPropagation.get("TEST-COMMUNICATION-TYPE");
+            log.info("Found the following communication type [{}]", testCommunicationType);
+            switch (testCommunicationType) {
+            case "FEIGN":
                 callPresentingViaFeign(correlationId);
                 break;
             default:
@@ -88,18 +88,15 @@ class BottlingServiceUpdater {
     }
 
     private void callPresentingViaFeign(String correlationId) {
-        presentingServiceClient.maturingFeed(correlationId, FEIGN.name());
+        presentingServiceClient.maturingFeed(correlationId, "FEIGN");
     }
 
-	/**
-     * [SLEUTH] HystrixCommand - Javanica integration
-     */
     public void notifyBottlingService(Ingredients ingredients, String correlationId) {
         circuitBreakerFactory.create("notifyBottlingService").run(() -> {
             log.info("Calling bottling from maturing");
             Span scope = this.tracer.nextSpan().name("calling_bottling_from_maturing").start();
             try (Tracer.SpanInScope ws = tracer.withSpanInScope(scope)) {
-                bottlingService.bottle(new Wort(getQuantity(ingredients)), correlationId, FEIGN.name());
+                bottlingService.bottle(new Wort(getQuantity(ingredients)), correlationId, "FEIGN");
             } finally {
                 scope.finish();
             }

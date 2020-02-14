@@ -23,6 +23,11 @@ management.security.enabled: false
 management.endpoints.web.base-path: /
 
 spring.zipkin.sender.type: web
+spring:
+  sleuth:
+    propagation-keys:
+      - TEST-COMMUNICATION-TYPE
+      - test-communication-type
 
 # The bean 'presenting.FeignClientSpecification', defined in null, 
 # could not be registered. A bean with that name has already been defined in null and overriding is disabled.

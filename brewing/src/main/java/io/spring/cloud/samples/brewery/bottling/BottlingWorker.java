@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import brave.Span;
 import brave.Tracer;
-import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
+import brave.propagation.ExtraFieldPropagation;
 import io.spring.cloud.samples.brewery.common.events.Event;
 import io.spring.cloud.samples.brewery.common.events.EventGateway;
 import io.spring.cloud.samples.brewery.common.events.EventType;
@@ -19,7 +19,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
 import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
 
 @Component
@@ -44,16 +43,18 @@ class BottlingWorker {
     }
 
     @Async
-    public void bottleBeer(Integer wortAmount, String processId, TestConfigurationHolder.TestCommunicationType configurationHolder) {
+    public void bottleBeer(Integer wortAmount, String processId) {
         increaseBottles(wortAmount, processId);
         eventGateway.emitEvent(Event.builder().eventType(EventType.BEER_BOTTLED).processId(processId).build());
-        notifyPresentingService(processId, configurationHolder);
+        notifyPresentingService(processId);
     }
 
-    private void notifyPresentingService(String processId, TestConfigurationHolder.TestCommunicationType configurationHolder) {
+    private void notifyPresentingService(String processId) {
         Span scope = this.tracer.nextSpan().name("calling_presenting").start();
         try (Tracer.SpanInScope ws = tracer.withSpanInScope(scope)) {
-            if (configurationHolder == FEIGN) {
+            String testCommunicationType = ExtraFieldPropagation.get("TEST-COMMUNICATION-TYPE");
+            log.info("Found the following communication type [{}]", testCommunicationType);
+            if (testCommunicationType.equals("FEIGN")) {
                 callPresentingViaFeign(processId);
             }
             else {
@@ -89,7 +90,7 @@ class BottlingWorker {
     }
 
     private void callPresentingViaFeign(String processId) {
-        presentingClient.updateBottles(PROCESS_STATE.get(processId).getBottles(), processId, FEIGN.name());
+        presentingClient.updateBottles(PROCESS_STATE.get(processId).getBottles(), processId, "FEIGN");
     }
 
     private void useRestTemplateToCallPresenting(String processId) {

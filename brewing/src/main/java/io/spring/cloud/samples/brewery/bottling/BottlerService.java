@@ -4,7 +4,7 @@ import java.net.URI;
 
 import brave.Span;
 import brave.Tracer;
-import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
+import brave.propagation.ExtraFieldPropagation;
 import io.spring.cloud.samples.brewery.common.model.Version;
 import io.spring.cloud.samples.brewery.common.model.Wort;
 import org.slf4j.Logger;
@@ -15,7 +15,6 @@ import org.springframework.http.RequestEntity;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
 
-import static io.spring.cloud.samples.brewery.common.TestConfigurationHolder.TestCommunicationType.FEIGN;
 import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
 
 class BottlerService {
@@ -38,12 +37,12 @@ class BottlerService {
         this.factory = factory;
     }
 
-    void bottle(Wort wort, String processId, TestConfigurationHolder holder) {
+    void bottle(Wort wort, String processId) {
         factory.create("bottle").run(() -> {
             log.info("I'm inside bottling");
             Span span = tracer.nextSpan().name("inside_bottling").start();
             try (Tracer.SpanInScope ws = tracer.withSpanInScope(span)) {
-                bottleWithCircuitBreaker(holder.getTestCommunicationType(), wort, processId);
+                bottleWithCircuitBreaker(wort, processId);
             } finally {
                 span.finish();
             }
@@ -54,12 +53,12 @@ class BottlerService {
     /**
      * [SLEUTH] CircuitBreaker integration
      */
-    void bottleWithCircuitBreaker(TestConfigurationHolder.TestCommunicationType type, Wort wort, String processId) {
+    void bottleWithCircuitBreaker(Wort wort, String processId) {
         Span span = tracer.nextSpan().name("inside_bottling_circuitbreaker").start();
         try (Tracer.SpanInScope ws = tracer.withSpanInScope(span)) {
-            notifyPresenting(processId, type);
+            notifyPresenting(processId);
             factory.create("circuitbreaker").run(() -> {
-                bottlingWorker.bottleBeer(wort.getWort(), processId, type);
+                bottlingWorker.bottleBeer(wort.getWort(), processId);
                 return null;
             });
         } finally {
@@ -67,9 +66,11 @@ class BottlerService {
         }
     }
 
-    void notifyPresenting(String processId, TestConfigurationHolder.TestCommunicationType type) {
+    void notifyPresenting(String processId) {
         log.info("I'm inside bottling. Notifying presenting");
-        if (type == FEIGN) {
+        String testCommunicationType = ExtraFieldPropagation.get("TEST-COMMUNICATION-TYPE");
+        log.info("Found the following communication type [{}]", testCommunicationType);
+        if (testCommunicationType.equals("FEIGN")) {
             callPresentingViaFeign(processId);
         }
         else {
@@ -78,7 +79,7 @@ class BottlerService {
     }
 
     private void callPresentingViaFeign(String processId) {
-        presentingClient.bottlingFeed(processId, FEIGN.name());
+        presentingClient.bottlingFeed(processId, "FEIGN");
     }
 
 	/**
