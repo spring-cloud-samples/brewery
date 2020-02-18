@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 
 import brave.Span;
 import brave.Tracer;
+import brave.propagation.ExtraFieldPropagation;
 import io.spring.cloud.samples.brewery.common.events.Event;
 import org.slf4j.Logger;
 
@@ -27,6 +28,8 @@ class EventListener implements Consumer<Message<Event>> {
 
 	private void handleEvents(Event event, Map<String, Object> headers) {
 		log.info("Received the following message with headers [{}] and body [{}]", headers, event);
+		String testCommunicationType = ExtraFieldPropagation.get("TEST-COMMUNICATION-TYPE");
+		log.info("Found the following communication type [{}]", testCommunicationType);
 		Span newSpan = tracer.nextSpan().name("inside_reporting").start();
 		try (Tracer.SpanInScope ws = tracer.withSpanInScope(newSpan)) {
 			reportingRepository.createOrUpdate(event);

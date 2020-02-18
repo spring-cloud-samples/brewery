@@ -23,7 +23,6 @@ spring.zipkin.sender.type: web
 spring:
   sleuth:
     propagation-keys:
-      - TEST-COMMUNICATION-TYPE
       - test-communication-type
 
 spring.cloud.function.definition: events

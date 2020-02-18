@@ -16,5 +16,5 @@ interface PresentingServiceClient {
             consumes = Version.PRESENTING_V1,
             method = PUT)
     String maturingFeed(@RequestHeader("PROCESS-ID") String processId,
-                        @RequestHeader("TEST_COMMUNICATION_TYPE") String testCommunicationType);
+                        @RequestHeader("TEST-COMMUNICATION-TYPE") String testCommunicationType);
 }

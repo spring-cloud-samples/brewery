@@ -26,7 +26,6 @@ spring.zipkin.sender.type: web
 spring:
   sleuth:
     propagation-keys:
-      - TEST-COMMUNICATION-TYPE
       - test-communication-type
 
 # The bean 'presenting.FeignClientSpecification', defined in null, 

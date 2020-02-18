@@ -18,7 +18,7 @@ interface PresentingClient {
             method = PUT)
     String updateBottles(@PathVariable("bottles") int bottles,
                          @RequestHeader("PROCESS-ID") String processId,
-                         @RequestHeader("TEST_COMMUNICATION_TYPE") String testCommunicationType);
+                         @RequestHeader("TEST-COMMUNICATION-TYPE") String testCommunicationType);
 
     @RequestMapping(
             value = "/bottling",
@@ -26,5 +26,5 @@ interface PresentingClient {
             consumes = Version.PRESENTING_V1,
             method = PUT)
     void bottlingFeed(@RequestHeader("PROCESS-ID") String processId,
-                      @RequestHeader("TEST_COMMUNICATION_TYPE") String testCommunicationType);
+                      @RequestHeader("TEST-COMMUNICATION-TYPE") String testCommunicationType);
 }

@@ -4,41 +4,43 @@ spring:
   cloud:
     gateway:
       routes:
-      - id: ingredients
-        uri: lb://ingredients
-        predicates:
-        - Path=/ingredients/**
-        filters:
-        - StripPrefix=1
-        - name: Retry
-          args:
-            retries: 3
-      - id: ingredients_feign
-        uri: lb://ingredients
-        predicates:
-        - Path=/ingredients/{segment}
-        filters:
-        - SetPath=/{segment}
-        - name: Retry
-          args:
-            retries: 3
+        - id: ingredients
+          uri: lb://ingredients
+          predicates:
+            - Path=/ingredients/**
+          filters:
+            - StripPrefix=1
+            - name: Retry
+              args:
+                retries: 3
+        - id: ingredients_feign
+          uri: lb://ingredients
+          predicates:
+            - Path=/ingredients/{segment}
+          filters:
+            - SetPath=/{segment}
+            - name: Retry
+              args:
+                retries: 3
   sleuth:
+    propagation-keys:
+      - test-communication-type
     reactor:
-      decorate-on-each: false
+      decorate-on-each: true
 
 logging:
   level:
-      org.springframework.cloud.gateway: TRACE
-      zipkin2: TRACE
-      org.springframework.cloud: DEBUG
-      org.springframework.cloud.sleuth: TRACE
-      org.springframework.cloud.sleuth.log: DEBUG
-      org.springframework.cloud.sleuth.trace: DEBUG
-      org.springframework.cloud.sleuth.instrument.rxjava: DEBUG
-      io.netty.channel.unix: DEBUG
-      org.springframework.http.server.reactive: DEBUG
-      org.springframework.web.reactive: DEBUG
-      reactor.ipc.netty: DEBUG
+    org.springframework.cloud.gateway: TRACE
+    zipkin2: TRACE
+    org.springframework.cloud: DEBUG
+    org.springframework.cloud.sleuth: TRACE
+    org.springframework.cloud.sleuth.log: DEBUG
+    org.springframework.cloud.sleuth.trace: DEBUG
+    org.springframework.cloud.sleuth.instrument.rxjava: DEBUG
+    io.netty.channel.unix: DEBUG
+    org.springframework.http.server.reactive: DEBUG
+    org.springframework.web.reactive: DEBUG
+    reactor.ipc.netty: DEBUG
 
 logging.file: build/proxy.log
 
@@ -49,11 +51,6 @@ spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 management.endpoints.web.base-path: /
 
 spring.zipkin.sender.type: web
-spring:
-  sleuth:
-    propagation-keys:
-      - TEST-COMMUNICATION-TYPE
-      - test-communication-type
 
 spring.cloud.function.definition: events
 spring.cloud.stream.bindings.events-out-0.destination: events

@@ -17,5 +17,5 @@ public interface BrewingServiceClient {
 	@RequestMapping(method = RequestMethod.POST)
 	String getIngredients(String body,
 						  @RequestHeader("PROCESS-ID") String processId,
-						  @RequestHeader("TEST_COMMUNICATION_TYPE") String testCommunicationType);
+						  @RequestHeader("TEST-COMMUNICATION-TYPE") String testCommunicationType);
 }

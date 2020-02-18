@@ -32,7 +32,7 @@ class IngredientsFetchController {
 	@RequestMapping(value = "/{ingredient}", method = RequestMethod.POST)
 	public Mono<Ingredient> ingredients(@PathVariable("ingredient") IngredientType ingredientType,
 										@RequestHeader("PROCESS-ID") String processId,
-										@RequestHeader("TEST_COMMUNICATION_TYPE") String testCommunicationType) {
+										@RequestHeader("TEST-COMMUNICATION-TYPE") String testCommunicationType) {
 		log.info("Received a request to [/{}] with process id [{}] and communication type [{}]", ingredientType,
 				processId, testCommunicationType);
 			Span span = tracer.nextSpan().name("inside_ingredients").start();

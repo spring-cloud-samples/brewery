@@ -20,8 +20,10 @@ public class EventGateway {
 
 	public void emitEvent(Event event) {
 		emitterProcessor.ifAvailable(processor -> {
+			// [Thread1] Thread Local -> traceId: 1
 			log.info("Emitting event [{}]", event);
-			processor.onNext(event);
+			processor.onNext(event); 
+				// -> [Thread2]
 		});
 	}
 
