@@ -42,12 +42,11 @@ class FeedController {
 	public void maturing(@RequestHeader("PROCESS-ID") String processId) {
 		log.info("new maturing with process [{}]", processId);
 		Span span = tracer.nextSpan().name("inside_presenting_maturing_feed").start();
-		Tracer.SpanInScope ws = tracer.withSpanInScope(span);
-		try {
+		try (Tracer.SpanInScope ws = tracer.withSpanInScope(span)) {
 			feedRepository.addModifyProcess(processId, ProcessState.MATURING);
-		} finally {
+		}
+		finally {
 			span.finish();
-			ws.close();
 		}
 	}
 

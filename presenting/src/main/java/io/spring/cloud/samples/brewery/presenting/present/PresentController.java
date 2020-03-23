@@ -2,7 +2,7 @@ package io.spring.cloud.samples.brewery.presenting.present;
 
 import brave.Span;
 import brave.Tracer;
-import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
+import brave.propagation.ExtraFieldPropagation;
 import io.spring.cloud.samples.brewery.presenting.config.Collaborators;
 import io.spring.cloud.samples.brewery.presenting.config.Versions;
 import io.spring.cloud.samples.brewery.presenting.feed.FeedRepository;
@@ -58,8 +58,10 @@ class PresentController {
 		Span span = this.tracer.nextSpan().name("inside_presenting").start();
 		Tracer.SpanInScope ws = tracer.withSpanInScope(span);
 		try {
-			switch (TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType()) {
-			case FEIGN:
+			String testCommunicationType = ExtraFieldPropagation.get("TEST-COMMUNICATION-TYPE");
+			log.info("Found the following communication type [{}]", testCommunicationType);
+			switch (testCommunicationType) {
+			case "FEIGN":
 				return useFeignToCallAggregation(body, processId);
 			default:
 				return useRestTemplateToCallAggregation(body, processId);
@@ -82,9 +84,11 @@ class PresentController {
 	}
 
 	private String useFeignToCallAggregation(HttpEntity<String> body, String processId) {
+		String testCommunicationType = ExtraFieldPropagation.get("TEST-COMMUNICATION-TYPE");
+		log.info("Found the following communication type [{}]", testCommunicationType);
 		return aggregationServiceClient.getIngredients(body.getBody(),
 				processId,
-				TestConfigurationHolder.TEST_CONFIG.get().getTestCommunicationType().name());
+				testCommunicationType);
 	}
 
 	@RequestMapping(value = "/maturing", method = GET)

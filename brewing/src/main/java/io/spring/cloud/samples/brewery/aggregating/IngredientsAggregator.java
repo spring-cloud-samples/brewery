@@ -3,7 +3,6 @@ package io.spring.cloud.samples.brewery.aggregating;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
-import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.events.Event;
 import io.spring.cloud.samples.brewery.common.events.EventGateway;
 import io.spring.cloud.samples.brewery.common.events.EventType;
@@ -39,8 +38,7 @@ class IngredientsAggregator {
     }
 
     // TODO: Consider simplifying the case by removing the DB (always matches threshold)
-    public Ingredients fetchIngredients(Order order, String processId, TestConfigurationHolder testConfigurationHolder) throws Exception {
-        TestConfigurationHolder.TEST_CONFIG.set(testConfigurationHolder);
+    public Ingredients fetchIngredients(Order order, String processId) throws Exception {
         log.info("Fetching ingredients for order [{}] , processId [{}]", order, processId);
         /**
          * [SLEUTH] ParallelStreams won't work out of the box
@@ -48,7 +46,6 @@ class IngredientsAggregator {
          * - makes little business sense here but that's just an example
          */
         CompletableFuture completableFuture = CompletableFuture.supplyAsync(() -> {
-                    TestConfigurationHolder.TEST_CONFIG.set(testConfigurationHolder);
                     ingredientsCollector.collectIngredients(order, processId).stream()
                             .filter(ingredient -> ingredient != null)
                             .forEach((Ingredient ingredient) -> {

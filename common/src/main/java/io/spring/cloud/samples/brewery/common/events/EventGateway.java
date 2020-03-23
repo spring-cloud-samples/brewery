@@ -1,12 +1,30 @@
 package io.spring.cloud.samples.brewery.common.events;
 
-import org.springframework.integration.annotation.Gateway;
-import org.springframework.integration.annotation.MessagingGateway;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@MessagingGateway
-public interface EventGateway {
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.stereotype.Component;
 
-	@Gateway(requestChannel=EventSource.OUTPUT)
-	void emitEvent(Event event);
+@Component
+public class EventGateway {
+
+	private static final Logger log = LoggerFactory.getLogger(EventGateway.class);
+
+	private final ObjectProvider<StreamBridge> emitterProcessor;
+
+	public EventGateway(ObjectProvider<StreamBridge> emitterProcessor) {
+		this.emitterProcessor = emitterProcessor;
+	}
+
+	public void emitEvent(Event event) {
+		emitterProcessor.ifAvailable(processor -> {
+			// [Thread1] Thread Local -> traceId: 1
+			log.info("Emitting event [{}]", event);
+			processor.send("events-out-0", event);
+				// -> [Thread2]
+		});
+	}
 
 }

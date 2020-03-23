@@ -13,8 +13,6 @@ spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 
 logging.file: build/reporting.log
 
-hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
-
 spring.cloud.stream:
   binder.rabbit.default.maxConcurrency: 5
 
@@ -25,3 +23,10 @@ management.security.enabled: false
 management.endpoints.web.base-path: /
 
 spring.zipkin.sender.type: web
+spring:
+  sleuth:
+    propagation-keys:
+      - test-communication-type
+
+spring.cloud.function.definition: events
+spring.cloud.stream.bindings.events-in-0.destination: events

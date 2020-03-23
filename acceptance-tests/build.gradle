@@ -1,14 +1,14 @@
 apply plugin: 'groovy'
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.4.15'
+    implementation 'org.codehaus.groovy:groovy-all:2.4.15'
 
-    testCompile 'com.jayway.awaitility:awaitility:1.6.5'
-    testCompile "org.springframework.boot:spring-boot-starter-test"
-    testCompile "org.springframework:spring-web"
-    testCompile "org.springframework.boot:spring-boot-starter-web"
-    testCompile "org.springframework.cloud:spring-cloud-starter-sleuth"
-    testCompile "io.zipkin.java:zipkin:2.10.0"
+    testImplementation 'com.jayway.awaitility:awaitility:1.6.5'
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.springframework:spring-web"
+    testImplementation "org.springframework.boot:spring-boot-starter-web"
+    testImplementation "org.springframework.cloud:spring-cloud-starter-sleuth"
+    testImplementation "io.zipkin.java:zipkin:2.10.0"
 }
 
 test {

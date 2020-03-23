@@ -13,8 +13,6 @@ spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 
 logging.file: build/brewing.log
 
-hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
-
 spring.cloud.stream:
   binder.rabbit.default.maxConcurrency: 5
 
@@ -25,7 +23,14 @@ management.security.enabled: false
 management.endpoints.web.base-path: /
 
 spring.zipkin.sender.type: web
+spring:
+  sleuth:
+    propagation-keys:
+      - test-communication-type
 
 # The bean 'presenting.FeignClientSpecification', defined in null, 
 # could not be registered. A bean with that name has already been defined in null and overriding is disabled.
 spring.main.allow-bean-definition-overriding: true
+
+spring.cloud.stream.source: events
+spring.cloud.stream.bindings.events-out-0.destination: events

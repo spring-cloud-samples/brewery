@@ -27,7 +27,7 @@ In tracing approach we're checking the following integrations:
 - @Async annotated methods
 - CompletableFuture.supplyAsync(...) with TraceableExecutorService
 - Controllers with Callable returning methods
-- Javanica (@HystrixCommand annotated methods)
+- Spring Cloud CiruitBreaker
 
 ## How to run it?
 

@@ -2,7 +2,6 @@ package io.spring.cloud.samples.brewery.ingredients;
 
 import brave.Span;
 import brave.Tracer;
-import io.spring.cloud.samples.brewery.common.TestConfigurationHolder;
 import io.spring.cloud.samples.brewery.common.model.Ingredient;
 import io.spring.cloud.samples.brewery.common.model.IngredientType;
 import org.slf4j.Logger;
@@ -33,7 +32,7 @@ class IngredientsFetchController {
 	@RequestMapping(value = "/{ingredient}", method = RequestMethod.POST)
 	public Mono<Ingredient> ingredients(@PathVariable("ingredient") IngredientType ingredientType,
 										@RequestHeader("PROCESS-ID") String processId,
-										@RequestHeader(TestConfigurationHolder.TEST_COMMUNICATION_TYPE_HEADER_NAME) String testCommunicationType) {
+										@RequestHeader("TEST-COMMUNICATION-TYPE") String testCommunicationType) {
 		log.info("Received a request to [/{}] with process id [{}] and communication type [{}]", ingredientType,
 				processId, testCommunicationType);
 			Span span = tracer.nextSpan().name("inside_ingredients").start();

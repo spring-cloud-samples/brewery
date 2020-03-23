@@ -1,5 +1,0 @@
-dependencies {
-    compile "org.springframework.cloud:spring-cloud-starter-netflix-zuul"
-}
-
-createDockerTaskWithPort(9993)

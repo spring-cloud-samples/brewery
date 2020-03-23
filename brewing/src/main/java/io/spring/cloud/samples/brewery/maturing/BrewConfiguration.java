@@ -1,15 +1,17 @@
 package io.spring.cloud.samples.brewery.maturing;
 
+import brave.Tracer;
 import io.spring.cloud.samples.brewery.common.BottlingService;
 import io.spring.cloud.samples.brewery.common.TestConfiguration;
 import io.spring.cloud.samples.brewery.common.events.EventGateway;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import brave.Tracer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 
 @Configuration
 @Import(TestConfiguration.class)
@@ -26,9 +28,9 @@ class BrewConfiguration {
     BottlingServiceUpdater bottlingServiceUpdater(Tracer trace, PresentingServiceClient presentingServiceClient,
                                                   BottlingService bottlingService,
                                                   @LoadBalanced RestTemplate restTemplate,
-                                                  EventGateway eventGateway) {
+                                                  EventGateway eventGateway, CircuitBreakerFactory circuitBreakerFactory) {
         return new BottlingServiceUpdater(brewProperties(), trace, presentingServiceClient,
-                bottlingService, restTemplate, eventGateway);
+                bottlingService, restTemplate, eventGateway, circuitBreakerFactory);
     }
 
     @Bean

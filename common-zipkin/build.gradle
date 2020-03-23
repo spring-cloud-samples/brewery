@@ -1,8 +1,8 @@
 moduleEnabled(whatToTest('SLEUTH') && !getProp("BOM_VERSION").contains("Dalston"))
 
 dependencies {
-	compile "org.springframework.cloud:spring-cloud-starter-zipkin"
-	compile "org.springframework.boot:spring-boot-starter-web"
+	implementation "org.springframework.cloud:spring-cloud-starter-zipkin"
+	implementation "org.springframework.boot:spring-boot-starter-web"
 }
 
 String getProp(String propName) {

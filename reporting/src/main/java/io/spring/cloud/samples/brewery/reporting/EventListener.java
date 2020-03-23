@@ -1,20 +1,20 @@
 package io.spring.cloud.samples.brewery.reporting;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 import brave.Span;
 import brave.Tracer;
+import brave.propagation.ExtraFieldPropagation;
 import io.spring.cloud.samples.brewery.common.events.Event;
-import io.spring.cloud.samples.brewery.common.events.EventSink;
 import org.slf4j.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.integration.annotation.MessageEndpoint;
-import org.springframework.integration.annotation.ServiceActivator;
-import org.springframework.messaging.handler.annotation.Headers;
+import org.springframework.messaging.Message;
+import org.springframework.stereotype.Component;
 
-@MessageEndpoint
-class EventListener {
+@Component("events")
+class EventListener implements Consumer<Message<Event>> {
 
 	private static final Logger log = org.slf4j.LoggerFactory.getLogger(EventListener.class);
 	private final ReportingRepository reportingRepository;
@@ -26,9 +26,10 @@ class EventListener {
 		this.tracer = tracer;
 	}
 
-	@ServiceActivator(inputChannel = EventSink.INPUT)
-	public void handleEvents(Event event, @Headers Map<String, Object> headers) throws InterruptedException {
+	private void handleEvents(Event event, Map<String, Object> headers) {
 		log.info("Received the following message with headers [{}] and body [{}]", headers, event);
+		String testCommunicationType = ExtraFieldPropagation.get("TEST-COMMUNICATION-TYPE");
+		log.info("Found the following communication type [{}]", testCommunicationType);
 		Span newSpan = tracer.nextSpan().name("inside_reporting").start();
 		try (Tracer.SpanInScope ws = tracer.withSpanInScope(newSpan)) {
 			reportingRepository.createOrUpdate(event);
@@ -37,5 +38,10 @@ class EventListener {
 		} finally {
 			newSpan.finish();
 		}
+	}
+
+	@Override
+	public void accept(Message<Event> eventMessage) {
+		handleEvents(eventMessage.getPayload(), eventMessage.getHeaders());
 	}
 }
