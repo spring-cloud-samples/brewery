@@ -1,7 +1,7 @@
 apply plugin: 'groovy'
 
 dependencies {
-    implementation 'org.codehaus.groovy:groovy-all:2.4.15'
+    implementation localGroovy()
 
     testImplementation 'com.jayway.awaitility:awaitility:1.6.5'
     testImplementation "org.springframework.boot:spring-boot-starter-test"

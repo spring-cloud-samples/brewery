@@ -49,7 +49,6 @@ allprojects {
 
 configure(subprojects) {
 
-	apply plugin: 'java'
 	apply plugin: 'eclipse'
 	apply plugin: 'idea'
 	apply plugin: 'org.springframework.boot'
@@ -149,7 +148,6 @@ configure(subprojects) {
 			mavenBom "org.springframework.cloud:spring-cloud-dependencies:${getProp("BOM_VERSION") }"
 			if (getProp("BOOT_VERSION")) {
 				String bootVersion = getProp("BOOT_VERSION")
-				String bomVersion = getProp("BOM_VERSION")
 				logger.lifecycle("Using boot in version [${bootVersion}]")
 				mavenBom "org.springframework.boot:spring-boot-dependencies:${bootVersion}"
 			}
