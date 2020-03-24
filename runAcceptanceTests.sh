@@ -87,7 +87,7 @@ function reset(){
 function tail_log() {
     echo -e "\n\nLogs of [$1] jar app"
     if [[ -z "${CLOUD_FOUNDRY}" ]] ; then
-        tail -n ${NUMBER_OF_LINES_TO_LOG} build/"$1".log || echo "Failed to open log"
+        tail -n ${NUMBER_OF_LINES_TO_LOG} "$1"/build/libs/nohup.log || echo "Failed to open log"
     else
         cf logs "${CLOUD_PREFIX}-$1" --recent || echo "Failed to open log"
     fi
