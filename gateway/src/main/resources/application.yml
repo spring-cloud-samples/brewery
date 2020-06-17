@@ -41,6 +41,7 @@ logging:
     org.springframework.http.server.reactive: DEBUG
     org.springframework.web.reactive: DEBUG
     reactor.ipc.netty: DEBUG
+    com.wavefront.spring: DEBUG
 
 logging.file: build/proxy.log
 

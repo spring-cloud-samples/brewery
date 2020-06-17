@@ -6,6 +6,7 @@ logging:
   level.org.springframework.cloud.sleuth.log: DEBUG
   level.org.springframework.cloud.sleuth.trace: DEBUG
   level.org.springframework.cloud.sleuth.instrument.rxjava: DEBUG
+  level.com.wavefront.spring: DEBUG
 
 server.port: ${PORT:9991}
 
@@ -22,8 +23,9 @@ management.endpoints.web.base-path: /
 spring.zipkin.sender.type: web
 spring:
   sleuth:
-    propagation-keys:
-      - test-communication-type
+    baggage:
+      correlation-fields:
+        - test-communication-type
 
 spring.cloud.stream.source: events
 spring.cloud.stream.bindings.events-out-0.destination: events

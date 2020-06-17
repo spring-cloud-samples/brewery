@@ -6,6 +6,7 @@ logging:
   level.org.springframework.cloud.sleuth.log: DEBUG
   level.org.springframework.cloud.sleuth.trace: DEBUG
   level.org.springframework.cloud.sleuth.instrument.rxjava: DEBUG
+  level.com.wavefront.spring: DEBUG
 
 server.port: ${PORT:9992}
 
@@ -25,8 +26,9 @@ management.endpoints.web.base-path: /
 spring.zipkin.sender.type: web
 spring:
   sleuth:
-    propagation-keys:
-      - test-communication-type
+    baggage:
+      correlation-fields:
+        - test-communication-type
 
 # The bean 'presenting.FeignClientSpecification', defined in null, 
 # could not be registered. A bean with that name has already been defined in null and overriding is disabled.
