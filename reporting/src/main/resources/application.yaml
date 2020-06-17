@@ -30,5 +30,3 @@ spring:
 
 spring.cloud.function.definition: events
 spring.cloud.stream.bindings.events-in-0.destination: events
-
-management.endpoints.web.exposure.include: '*'

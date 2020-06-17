@@ -48,7 +48,7 @@ fi
 
 export WAVEFRONT_API_TOKEN="${WAVEFRONT_API_TOKEN}"
 export WAVEFRONT_URI="${WAVEFRONT_URI:-https://wavefront.surf}"
-SYSTEM_PROPS="${SYSTEM_PROPS} -Dmanagement.metrics.export.wavefront.api-token=${WAVEFRONT_API_TOKEN} -Dmanagement.metrics.export.wavefront.uri=${WAVEFRONT_URI}"
+SYSTEM_PROPS="${SYSTEM_PROPS} -Dwavefront.application.name=brewery -Dmanagement.metrics.export.wavefront.api-token=${WAVEFRONT_API_TOKEN} -Dmanagement.metrics.export.wavefront.uri=${WAVEFRONT_URI}"
 
 echo -e "\n\nStarting brewery apps..."
 start_brewery_apps "$SYSTEM_PROPS"

@@ -34,5 +34,3 @@ spring.main.allow-bean-definition-overriding: true
 
 spring.cloud.stream.source: events
 spring.cloud.stream.bindings.events-out-0.destination: events
-
-management.endpoints.web.exposure.include: '*'
