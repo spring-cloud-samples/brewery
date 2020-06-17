@@ -18,7 +18,7 @@ class TestConditions {
 
 	public static final Closure<Boolean> SERVICE_DISCOVERY = {
 		return whatToTestSystemPropMatchesAny(
-				[WhatToTest.CONSUL, WhatToTest.EUREKA, WhatToTest.ZOOKEEPER, WhatToTest.SCS]
+				[WhatToTest.CONSUL, WhatToTest.EUREKA, WhatToTest.ZOOKEEPER, WhatToTest.SCS, WhatToTest.WAVEFRONT]
 		)
 	}
 

@@ -1,0 +1,15 @@
+#mysql:
+#  image: openzipkin/zipkin-mysql
+#  ports:
+#    - 3306:3306
+zookeeper:
+  image: zookeeper:3.5
+  ports:
+    - "2181:2181"
+
+rabbitmq:
+  image: rabbitmq:management
+  ports:
+    - 9672:5672
+    - 15672
+

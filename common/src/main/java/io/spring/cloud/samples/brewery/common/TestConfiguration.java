@@ -5,6 +5,7 @@ import brave.sampler.Sampler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 
 @Configuration
@@ -12,7 +13,7 @@ import org.springframework.integration.annotation.IntegrationComponentScan;
 @IntegrationComponentScan
 public class TestConfiguration {
 
-	@Bean Sampler defaultSampler() {
+	@Bean @Primary Sampler defaultSampler() {
 		return Sampler.ALWAYS_SAMPLE;
 	}
 
