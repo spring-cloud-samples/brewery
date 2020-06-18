@@ -5,6 +5,7 @@ dependencies {
 
     testImplementation 'com.jayway.awaitility:awaitility:1.6.5'
     testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.junit.vintage:junit-vintage-engine"
     testImplementation "org.springframework:spring-web"
     testImplementation "org.springframework.boot:spring-boot-starter-web"
     testImplementation "org.springframework.cloud:spring-cloud-starter-sleuth"
