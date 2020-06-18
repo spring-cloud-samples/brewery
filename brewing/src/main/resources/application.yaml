@@ -28,7 +28,9 @@ spring:
   sleuth:
     baggage:
       correlation-fields:
-        - test-communication-type
+        - TEST-COMMUNICATION-TYPE
+      remote-fields:
+        - TEST-COMMUNICATION-TYPE
 
 # The bean 'presenting.FeignClientSpecification', defined in null, 
 # could not be registered. A bean with that name has already been defined in null and overriding is disabled.

@@ -24,7 +24,7 @@ spring:
                 retries: 3
   sleuth:
     propagation-keys:
-      - test-communication-type
+      - TEST-COMMUNICATION-TYPE
     reactor:
       decorate-on-each: true
 

@@ -28,7 +28,9 @@ spring:
   sleuth:
     baggage:
       correlation-fields:
-        - test-communication-type
+        - TEST-COMMUNICATION-TYPE
+      remote-fields:
+        - TEST-COMMUNICATION-TYPE
 
 spring.cloud.function.definition: events
 spring.cloud.stream.bindings.events-in-0.destination: events

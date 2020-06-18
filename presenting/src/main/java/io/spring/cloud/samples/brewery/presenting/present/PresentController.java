@@ -2,6 +2,7 @@ package io.spring.cloud.samples.brewery.presenting.present;
 
 import brave.Span;
 import brave.Tracer;
+import brave.baggage.BaggageField;
 import brave.propagation.ExtraFieldPropagation;
 import io.spring.cloud.samples.brewery.presenting.config.Collaborators;
 import io.spring.cloud.samples.brewery.presenting.config.Versions;
@@ -58,7 +59,7 @@ class PresentController {
 		Span span = this.tracer.nextSpan().name("inside_presenting").start();
 		Tracer.SpanInScope ws = tracer.withSpanInScope(span);
 		try {
-			String testCommunicationType = ExtraFieldPropagation.get("TEST-COMMUNICATION-TYPE");
+			String testCommunicationType = BaggageField.getByName("TEST-COMMUNICATION-TYPE").getValue();
 			log.info("Found the following communication type [{}]", testCommunicationType);
 			switch (testCommunicationType) {
 			case "FEIGN":
@@ -84,7 +85,7 @@ class PresentController {
 	}
 
 	private String useFeignToCallAggregation(HttpEntity<String> body, String processId) {
-		String testCommunicationType = ExtraFieldPropagation.get("TEST-COMMUNICATION-TYPE");
+		String testCommunicationType = BaggageField.getByName("TEST-COMMUNICATION-TYPE").getValue();
 		log.info("Found the following communication type [{}]", testCommunicationType);
 		return aggregationServiceClient.getIngredients(body.getBody(),
 				processId,

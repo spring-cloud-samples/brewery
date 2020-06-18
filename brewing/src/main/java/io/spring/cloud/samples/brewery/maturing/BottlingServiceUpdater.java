@@ -2,6 +2,7 @@ package io.spring.cloud.samples.brewery.maturing;
 
 import brave.Span;
 import brave.Tracer;
+import brave.baggage.BaggageField;
 import brave.propagation.ExtraFieldPropagation;
 import io.spring.cloud.samples.brewery.common.BottlingService;
 import io.spring.cloud.samples.brewery.common.events.Event;
@@ -73,7 +74,7 @@ class BottlingServiceUpdater {
         log.info("Calling presenting from maturing");
         Span scope = this.tracer.nextSpan().name("calling_presenting_from_maturing").start();
         try (Tracer.SpanInScope ws = tracer.withSpanInScope(scope)) {
-            String testCommunicationType = ExtraFieldPropagation.get("TEST-COMMUNICATION-TYPE");
+            String testCommunicationType = BaggageField.getByName("TEST-COMMUNICATION-TYPE").getValue();
             log.info("Found the following communication type [{}]", testCommunicationType);
             switch (testCommunicationType) {
             case "FEIGN":

@@ -4,6 +4,7 @@ import java.net.URI;
 
 import brave.Span;
 import brave.Tracer;
+import brave.baggage.BaggageField;
 import brave.propagation.ExtraFieldPropagation;
 import io.spring.cloud.samples.brewery.common.model.Version;
 import io.spring.cloud.samples.brewery.common.model.Wort;
@@ -65,7 +66,7 @@ class BottlerService {
 
     void notifyPresenting(String processId) {
         log.info("I'm inside bottling. Notifying presenting");
-        String testCommunicationType = ExtraFieldPropagation.get("TEST-COMMUNICATION-TYPE");
+        String testCommunicationType = BaggageField.getByName("TEST-COMMUNICATION-TYPE").getValue();
         log.info("Found the following communication type [{}]", testCommunicationType);
         if (testCommunicationType.equals("FEIGN")) {
             callPresentingViaFeign(processId);

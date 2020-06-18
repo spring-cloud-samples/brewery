@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
+import brave.baggage.BaggageField;
 import brave.propagation.ExtraFieldPropagation;
 import io.spring.cloud.samples.brewery.common.model.Ingredient;
 import io.spring.cloud.samples.brewery.common.model.Order;
@@ -29,7 +30,7 @@ class IngredientsCollector {
 	}
 
 	List<Ingredient> collectIngredients(Order order, String processId) {
-		String testCommunicationType = ExtraFieldPropagation.get("TEST-COMMUNICATION-TYPE");
+		String testCommunicationType = BaggageField.getByName("TEST-COMMUNICATION-TYPE").getValue();
 		log.info("Found the following communication type [{}]", testCommunicationType);
 		switch (testCommunicationType) {
 			case "FEIGN":

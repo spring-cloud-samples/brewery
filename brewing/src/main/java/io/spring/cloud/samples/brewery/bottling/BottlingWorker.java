@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import brave.Span;
 import brave.Tracer;
+import brave.baggage.BaggageField;
 import brave.propagation.ExtraFieldPropagation;
 import io.spring.cloud.samples.brewery.common.events.Event;
 import io.spring.cloud.samples.brewery.common.events.EventGateway;
@@ -52,7 +53,7 @@ class BottlingWorker {
     private void notifyPresentingService(String processId) {
         Span scope = this.tracer.nextSpan().name("calling_presenting").start();
         try (Tracer.SpanInScope ws = tracer.withSpanInScope(scope)) {
-            String testCommunicationType = ExtraFieldPropagation.get("TEST-COMMUNICATION-TYPE");
+            String testCommunicationType = BaggageField.getByName("TEST-COMMUNICATION-TYPE").getValue();
             log.info("Found the following communication type [{}]", testCommunicationType);
             if (testCommunicationType.equals("FEIGN")) {
                 callPresentingViaFeign(processId);
