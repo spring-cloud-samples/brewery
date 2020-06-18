@@ -2,7 +2,6 @@ moduleEnabled(whatToTest('EUREKA') || cloudFoundrySet())
 
 dependencies {
     implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server"
-    implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"
     if (JavaVersion.current().isJava11Compatible()) {
         implementation("javax.xml.bind:jaxb-api")
         implementation("javax.activation:javax.activation-api")
