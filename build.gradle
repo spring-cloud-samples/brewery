@@ -183,7 +183,11 @@ configure(subprojects - gateway - acceptanceTestsProject - servers) {
 configure(zipkinRelatedProjects) {
 
 	dependencies {
-		if (whatToTest('WAVEFRONT')) implementation "com.wavefront:wavefront-spring-boot-starter:${getProp("WAVEFRONT_VERSION")}"
+		if (whatToTest('WAVEFRONT')) {
+			implementation("com.wavefront:wavefront-spring-boot-starter:${getProp("WAVEFRONT_VERSION")}") {
+				exclude group: 'org.springframework.boot'
+			}
+		}
 		if (whatToTest('SLEUTH')) { implementation "org.springframework.cloud:spring-cloud-starter-zipkin" }
 	}
 }
