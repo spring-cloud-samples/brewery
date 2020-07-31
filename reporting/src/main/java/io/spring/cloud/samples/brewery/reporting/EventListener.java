@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 import brave.Span;
 import brave.Tracer;
 import brave.baggage.BaggageField;
-import brave.propagation.ExtraFieldPropagation;
 import io.spring.cloud.samples.brewery.common.events.Event;
 import org.slf4j.Logger;
 
@@ -35,7 +34,7 @@ class EventListener implements Consumer<Message<Event>> {
 		try (Tracer.SpanInScope ws = tracer.withSpanInScope(newSpan)) {
 			reportingRepository.createOrUpdate(event);
 			newSpan.annotate("savedEvent");
-			log.info("Saved event to the db", headers, event);
+			log.info("Saved event to the db [{}] [{}]", headers, event);
 		} finally {
 			newSpan.finish();
 		}
