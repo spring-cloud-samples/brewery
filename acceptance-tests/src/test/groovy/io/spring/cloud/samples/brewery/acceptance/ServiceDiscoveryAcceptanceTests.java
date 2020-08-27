@@ -18,6 +18,15 @@ public class ServiceDiscoveryAcceptanceTests extends AbstractBreweryAcceptance {
 		TestConditions.assumeServiceDiscovery();
 	}
 
+
+	@Test
+	public void should_successfully_pass_Trace_Id_via_rest_template() {
+		// setup:
+		warm_up_the_environment(() -> check_brewery(CommunicationType.REST_TEMPLATE));
+		// given:
+		check_brewery(CommunicationType.REST_TEMPLATE);
+	}
+
 	@Test
 	public void should_successfully_brew_the_beer_via_rest_template_and_service_discovery() {
 		// given:

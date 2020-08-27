@@ -26,6 +26,8 @@ management.endpoints.web.base-path: /
 spring.zipkin.sender.type: web
 spring:
   sleuth:
+    reactor:
+      enabled: false
     baggage:
       correlation-fields:
         - TEST-COMMUNICATION-TYPE

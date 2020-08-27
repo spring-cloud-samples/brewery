@@ -93,6 +93,18 @@ abstract class AbstractBreweryAcceptance {
 		})
 	}
 
+	void check_brewery(CommunicationType communicationType) {
+		String referenceProcessId = SpanUtil.idToHex(new Random().nextLong());
+		RequestEntity requestEntity = an_order_for_all_ingredients_with_process_id(referenceProcessId, communicationType);
+		// when:
+		presenting_service_has_been_called(requestEntity);
+		// and:
+		requestEntity = an_order_for_all_ingredients_with_process_id(referenceProcessId, communicationType);
+		presenting_service_has_been_called(requestEntity);
+		// then:
+		beer_has_been_brewed_for_process_id(referenceProcessId);
+	}
+
 	void entry_for_trace_id_is_present_in_Zipkin(String traceId) {
 		await().pollInterval(pollInterval, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
 			@Override

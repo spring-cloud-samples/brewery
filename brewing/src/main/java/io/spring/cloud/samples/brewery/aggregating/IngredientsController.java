@@ -21,32 +21,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/ingredients", consumes = Version.BREWING_V1, produces = MediaType.APPLICATION_JSON_VALUE)
 class IngredientsController {
 
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(IngredientsController.class);
-    private final IngredientsAggregator ingredientsAggregator;
-    private final Tracer tracer;
+	private static final Logger log = org.slf4j.LoggerFactory.getLogger(IngredientsController.class);
+	private final IngredientsAggregator ingredientsAggregator;
+	private final Tracer tracer;
 
-    @Autowired
-    public IngredientsController(IngredientsAggregator ingredientsAggregator, Tracer tracer) {
-        this.ingredientsAggregator = ingredientsAggregator;
-        this.tracer = tracer;
-    }
+	@Autowired
+	public IngredientsController(IngredientsAggregator ingredientsAggregator, Tracer tracer) {
+		this.ingredientsAggregator = ingredientsAggregator;
+		this.tracer = tracer;
+	}
 
 	/**
-     * [SLEUTH] Callable - separate thread pool
-     */
-    @RequestMapping(method = RequestMethod.POST)
-    public Callable<Ingredients> distributeIngredients(@RequestBody Order order,
-                                                       @RequestHeader("PROCESS-ID") String processId) {
-        log.info("Setting tags and events on an already existing span");
-        tracer.currentSpan().tag("beer", "stout");
-        tracer.currentSpan().annotate("ingredientsAggregationStarted");
-        log.info("Starting beer brewing process for process id [{}]", processId);
-        Span span = tracer.nextSpan().name("inside_aggregating").start();
-        try (Tracer.SpanInScope ws = tracer.withSpanInScope(span)) {
-            return () -> ingredientsAggregator.fetchIngredients(order, processId);
-        } finally {
-            span.finish();
-        }
-    }
+	 * [SLEUTH] Callable - separate thread pool
+	 */
+	@RequestMapping(method = RequestMethod.POST)
+	public Callable<Ingredients> distributeIngredients(@RequestBody Order order,
+			@RequestHeader("PROCESS-ID") String processId) {
+		log.info("Setting tags and events on an already existing span");
+		tracer.currentSpan().tag("beer", "stout");
+		tracer.currentSpan().annotate("ingredientsAggregationStarted");
+		log.info("Starting beer brewing process for process id [{}]", processId);
+		Span span = tracer.nextSpan().name("inside_aggregating").start();
+		try (Tracer.SpanInScope ws = tracer.withSpanInScope(span)) {
+			return () -> ingredientsAggregator.fetchIngredients(order, processId);
+		}
+		finally {
+			span.finish();
+		}
+	}
 
 }
