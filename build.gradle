@@ -167,6 +167,7 @@ configure(subprojects - gateway - acceptanceTestsProject - servers) {
 	dependencies {
 		implementation "org.springframework.boot:spring-boot-starter-web"
 		implementation "org.springframework.cloud:spring-cloud-starter-sleuth"
+		implementation "org.springframework.cloud:spring-cloud-starter-bootstrap"
 		if (!whatToTest('SCS')) implementation "org.springframework.cloud:spring-cloud-starter-config"
 		if (whatToTest('SCS')) implementation("io.pivotal.spring.cloud:spring-cloud-services-starter-config-client")
 		if (whatToTest('SCS')) implementation("io.pivotal.spring.cloud:spring-cloud-services-starter-service-registry")
