@@ -1,7 +1,7 @@
 moduleEnabled(whatToTest('SLEUTH') && !getProp("BOM_VERSION").contains("Dalston"))
 
 dependencies {
-	implementation "org.springframework.cloud:spring-cloud-starter-zipkin"
+	implementation "org.springframework.cloud:spring-cloud-sleuth-zipkin"
 	implementation "org.springframework.boot:spring-boot-starter-web"
 }
 
