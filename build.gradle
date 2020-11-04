@@ -167,6 +167,9 @@ configure(subprojects - gateway - acceptanceTestsProject - servers) {
 	dependencies {
 		implementation "org.springframework.boot:spring-boot-starter-web"
 		implementation "org.springframework.cloud:spring-cloud-starter-sleuth"
+		if (getProp("BOM_VERSION").startsWith("202")) {
+			implementation "org.springframework.cloud:spring-cloud-starter-bootstrap"
+		}
 		if (!whatToTest('SCS')) implementation "org.springframework.cloud:spring-cloud-starter-config"
 		if (whatToTest('SCS')) implementation("io.pivotal.spring.cloud:spring-cloud-services-starter-config-client")
 		if (whatToTest('SCS')) implementation("io.pivotal.spring.cloud:spring-cloud-services-starter-service-registry")
@@ -188,7 +191,7 @@ configure(zipkinRelatedProjects) {
 				exclude group: 'org.springframework.boot'
 			}
 		}
-		if (whatToTest('SLEUTH')) { implementation "org.springframework.cloud:spring-cloud-sleuth-zipkin" }
+		if (whatToTest('SLEUTH')) { implementation "org.springframework.cloud:spring-cloud-starter-zipkin" }
 	}
 }
 
