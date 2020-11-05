@@ -264,6 +264,11 @@ function kill_all_apps_if_switch_on() {
     return 0
 }
 
+function wavefrontVersion {
+    local version="${1}"
+    curl --silent https://repo.spring.io/libs-snapshot-local/com/wavefront/wavefront-spring-boot-starter/maven-metadata.xml | grep "<version>${version}." | grep "SNAPSHOT" | tail -1 | sed -ne '/<version>/s#\s*<[^>]*>\s*##gp' | xargs
+}
+
 function print_usage() {
 cat <<EOF
 
@@ -621,6 +626,12 @@ fi
 if [[ "${SCS_VERSION}" != "" ]] ; then
     echo "Will use SCS in version [${SCS_VERSION}]"
     PARAMS="${PARAMS} -D${SCS_BOM_VERSION_PROP_NAME}=${SCS_VERSION}"
+fi
+# Different Wavefront version for Hoxton
+if [[ "${WHAT_TO_TEST}" == "WAVEFRONT" && "${VERSION}" == *"Hoxton"* ]]; then
+    WAVEFRONT_VERSION="$( wavefrontVersion '2.0')"
+    echo "Wavefront version set to [${WAVEFRONT_VERSION}]"
+    PARAMS="${PARAMS} -DWAVEFRONT_VERSION=${WAVEFRONT_VERSION}"
 fi
 echo -e "\n\nPassing following Gradle parameters [${PARAMS}]\n\n"
 
