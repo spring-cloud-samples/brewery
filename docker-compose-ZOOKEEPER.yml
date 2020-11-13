@@ -1,5 +1,5 @@
 zookeeper:
-  image: zookeeper
+  image: zookeeper:3.6
   ports:
     - "2181:2181"
 rabbitmq:
