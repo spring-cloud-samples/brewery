@@ -191,7 +191,7 @@ configure(zipkinRelatedProjects) {
 				exclude group: 'org.springframework.boot'
 			}
 		}
-		if (whatToTest('SLEUTH')) { implementation "org.springframework.cloud:spring-cloud-starter-zipkin" }
+		if (whatToTest('SLEUTH')) { implementation "org.springframework.cloud:spring-cloud-sleuth-zipkin" }
 	}
 }
 
