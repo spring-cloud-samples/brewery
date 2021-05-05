@@ -252,9 +252,9 @@ configure(subprojects - techProjects - commonZipkinProject) {
 //        implementation 'org.hibernate:hibernate-validator'
 		implementation "org.aspectj:aspectjrt"
 
-		runtime 'cglib:cglib-nodep:3.1'
-		runtime 'org.objenesis:objenesis:2.2'
-		runtime 'org.aspectj:aspectjweaver'
+		implementation 'cglib:cglib-nodep:3.1'
+		implementation 'org.objenesis:objenesis:2.2'
+		implementation 'org.aspectj:aspectjweaver'
 	}
 
 	bootRun {
