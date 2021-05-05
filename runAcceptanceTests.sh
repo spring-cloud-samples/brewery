@@ -293,7 +293,7 @@ GLOBAL:
 -b  |--bootversion - Which version of Boot should be used?
 -cli|--cliversion - which version of Spring Cloud CLI should be used (it's used to start Kafka)?
 -ve |--verbose - Will print all library versions
--br |--branch - Which repo branch of the brewery repo should be checked out. Defaults to "master"
+-br |--branch - Which repo branch of the brewery repo should be checked out. Defaults to "main"
 
 CLOUD FOUNDRY RELATED PROPERTIES:
 -c  |--usecloudfoundry - should run tests for cloud foundry? (works only for SLEUTH) Defaults to "no"
@@ -466,7 +466,7 @@ done
 [[ -z "${DOMAIN}" ]] && DOMAIN="run.pivotal.io"
 [[ -z "${CLOUD_SPACE}" ]] && CLOUD_SPACE="${DEFAULT_SPACE}"
 [[ -z "${CLOUD_ORG}" ]] && CLOUD_ORG="${DEFAULT_ORG}"
-[[ -z "${REPO_BRANCH}" ]] && REPO_BRANCH="master"
+[[ -z "${REPO_BRANCH}" ]] && REPO_BRANCH="main"
 [[ -z "${START_ZIPKIN}" ]] && START_ZIPKIN="true"
 
 CLOUD_DOMAIN=${DOMAIN}
