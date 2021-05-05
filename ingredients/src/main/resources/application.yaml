@@ -32,3 +32,5 @@ spring:
 
 spring.cloud.stream.source: events
 spring.cloud.stream.bindings.events-out-0.destination: events
+
+spring.cloud.config.label: main

@@ -17,7 +17,6 @@ logging.file: build/brewing.log
 spring.cloud.stream:
   binder.rabbit.default.maxConcurrency: 5
 
-
 endpoints.health.sensitive: false
 endpoints.default.web.enabled: true
 management.security.enabled: false
@@ -38,3 +37,5 @@ spring.main.allow-bean-definition-overriding: true
 
 spring.cloud.stream.source: events
 spring.cloud.stream.bindings.events-out-0.destination: events
+
+spring.cloud.config.label: main

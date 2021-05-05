@@ -36,3 +36,5 @@ spring:
 
 spring.cloud.function.definition: events
 spring.cloud.stream.bindings.events-in-0.destination: events
+
+spring.cloud.config.label: main
