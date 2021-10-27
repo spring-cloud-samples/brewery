@@ -1,14 +1,14 @@
 package io.spring.cloud.samples.brewery.maturing;
 
 import io.spring.cloud.samples.brewery.common.model.Version;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
-@FeignClient(Collaborators.PRESENTING)
-@RequestMapping("/feed")
+@FeignClient(name = Collaborators.PRESENTING, path = "/feed")
 interface PresentingServiceClient {
     @RequestMapping(
             value = "/maturing",
