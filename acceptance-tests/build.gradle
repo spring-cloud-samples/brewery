@@ -8,7 +8,9 @@ dependencies {
     testImplementation "org.junit.vintage:junit-vintage-engine"
     testImplementation "org.springframework:spring-web"
     testImplementation "org.springframework.boot:spring-boot-starter-web"
-    testImplementation "org.springframework.cloud:spring-cloud-starter-sleuth"
+    if (beforeJubilee) {
+        testImplementation "org.springframework.cloud:spring-cloud-starter-sleuth"
+    }
     testImplementation "io.zipkin.java:zipkin:2.10.0"
 }
 

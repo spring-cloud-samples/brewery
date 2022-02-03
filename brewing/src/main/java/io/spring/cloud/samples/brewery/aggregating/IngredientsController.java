@@ -2,8 +2,8 @@ package io.spring.cloud.samples.brewery.aggregating;
 
 import java.util.concurrent.Callable;
 
-import brave.Span;
-import brave.Tracer;
+//import brave.Span;
+//import brave.Tracer;
 import io.spring.cloud.samples.brewery.common.model.Ingredients;
 import io.spring.cloud.samples.brewery.common.model.Order;
 import io.spring.cloud.samples.brewery.common.model.Version;

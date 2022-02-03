@@ -23,11 +23,10 @@ class BottlerService {
     private final BottlingWorker bottlingWorker;
     private final PresentingClient presentingClient;
     private final RestTemplate restTemplate;
-    private final Tracer tracer;
     private final CircuitBreakerFactory factory;
 
     public BottlerService(BottlingWorker bottlingWorker, PresentingClient presentingClient,
-                          RestTemplate restTemplate, Tracer tracer, CircuitBreakerFactory factory) {
+                          RestTemplate restTemplate, CircuitBreakerFactory factory) {
         this.bottlingWorker = bottlingWorker;
         this.presentingClient = presentingClient;
         this.restTemplate = restTemplate;

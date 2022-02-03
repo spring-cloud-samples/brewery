@@ -1,6 +1,5 @@
 package io.spring.cloud.samples.brewery.bottling;
 
-import brave.Tracer;
 import io.spring.cloud.samples.brewery.common.TestConfiguration;
 
 import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JCircuitBreakerFactory;
@@ -20,8 +19,8 @@ class BottlingConfiguration {
     @Bean
     BottlerService bottlingService(BottlingWorker bottlingWorker,
                                    PresentingClient presentingClient,
-                                   Tracer tracer, CircuitBreakerFactory circuitBreakerFactory, @LoadBalanced RestTemplate restTemplate) {
-        return new BottlerService(bottlingWorker, presentingClient, restTemplate, tracer, circuitBreakerFactory);
+                                   CircuitBreakerFactory circuitBreakerFactory, @LoadBalanced RestTemplate restTemplate) {
+        return new BottlerService(bottlingWorker, presentingClient, restTemplate, circuitBreakerFactory);
     }
 
     @Bean

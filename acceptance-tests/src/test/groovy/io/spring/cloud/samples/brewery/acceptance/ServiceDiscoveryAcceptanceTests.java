@@ -6,14 +6,14 @@ import io.spring.cloud.samples.brewery.acceptance.common.AbstractBreweryAcceptan
 import io.spring.cloud.samples.brewery.acceptance.common.SpanUtil;
 import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConditions;
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.RequestEntity;
 
 public class ServiceDiscoveryAcceptanceTests extends AbstractBreweryAcceptance {
 
-	@Before
+	@BeforeEach
 	public void before() {
 		TestConditions.assumeServiceDiscovery();
 	}

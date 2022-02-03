@@ -3,6 +3,8 @@ package io.spring.cloud.samples.brewery.acceptance.common.tech
 import io.spring.cloud.samples.brewery.acceptance.common.WhatToTest
 import org.junit.Assume
 
+import org.springframework.util.ClassUtils
+
 class TestConditions {
 
 	private static String getAndLogWhatToTestSystemProp() {
@@ -38,6 +40,7 @@ class TestConditions {
 	}
 
 	static void assumeSleuth() {
+		Assume.assumeTrue(ClassUtils.isPresent("org.springframework.cloud.sleuth.Tracer"))
 		assumeSystemPropIsValid()
 		Assume.assumeTrue(SLEUTH())
 	}

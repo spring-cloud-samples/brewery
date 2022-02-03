@@ -55,6 +55,8 @@ configure(subprojects) {
 	apply plugin: 'io.spring.dependency-management'
 
 	ext {
+		beforeJubilee = Integer.parseInt(getProp("BOM_VERSION").split("\\.")[0]) < 2022
+		jubileeOrLater = !beforeJubilee
 		dockerConfiguration = { int port ->
 			if (hasProperty("docker")) {
 				int debugPort = port - 1000
@@ -107,7 +109,11 @@ configure(subprojects) {
 	group = 'io.spring.cloud.samples.brewery'
 	version = buildNrLoc
 
-	sourceCompatibility = '1.8'
+	sourceCompatibility = beforeJubilee ? '1.8' : '17'
+
+	if (jubileeOrLater && whatToTest('SLEUTH')) {
+		throw new IllegalStateException("You've picked SLEUTH as thing to test but you're using the train 2022 that has removed Sleuth!")
+	}
 
 	configurations {
 		all {
@@ -135,7 +141,6 @@ configure(subprojects) {
 		maven {
 			url "https://repo.spring.io/release"
 		}
-		jcenter()
 	}
 
 	dependencyManagement {
@@ -166,13 +171,12 @@ configure(subprojects - gateway - acceptanceTestsProject - servers) {
 
 	dependencies {
 		implementation "org.springframework.boot:spring-boot-starter-web"
-		implementation "org.springframework.cloud:spring-cloud-starter-sleuth"
+		if (beforeJubilee) {
+			implementation "org.springframework.cloud:spring-cloud-starter-sleuth"
+		}
 		if (getProp("BOM_VERSION").startsWith("202")) {
 			implementation "org.springframework.cloud:spring-cloud-starter-bootstrap"
 		}
-		if (!whatToTest('SCS')) implementation "org.springframework.cloud:spring-cloud-starter-config"
-		if (whatToTest('SCS')) implementation("io.pivotal.spring.cloud:spring-cloud-services-starter-config-client")
-		if (whatToTest('SCS')) implementation("io.pivotal.spring.cloud:spring-cloud-services-starter-service-registry")
 		implementation "org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j"
 		implementation "org.springframework.cloud:spring-cloud-starter-stream-${propOrSysEnvPresent('kafka') ? 'kafka' : 'rabbit'}"
 		implementation "org.springframework.amqp:spring-amqp"
