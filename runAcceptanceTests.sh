@@ -608,7 +608,7 @@ if [[ "${CLOUD_FOUNDRY}" == "true" ]] ; then
     WHAT_TO_TEST="SLEUTH"
 fi
 
-PARAMS="--no-daemon";
+PARAMS="--daemon";
 if [[ "${WORK_OFFLINE}" == "false" ]]; then
     PARAMS="${PARAMS} --refresh-dependencies";
 else
@@ -773,7 +773,7 @@ fi
 if [[ "${READY_FOR_TESTS}" == "yes" ]] ; then
     echo -e "\n\nSuccessfully booted up all the apps. Proceeding with the acceptance tests"
     echo -e "\n\nRunning acceptance tests with the following parameters [-DWHAT_TO_TEST=${WHAT_TO_TEST} ${ACCEPTANCE_TEST_OPTS}]"
-    ./gradlew ${PARAMS} :acceptance-tests:acceptanceTests "-DWHAT_TO_TEST=${WHAT_TO_TEST}" ${ACCEPTANCE_TEST_OPTS} --stacktrace --no-daemon --configure-on-demand && TESTS_PASSED="yes"
+    ./gradlew ${PARAMS} :acceptance-tests:acceptanceTests "-DWHAT_TO_TEST=${WHAT_TO_TEST}" ${ACCEPTANCE_TEST_OPTS} --stacktrace --daemon --configure-on-demand && TESTS_PASSED="yes"
 fi
 
 if [[ "${TESTS_PASSED}" == "yes" ]] ; then
