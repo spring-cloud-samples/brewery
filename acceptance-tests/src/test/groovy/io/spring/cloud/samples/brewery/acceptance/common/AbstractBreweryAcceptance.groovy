@@ -35,13 +35,11 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
-import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.web.client.RestTemplate
 
 import static com.jayway.awaitility.Awaitility.await
 import static java.util.concurrent.TimeUnit.SECONDS
 
-@RunWith(SpringRunner)
 @SpringBootTest(classes = TestConfiguration)
 abstract class AbstractBreweryAcceptance {
 

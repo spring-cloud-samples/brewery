@@ -3,11 +3,13 @@ package io.spring.cloud.samples.brewery.acceptance;
 import io.spring.cloud.samples.brewery.acceptance.common.AbstractBreweryAcceptance;
 import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConditions;
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
+@Disabled
 public class SleuthBreweryAcceptanceTests extends AbstractBreweryAcceptance {
-	@Before
+	@BeforeEach
 	public void before() {
 		TestConditions.assumeSleuth();
 	}

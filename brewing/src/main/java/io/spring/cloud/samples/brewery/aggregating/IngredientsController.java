@@ -32,7 +32,7 @@ class IngredientsController {
 	}
 
 	/**
-	 * [SLEUTH] Callable - separate thread pool
+	 * [OBSERVABILITY] Callable - separate thread pool
 	 */
 	@RequestMapping(method = RequestMethod.POST)
 	public Callable<Ingredients> distributeIngredients(@RequestBody Order order,

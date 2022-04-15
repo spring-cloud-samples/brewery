@@ -22,7 +22,7 @@ class Bottler implements BottlingService {
     }
 
 	/**
-     * [SLEUTH] TraceCommand
+     * [OBSERVABILITY] TraceCommand
      */
     @Override
     public void bottle(Wort wort, String processId, String testCommunicationType) {

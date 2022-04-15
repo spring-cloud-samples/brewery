@@ -1,7 +1,6 @@
 package io.spring.cloud.samples.brewery.aggregating;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 
 import io.spring.cloud.samples.brewery.common.events.Event;
 import io.spring.cloud.samples.brewery.common.events.EventGateway;
@@ -13,7 +12,6 @@ import org.slf4j.Logger;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.sleuth.instrument.async.TraceableExecutorService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -41,10 +39,19 @@ class IngredientsAggregator {
     public Ingredients fetchIngredients(Order order, String processId) throws Exception {
         log.info("Fetching ingredients for order [{}] , processId [{}]", order, processId);
         /**
-         * [SLEUTH] ParallelStreams won't work out of the box
+         * [OBSERVABILITY] ParallelStreams won't work out of the box
          * - example of a completable future with our TraceableExecutorService
          * - makes little business sense here but that's just an example
          */
+        /*CompletableFuture completableFuture = CompletableFuture.supplyAsync(() -> {
+                    ingredientsCollector.collectIngredients(order, processId).stream()
+                            .filter(ingredient -> ingredient != null)
+                            .forEach((Ingredient ingredient) -> {
+                                log.info("Adding an ingredient [{}] for order [{}] , processId [{}]", ingredient);
+                                ingredientWarehouse.addIngredient(ingredient);
+                            });
+                    return null;
+                }, new TraceableExecutorService(this.beanFactory, Executors.newFixedThreadPool(5), "fetchIngredients"));*/
         CompletableFuture completableFuture = CompletableFuture.supplyAsync(() -> {
                     ingredientsCollector.collectIngredients(order, processId).stream()
                             .filter(ingredient -> ingredient != null)
@@ -53,7 +60,7 @@ class IngredientsAggregator {
                                 ingredientWarehouse.addIngredient(ingredient);
                             });
                     return null;
-                }, new TraceableExecutorService(this.beanFactory, Executors.newFixedThreadPool(5), "fetchIngredients"));
+                });
         // block to perform the request (as I said the example is stupid)
         completableFuture.get();
         eventGateway.emitEvent(Event.builder().eventType(EventType.INGREDIENTS_ORDERED).processId(processId).build());

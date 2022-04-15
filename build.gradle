@@ -11,7 +11,6 @@ buildscript {
 		maven {
 			url "https://repo.spring.io/release"
 		}
-		jcenter()
 	}
 
 	Closure<String> getProp = { String propName ->
@@ -31,17 +30,13 @@ buildscript {
 }
 
 def commonProject = project(':common')
-def commonZipkinProject = project(':common-zipkin')
 def acceptanceTestsProject = project(':acceptance-tests')
-def eurekaProject = project(':eureka')
 def configServerProject = project(':config-server')
 def gateway = project(':gateway')
-def servers = [eurekaProject, configServerProject]
-def techProjects = [commonProject, commonZipkinProject, acceptanceTestsProject,
-					eurekaProject, configServerProject]
-def nonZipkinProjects = techProjects
-def nonDockerProjects = [commonProject, commonZipkinProject, acceptanceTestsProject]
-def zipkinRelatedProjects = subprojects - nonZipkinProjects
+def servers = [configServerProject]
+def techProjects = [commonProject, acceptanceTestsProject,
+					configServerProject]
+def nonDockerProjects = [commonProject, techProjects, acceptanceTestsProject]
 
 allprojects {
 	apply plugin: 'java'
@@ -135,7 +130,6 @@ configure(subprojects) {
 		maven {
 			url "https://repo.spring.io/release"
 		}
-		jcenter()
 	}
 
 	dependencyManagement {
@@ -145,13 +139,15 @@ configure(subprojects) {
 							hasProperty(propName) ? property(propName) :
 									System.getenv(propName) ?: project.getProperty(propName) ?: ""
 			}
+			// will come from Boot
+			mavenBom "io.micrometer:micrometer-bom:1.10.0-SNAPSHOT"
+			mavenBom "io.micrometer:micrometer-tracing-bom:1.0.0-SNAPSHOT"
 			mavenBom "org.springframework.cloud:spring-cloud-dependencies:${getProp("BOM_VERSION") }"
 			if (getProp("BOOT_VERSION")) {
 				String bootVersion = getProp("BOOT_VERSION")
 				logger.lifecycle("Using boot in version [${bootVersion}]")
 				mavenBom "org.springframework.boot:spring-boot-dependencies:${bootVersion}"
 			}
-			if (ext.whatToTest('SCS')) mavenBom "io.pivotal.spring.cloud:spring-cloud-services-dependencies:${getProp("SCS_VERSION")}"
 		}
 	}
 
@@ -166,7 +162,6 @@ configure(subprojects - gateway - acceptanceTestsProject - servers) {
 
 	dependencies {
 		implementation "org.springframework.boot:spring-boot-starter-web"
-		implementation "org.springframework.cloud:spring-cloud-starter-sleuth"
 		if (getProp("BOM_VERSION").startsWith("202")) {
 			implementation "org.springframework.cloud:spring-cloud-starter-bootstrap"
 		}
@@ -183,29 +178,10 @@ configure(subprojects - gateway - acceptanceTestsProject - servers) {
 	}
 }
 
-configure(zipkinRelatedProjects) {
-
-	dependencies {
-		if (whatToTest('WAVEFRONT')) {
-			implementation("com.wavefront:wavefront-spring-boot-starter:${getProp("WAVEFRONT_VERSION")}") {
-				exclude group: 'org.springframework.boot'
-			}
-		}
-		if (whatToTest('SLEUTH')) { implementation "org.springframework.cloud:spring-cloud-sleuth-zipkin" }
-	}
-}
-
 configure(nonDockerProjects) {
 
-	bootJar {
-		enabled = false
-	}
-	jar {
+	tasks.named("jar") {
 		enabled = true
-	}
-
-	bootRun {
-		enabled = false
 	}
 }
 
@@ -226,16 +202,13 @@ configure(subprojects - commonProject - servers - gateway) {
 	}
 }
 
-configure(subprojects - techProjects - commonZipkinProject - gateway) {
+configure(subprojects - techProjects - gateway) {
 	dependencies {
-		if (whatToTest('SLEUTH')) {
-			implementation commonZipkinProject
-		}
 		implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
 	}
 }
 
-configure(subprojects - techProjects - commonZipkinProject) {
+configure(subprojects - techProjects ) {
 	dependencies {
 		implementation "org.springframework.boot:spring-boot-starter-actuator"
 		implementation 'com.fasterxml.jackson.core:jackson-databind'
@@ -243,14 +216,17 @@ configure(subprojects - techProjects - commonZipkinProject) {
 			implementation "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery"
 		}
 		if (whatToTest('CONSUL')) { implementation "org.springframework.cloud:spring-cloud-starter-consul-discovery" }
-		if (whatToTest('EUREKA') || cloudFoundrySet()) {
-			implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"
+		if (whatToTest('WAVEFRONT')) {
+			implementation("io.micrometer:micrometer-tracing-reporter-wavefront")
 		}
 		implementation 'org.apache.commons:commons-lang3:3.4'
 		implementation 'com.jayway.jsonpath:json-path-assert:2.0.0'
 		implementation 'org.yaml:snakeyaml'
 //        implementation 'org.hibernate:hibernate-validator'
 		implementation "org.aspectj:aspectjrt"
+
+		// tracing
+		implementation "io.micrometer:micrometer-tracing-bridge-brave"
 
 		implementation 'cglib:cglib-nodep:3.1'
 		implementation 'org.objenesis:objenesis:2.2'

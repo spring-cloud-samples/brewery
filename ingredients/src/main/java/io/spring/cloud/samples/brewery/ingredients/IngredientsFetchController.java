@@ -27,7 +27,7 @@ class IngredientsFetchController {
 	}
 
 	/**
-	 * [SLEUTH] Mono
+	 * [OBSERVABILITY] Mono
 	 */
 	@RequestMapping(value = "/{ingredient}", method = RequestMethod.POST)
 	public Mono<Ingredient> ingredients(@PathVariable("ingredient") IngredientType ingredientType,

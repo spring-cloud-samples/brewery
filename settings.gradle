@@ -4,8 +4,6 @@ include 'brewing',
 		'reporting',
 		'ingredients',
 		'common',
-		'common-zipkin',
 		'acceptance-tests',
-		'eureka',
 		'config-server',
 		'gateway'

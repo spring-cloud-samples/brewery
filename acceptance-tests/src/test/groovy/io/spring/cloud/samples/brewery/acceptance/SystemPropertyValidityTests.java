@@ -1,7 +1,7 @@
 package io.spring.cloud.samples.brewery.acceptance;
 
 import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConditions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Marcin Grzejszczak

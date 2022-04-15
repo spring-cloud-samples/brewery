@@ -49,7 +49,7 @@ class BottlerService {
     }
 
     /**
-     * [SLEUTH] CircuitBreaker integration
+     * [OBSERVABILITY] CircuitBreaker integration
      */
     void bottleWithCircuitBreaker(Wort wort, String processId) {
         Span span = tracer.nextSpan().name("inside_bottling_circuitbreaker").start();
@@ -82,7 +82,7 @@ class BottlerService {
     }
 
 	/**
-     * [SLEUTH] AsyncRestTemplate with sync @LoadBalanced RestTemplate
+     * [OBSERVABILITY] AsyncRestTemplate with sync @LoadBalanced RestTemplate
      */
     private void useRestTemplateToCallPresenting(String processId) {
         log.info("Notifying presenting about beer. Process id [{}]", processId);
