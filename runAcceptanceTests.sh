@@ -466,7 +466,7 @@ done
 [[ -z "${DOMAIN}" ]] && DOMAIN="run.pivotal.io"
 [[ -z "${CLOUD_SPACE}" ]] && CLOUD_SPACE="${DEFAULT_SPACE}"
 [[ -z "${CLOUD_ORG}" ]] && CLOUD_ORG="${DEFAULT_ORG}"
-[[ -z "${REPO_BRANCH}" ]] && REPO_BRANCH="main"
+[[ -z "${REPO_BRANCH}" ]] && REPO_BRANCH="2021.0.x"
 [[ -z "${START_ZIPKIN}" ]] && START_ZIPKIN="true"
 
 CLOUD_DOMAIN=${DOMAIN}
