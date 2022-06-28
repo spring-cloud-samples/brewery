@@ -40,6 +40,10 @@ def nonDockerProjects = [commonProject, techProjects, acceptanceTestsProject]
 
 allprojects {
 	apply plugin: 'java'
+
+
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
 }
 
 configure(subprojects) {
@@ -101,8 +105,6 @@ configure(subprojects) {
 
 	group = 'io.spring.cloud.samples.brewery'
 	version = buildNrLoc
-
-	sourceCompatibility = '1.8'
 
 	configurations {
 		all {
