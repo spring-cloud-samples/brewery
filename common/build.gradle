@@ -1,7 +1,5 @@
 dependencies {
-	implementation "org.springframework.cloud:spring-cloud-starter-stream-${propOrSysEnvPresent('kafka') ? 'kafka' : 'rabbit'}"
-	// tracing
-	implementation "io.micrometer:micrometer-tracing-bridge-brave"
+	optionalApi "org.springframework.boot:spring-boot-starter-web"
 }
 
 bootJar.enabled = false

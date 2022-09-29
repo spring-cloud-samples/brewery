@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 @EnableAsync
 @EnableFeignClients
 @Import(TestConfiguration.class)
-public class Application {
+public class PresentingApplication {
 
 	@Bean
 	@LoadBalanced
@@ -24,6 +24,6 @@ public class Application {
 	}
 
 	public static void main(String[] args) {
-		new SpringApplication(Application.class).run(args);
+		new SpringApplication(PresentingApplication.class).run(args);
 	}
 }

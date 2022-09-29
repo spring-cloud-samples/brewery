@@ -1,0 +1,14 @@
+global:
+    scrape_interval: 2s
+    evaluation_interval: 2s
+
+scrape_configs:
+    - job_name: 'prometheus'
+      static_configs:
+          - targets: ['host.docker.internal:9090']
+    - job_name: 'test-app'
+        #   scheme: 'https'
+      metrics_path: '/actuator/prometheus'
+      static_configs:
+          - targets: [ 'host.docker.internal:8888','host.docker.internal:9991','host.docker.internal:9992','host.docker.internal:9993','host.docker.internal:9994','host.docker.internal:9995' ]
+

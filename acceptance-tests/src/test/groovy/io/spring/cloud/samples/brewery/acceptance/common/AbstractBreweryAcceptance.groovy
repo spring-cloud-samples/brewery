@@ -23,7 +23,6 @@ import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
 import io.spring.cloud.samples.brewery.acceptance.model.IngredientType
 import io.spring.cloud.samples.brewery.acceptance.model.Order
 import io.spring.cloud.samples.brewery.acceptance.model.ProcessState
-import org.junit.runner.RunWith
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -43,8 +42,8 @@ import static java.util.concurrent.TimeUnit.SECONDS
 @SpringBootTest(classes = TestConfiguration)
 abstract class AbstractBreweryAcceptance {
 
-	public static final String TRACE_ID_HEADER_NAME = "X-B3-TraceId"
-	public static final String SPAN_ID_HEADER_NAME = "X-B3-SpanId"
+	// W3C
+	public static final String TRACEPARENT_HEADER_NAME = "traceparent"
 	public static final Logger log = LoggerFactory.getLogger(AbstractBreweryAcceptance)
 
 	protected static final List<String> APP_NAMES = ['presenting', 'brewing', 'proxy']
@@ -67,7 +66,6 @@ abstract class AbstractBreweryAcceptance {
 	@Value('${zipkin.query.port:9411}') Integer zipkinQueryPort
 	@Value('${LOCAL_URL:http://localhost}') String zipkinQueryUrl
 	@Value('${test.zipkin.dependencies:true}') boolean checkZipkinDependencies
-	@Value('${BOM_VERSION:Greenwich.BUILD-SNAPSHOT}') String bomVersion
 
 	def setup() {
 		log.info("Starting test")
@@ -92,7 +90,13 @@ abstract class AbstractBreweryAcceptance {
 	}
 
 	void check_brewery(CommunicationType communicationType) {
-		String referenceProcessId = SpanUtil.idToHex(new Random().nextLong());
+		/*
+		base16(version) = 00
+		base16(trace-id) = 0000000000000000a3ce929d0e0e4736
+		base16(parent-id) = 00f067aa0ba902b7
+		base16(trace-flags) = 01  // sampled
+		 */
+		String referenceProcessId = "00-0000000000000000" + SpanUtil.idToHex(new Random().nextLong()) + "-" + SpanUtil.idToHex(new Random().nextLong()) + "-01"
 		RequestEntity requestEntity = an_order_for_all_ingredients_with_process_id(referenceProcessId, communicationType);
 		// when:
 		presenting_service_has_been_called(requestEntity);
@@ -221,14 +225,13 @@ abstract class AbstractBreweryAcceptance {
 	}
 
 	String trace_id_header(HttpEntity httpEntity) {
-		return httpEntity.headers.getFirst(TRACE_ID_HEADER_NAME)
+		return httpEntity.headers.getFirst(TRACEPARENT_HEADER_NAME)
 	}
 
 	RequestEntity an_order_for_all_ingredients_with_process_id(String processId, CommunicationType communicationType) {
 		HttpHeaders headers = new HttpHeaders()
 		headers.add("PROCESS-ID", processId)
-		headers.add(TRACE_ID_HEADER_NAME, processId)
-		headers.add(SPAN_ID_HEADER_NAME, SpanUtil.idToHex(new Random().nextLong()))
+		headers.add(TRACEPARENT_HEADER_NAME, processId)
 		headers.add("TEST-COMMUNICATION-TYPE", communicationType.name())
 		URI uri = URI.create("$presentingUrl/present/order")
 		Order allIngredients = allIngredients()

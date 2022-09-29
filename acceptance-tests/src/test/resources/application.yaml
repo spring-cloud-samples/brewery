@@ -6,4 +6,3 @@ spring.cloud.zookeeper.enabled: false
 spring.cloud.zookeeper.discovery.enabled: false
 ribbon.zookeeper.enabled: false
 spring.autoconfigure.exclude: org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration
-spring.zipkin.enabled: false

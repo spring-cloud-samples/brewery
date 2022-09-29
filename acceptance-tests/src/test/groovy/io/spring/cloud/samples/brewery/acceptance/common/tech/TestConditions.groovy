@@ -22,12 +22,6 @@ class TestConditions {
 		)
 	}
 
-	public static final Closure<Boolean> SLEUTH = {
-		return whatToTestSystemPropMatchesAny(
-				[WhatToTest.SLEUTH]
-		)
-	}
-
 	public static final Closure<Boolean> SYSTEM_PROP_IS_VALID = {
 		return whatToTestSystemPropMatchesAny(WhatToTest.values().toList())
 	}
@@ -35,11 +29,6 @@ class TestConditions {
 	static void assumeServiceDiscovery() {
 		assumeSystemPropIsValid()
 		Assume.assumeTrue(SERVICE_DISCOVERY())
-	}
-
-	static void assumeSleuth() {
-		assumeSystemPropIsValid()
-		Assume.assumeTrue(SLEUTH())
 	}
 
 	static void assumeSystemPropIsValid() {
