@@ -12,7 +12,7 @@ dependencies {
 }
 
 test {
-    exclude '**/*.*'
+    exclude 'io/spring/cloud/**'
 }
 
 bootJar.enabled = false
@@ -30,7 +30,9 @@ task acceptanceTests(type: Test) {
         exceptionFormat = 'full'
         showStandardStreams = true
     }
-    include '**/*.*'
+    include 'io/spring/cloud/**'
+
+	useJUnitPlatform()
 
     group = "Verification"
     description = "Runs the acceptance tests"

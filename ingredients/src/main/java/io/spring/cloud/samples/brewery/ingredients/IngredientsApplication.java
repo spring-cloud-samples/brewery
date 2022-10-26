@@ -1,16 +1,16 @@
 package io.spring.cloud.samples.brewery.ingredients;
 
+import io.spring.cloud.samples.brewery.common.TestConfiguration;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
-import io.spring.cloud.samples.brewery.common.TestConfiguration;
-
 @SpringBootApplication
 @Import(TestConfiguration.class)
-public class Application {
+public class IngredientsApplication {
 
     public static void main(String[] args) {
-        new SpringApplication(Application.class).run(args);
+        new SpringApplication(IngredientsApplication.class).run(args);
     }
 }

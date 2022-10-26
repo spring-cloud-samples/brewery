@@ -135,6 +135,7 @@ configure(subprojects) {
 		implementation 'org.aspectj:aspectjweaver'
 
 		// Observability
+		runtimeOnly 'com.github.loki4j:loki-logback-appender:1.3.2'
 		implementation "io.micrometer:context-propagation:1.0.0-RC1" // TODO: Will come from Micrometer-Tracing
 		implementation 'io.micrometer:micrometer-registry-prometheus'
 		if (propOrSysEnvPresent('brave')) { // TODO: Parameterize this in the script options

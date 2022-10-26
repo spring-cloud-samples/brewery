@@ -14,15 +14,12 @@ import io.spring.cloud.samples.brewery.common.model.Version;
 import org.slf4j.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.requestEntity;
 
-@Component
 class BottlingWorker {
 
 
@@ -38,7 +35,7 @@ class BottlingWorker {
 	@Autowired
 	public BottlingWorker(ObservationRegistry observationRegistry,
 		PresentingClient presentingClient,
-		@LoadBalanced RestTemplate restTemplate, EventGateway eventGateway, BaggageManager baggageManager) {
+		RestTemplate restTemplate, EventGateway eventGateway, BaggageManager baggageManager) {
 		this.observationRegistry = observationRegistry;
 		this.presentingClient = presentingClient;
 		this.restTemplate = restTemplate;

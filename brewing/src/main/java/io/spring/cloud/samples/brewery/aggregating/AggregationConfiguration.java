@@ -6,6 +6,7 @@ import io.spring.cloud.samples.brewery.common.TestConfiguration;
 import io.spring.cloud.samples.brewery.common.events.EventGateway;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,8 +20,8 @@ class AggregationConfiguration {
 
 	@Bean
 	@LoadBalanced
-	RestTemplate aggregationLoadBalancedRestTemplate() {
-		return new RestTemplate();
+	RestTemplate aggregationLoadBalancedRestTemplate(RestTemplateBuilder restTemplateBuilder) {
+		return restTemplateBuilder.build();
 	}
 
 	@Bean
@@ -33,8 +34,8 @@ class AggregationConfiguration {
 	}
 
 	@Bean
-	IngredientsCollector ingredientsCollector(@LoadBalanced RestTemplate restTemplate,
+	IngredientsCollector ingredientsCollector(RestTemplateBuilder restTemplateBuilder,
 		IngredientsProxy ingredientsProxy, BaggageManager baggageManager) {
-		return new IngredientsCollector(restTemplate, ingredientsProxy, baggageManager);
+		return new IngredientsCollector(aggregationLoadBalancedRestTemplate(restTemplateBuilder), ingredientsProxy, baggageManager);
 	}
 }

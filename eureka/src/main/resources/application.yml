@@ -12,3 +12,16 @@ endpoints.health.sensitive: false
 endpoints.default.web.enabled: true
 management.security.enabled: false
 management.endpoints.web.base-path: /
+
+management:
+    tracing:
+        sampling:
+            probability: 1.0
+        baggage:
+            remote-fields:
+                - TEST-COMMUNICATION-TYPE
+            correlation:
+                fields:
+                    - TEST-COMMUNICATION-TYPE
+
+logging.pattern.level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

@@ -13,7 +13,7 @@ services:
     image: rabbitmq:management
     extra_hosts: ['host.docker.internal:host-gateway']
     ports:
-      - "9672:5672"
+      - "5672:5672"
       - "15672:15672"
 
   tempo:

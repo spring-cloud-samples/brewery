@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Configuration;
 @SpringBootApplication
 @Configuration
 @EnableEurekaServer
-public class Application {
+public class EurekaApplication {
     public static void main(String[] args) {
-        new SpringApplication(Application.class).run(args);
+        new SpringApplication(EurekaApplication.class).run(args);
     }
 }

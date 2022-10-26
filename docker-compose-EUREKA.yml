@@ -4,25 +4,8 @@ services:
     image: rabbitmq:management
     extra_hosts: ['host.docker.internal:host-gateway']
     ports:
-      - "9672:5672"
+      - "5672:5672"
       - "15672:15672"
-  
-  postgres:
-    image: postgres
-    extra_hosts: ['host.docker.internal:host-gateway']
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: test
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
-  
-  postgres_toxiproxy:
-    image: shopify/toxiproxy
-    extra_hosts: ['host.docker.internal:host-gateway']
-    ports:
-      - "22220:22220"
-      - "8474:8474"
   
   tempo:
     image: grafana/tempo

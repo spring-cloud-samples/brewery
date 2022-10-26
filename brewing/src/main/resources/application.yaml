@@ -18,6 +18,10 @@ endpoints.default.web.enabled: true
 management.security.enabled: false
 management.endpoints.web.base-path: /
 
+spring:
+    main:
+        allow-bean-definition-overriding: true # TODO Why? The bean 'presenting.FeignClientSpecification' could not be registered. A bean with that name has already been defined and overriding is disabled.
+
 management:
     tracing:
         sampling:

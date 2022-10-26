@@ -28,11 +28,10 @@ class BrewConfiguration {
 
 	@Bean
 	BottlingServiceUpdater bottlingServiceUpdater(ObservationRegistry observationRegistry, PresentingServiceClient presentingServiceClient,
-		BottlingService bottlingService,
-		@LoadBalanced RestTemplate restTemplate,
+		BottlingService bottlingService, RestTemplateBuilder restTemplateBuilder,
 		EventGateway eventGateway, CircuitBreakerFactory circuitBreakerFactory, BaggageManager baggageManager, BrewProperties properties) {
 		return new BottlingServiceUpdater(properties, observationRegistry, presentingServiceClient,
-			bottlingService, restTemplate, eventGateway, circuitBreakerFactory, baggageManager);
+			bottlingService, brewLoadBalancedRestTemplate(restTemplateBuilder), eventGateway, circuitBreakerFactory, baggageManager);
 	}
 
 }

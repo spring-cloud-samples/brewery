@@ -12,9 +12,9 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 @EnableFeignClients
 @Import(TestConfiguration.class)
-public class Application {
+public class BrewingApplication {
 
 	public static void main(String[] args) {
-		new SpringApplication(Application.class).run(args);
+		new SpringApplication(BrewingApplication.class).run(args);
 	}
 }
