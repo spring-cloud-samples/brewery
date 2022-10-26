@@ -39,8 +39,6 @@ allprojects {
 
 configure(subprojects) {
 
-	apply plugin: 'eclipse'
-	apply plugin: 'idea'
 	apply plugin: 'org.springframework.boot'
 	apply plugin: 'io.spring.dependency-management'
 
@@ -128,7 +126,7 @@ configure(subprojects) {
 		implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 		implementation "org.springframework:spring-messaging"
 
-		// Why is this needed?
+		// TODO: Why is this needed?
 		implementation 'com.jayway.jsonpath:json-path-assert:2.0.0'
 		implementation 'org.yaml:snakeyaml'
 		implementation "org.aspectj:aspectjrt"
@@ -137,12 +135,20 @@ configure(subprojects) {
 		implementation 'org.aspectj:aspectjweaver'
 
 		// Observability
+		implementation "io.micrometer:context-propagation:1.0.0-RC1" // TODO: Will come from Micrometer-Tracing
 		implementation 'io.micrometer:micrometer-registry-prometheus'
-		implementation 'io.micrometer:micrometer-tracing'
-		// TODO: Add OTel version
-		implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+		if (propOrSysEnvPresent('brave')) { // TODO: Parameterize this in the script options
+			implementation "io.micrometer:micrometer-tracing-bridge-brave"
+			if (!whatToTest('WAVEFRONT')) {
+				implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+			}
+		} else {
+			implementation "io.micrometer:micrometer-tracing-bridge-otel"
+			if (!whatToTest('WAVEFRONT')) {
+				implementation 'io.opentelemetry:opentelemetry-exporter-zipkin'
+			}
+		}
 		if (whatToTest('WAVEFRONT')) { implementation("io.micrometer:micrometer-tracing-reporter-wavefront") }
-		if (!whatToTest('WAVEFRONT')) { implementation 'io.zipkin.reporter2:zipkin-reporter-brave' }
 
 		testImplementation(group: 'org.springframework.cloud', name: 'spring-cloud-stream', classifier: 'test-binder')
 	}
@@ -150,12 +156,6 @@ configure(subprojects) {
 	task allDeps(type: DependencyReportTask) {}
 
 	java {
-		// It is more idiomatic to define different features for different sets of optional
-		// dependencies, e.g., 'dropwizard' and 'reactor'. If this library published Gradle
-		// metadata, Gradle users would be able to use these feature names in their dependency
-		// declarations instead of understanding the actual required optional dependencies.
-		// But we don't publish Gradle metadata yet and this may be overkill so just have a
-		// single feature for now to correspond to any optional dependency.
 		registerFeature('optional') {
 			usingSourceSet(sourceSets.main)
 		}

@@ -2,10 +2,6 @@ spring.application.name: reporting
 
 logging:
   level.org.springframework.cloud: DEBUG
-  level.org.springframework.cloud.sleuth: TRACE
-  level.org.springframework.cloud.sleuth.log: DEBUG
-  level.org.springframework.cloud.sleuth.trace: DEBUG
-  level.org.springframework.cloud.sleuth.instrument.rxjava: DEBUG
   level.com.wavefront.spring: DEBUG
 
 server.port: ${PORT:9995}
@@ -23,18 +19,20 @@ endpoints.default.web.enabled: true
 management.security.enabled: false
 management.endpoints.web.base-path: /
 
-spring.zipkin.sender.type: web
-spring:
-  sleuth:
-    reactor:
-      enabled: false
-    baggage:
-      correlation-fields:
-        - TEST-COMMUNICATION-TYPE
-      remote-fields:
-        - TEST-COMMUNICATION-TYPE
-
 spring.cloud.function.definition: events
 spring.cloud.stream.bindings.events-in-0.destination: events
 
 spring.cloud.config.label: main
+
+management:
+    tracing:
+        sampling:
+            probability: 1.0
+        baggage:
+            remote-fields:
+                - TEST-COMMUNICATION-TYPE
+            correlation:
+                fields:
+                    - TEST-COMMUNICATION-TYPE
+
+logging.pattern.level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

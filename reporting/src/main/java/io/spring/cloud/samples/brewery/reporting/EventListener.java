@@ -3,9 +3,10 @@ package io.spring.cloud.samples.brewery.reporting;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import brave.baggage.BaggageField;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.tracing.BaggageManager;
+import io.spring.cloud.samples.brewery.common.TestCommunication;
 import io.spring.cloud.samples.brewery.common.events.Event;
 import org.slf4j.Logger;
 
@@ -20,15 +21,18 @@ class EventListener implements Consumer<Message<Event>> {
 	private final ReportingRepository reportingRepository;
 	private final ObservationRegistry observationRegistry;
 
+	private final BaggageManager baggageManager;
+
 	@Autowired
-	public EventListener(ReportingRepository reportingRepository, ObservationRegistry observationRegistry) {
+	public EventListener(ReportingRepository reportingRepository, ObservationRegistry observationRegistry, BaggageManager baggageManager) {
 		this.reportingRepository = reportingRepository;
 		this.observationRegistry = observationRegistry;
+		this.baggageManager = baggageManager;
 	}
 
 	private void handleEvents(Event event, Map<String, Object> headers) {
 		log.info("Received the following message with headers [{}] and body [{}]", headers, event);
-		String testCommunicationType = BaggageField.getByName("TEST-COMMUNICATION-TYPE").getValue();
+		String testCommunicationType = TestCommunication.fromBaggage(baggageManager);
 		log.info("Found the following communication type [{}]", testCommunicationType);
 		Observation observation = Observation.createNotStarted("metric.inside.reporting", this.observationRegistry)
 			.contextualName("inside_reporting").start();

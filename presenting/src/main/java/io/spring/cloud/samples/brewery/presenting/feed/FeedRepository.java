@@ -25,10 +25,11 @@ public class FeedRepository {
 	public void addModifyProcess(String id, ProcessState newState) {
 		synchronized (processes) {
 			Optional<Process> optional = processes.stream()
-					.filter(process -> id.equals(process.id)).findFirst();
+				.filter(process -> id.equals(process.id)).findFirst();
 			if (optional.isPresent()) {
 				optional.get().state = newState;
-			} else {
+			}
+			else {
 				log.info("Adding process: {} with state: {}", id, newState);
 				processes.add(new Process(id, newState));
 			}
@@ -42,19 +43,19 @@ public class FeedRepository {
 
 	public String showStatuses() {
 		return "MATURING: " + countFor(ProcessState.MATURING) + "\n" +
-				"BOTTLING: " + countFor(ProcessState.BOTTLING);
+			"BOTTLING: " + countFor(ProcessState.BOTTLING);
 	}
 
 	public Long countFor(ProcessState state) {
 		return processes.stream()
-				.filter(process -> process.state == state)
-				.count();
+			.filter(process -> process.state == state)
+			.count();
 	}
 
 	public ResponseEntity getProcessStateForId(String id) {
 		Optional<Process> process = processes.stream()
-				.filter(process1 -> id.equals(process1.id))
-				.findFirst();
+			.filter(process1 -> id.equals(process1.id))
+			.findFirst();
 		if (!process.isPresent()) {
 			return new ResponseEntity<>("Process with id [" + id + "] not found", HttpStatus.NOT_FOUND);
 		}

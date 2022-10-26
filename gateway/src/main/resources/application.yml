@@ -22,21 +22,12 @@ spring:
             - name: Retry
               args:
                 retries: 3
-  sleuth:
-    propagation-keys:
-      - TEST-COMMUNICATION-TYPE
-    reactor:
-      decorate-on-each: true
 
 logging:
   level:
     org.springframework.cloud.gateway: TRACE
     zipkin2: TRACE
     org.springframework.cloud: DEBUG
-    org.springframework.cloud.sleuth: TRACE
-    org.springframework.cloud.sleuth.log: DEBUG
-    org.springframework.cloud.sleuth.trace: DEBUG
-    org.springframework.cloud.sleuth.instrument.rxjava: DEBUG
     io.netty.channel.unix: DEBUG
     org.springframework.http.server.reactive: DEBUG
     org.springframework.web.reactive: DEBUG
@@ -51,9 +42,20 @@ spring.rabbitmq.host: ${RABBIT_HOST:localhost}
 
 management.endpoints.web.base-path: /
 
-spring.zipkin.sender.type: web
-
 spring.cloud.stream.source: events
 spring.cloud.stream.bindings.events-out-0.destination: events
 
 spring.cloud.config.label: main
+
+management:
+    tracing:
+        sampling:
+            probability: 1.0
+        baggage:
+            remote-fields:
+                - TEST-COMMUNICATION-TYPE
+            correlation:
+                fields:
+                    - TEST-COMMUNICATION-TYPE
+
+logging.pattern.level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

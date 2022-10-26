@@ -1,0 +1,14 @@
+logging.file: build/eureka.log
+
+server.port: ${PORT:8761}
+
+eureka:
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+
+
+endpoints.health.sensitive: false
+endpoints.default.web.enabled: true
+management.security.enabled: false
+management.endpoints.web.base-path: /

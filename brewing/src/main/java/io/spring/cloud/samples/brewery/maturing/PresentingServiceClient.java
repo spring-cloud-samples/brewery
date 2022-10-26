@@ -10,11 +10,11 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @FeignClient(name = Collaborators.PRESENTING, path = "/feed")
 interface PresentingServiceClient {
-    @RequestMapping(
-            value = "/maturing",
-            produces = Version.PRESENTING_V1,
-            consumes = Version.PRESENTING_V1,
-            method = PUT)
-    String maturingFeed(@RequestHeader("PROCESS-ID") String processId,
-                        @RequestHeader("TEST-COMMUNICATION-TYPE") String testCommunicationType);
+	@RequestMapping(
+		value = "/maturing",
+		produces = Version.PRESENTING_V1,
+		consumes = Version.PRESENTING_V1,
+		method = PUT)
+	String maturingFeed(@RequestHeader("PROCESS-ID") String processId,
+		@RequestHeader("TEST-COMMUNICATION-TYPE") String testCommunicationType);
 }

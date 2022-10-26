@@ -19,4 +19,3 @@ spring:
             - spanParentSpanId
             - spanTraceId
             - spanName
-            - messageSent

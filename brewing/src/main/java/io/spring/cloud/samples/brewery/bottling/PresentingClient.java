@@ -11,20 +11,20 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @FeignClient(name = Collaborators.PRESENTING, path = "/feed")
 interface PresentingClient {
-    @RequestMapping(
-            value = "/bottles/{bottles}",
-            produces = Version.PRESENTING_V1,
-            consumes = Version.PRESENTING_V1,
-            method = PUT)
-    String updateBottles(@PathVariable("bottles") int bottles,
-                         @RequestHeader("PROCESS-ID") String processId,
-                         @RequestHeader("TEST-COMMUNICATION-TYPE") String testCommunicationType);
+	@RequestMapping(
+		value = "/bottles/{bottles}",
+		produces = Version.PRESENTING_V1,
+		consumes = Version.PRESENTING_V1,
+		method = PUT)
+	String updateBottles(@PathVariable("bottles") int bottles,
+		@RequestHeader("PROCESS-ID") String processId,
+		@RequestHeader("TEST-COMMUNICATION-TYPE") String testCommunicationType);
 
-    @RequestMapping(
-            value = "/bottling",
-            produces = Version.PRESENTING_V1,
-            consumes = Version.PRESENTING_V1,
-            method = PUT)
-    void bottlingFeed(@RequestHeader("PROCESS-ID") String processId,
-                      @RequestHeader("TEST-COMMUNICATION-TYPE") String testCommunicationType);
+	@RequestMapping(
+		value = "/bottling",
+		produces = Version.PRESENTING_V1,
+		consumes = Version.PRESENTING_V1,
+		method = PUT)
+	void bottlingFeed(@RequestHeader("PROCESS-ID") String processId,
+		@RequestHeader("TEST-COMMUNICATION-TYPE") String testCommunicationType);
 }

@@ -34,10 +34,6 @@ services:
     ports:
       - "14268"  # jaeger ingest
       - "9411:9411" # zipkin
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
   
   loki:
     image: grafana/loki
@@ -50,10 +46,6 @@ services:
       - JAEGER_ENDPOINT=http://tempo:14268/api/traces # send traces to Tempo
       - JAEGER_SAMPLER_TYPE=const
       - JAEGER_SAMPLER_PARAM=1
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
   
   prometheus:
     image: prom/prometheus
@@ -65,10 +57,6 @@ services:
       - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     ports:
       - "9090:9090"
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
   
   grafana:
     image: grafana/grafana
@@ -82,8 +70,3 @@ services:
       - GF_AUTH_DISABLE_LOGIN_FORM=true
     ports:
       - "3000:3000"
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-# Grafana creds: admin:admin
