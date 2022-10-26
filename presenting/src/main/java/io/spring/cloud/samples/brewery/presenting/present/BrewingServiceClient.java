@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @FeignClient(name = Collaborators.BREWING, path = "/ingredients")
 public interface BrewingServiceClient {
 	@RequestMapping(method = RequestMethod.POST, consumes = Versions.BREWING_CONTENT_TYPE_V1,
-			produces = MediaType.APPLICATION_JSON_VALUE)
+		produces = MediaType.APPLICATION_JSON_VALUE)
 	String getIngredients(String body,
-			@RequestHeader("PROCESS-ID") String processId,
-			@RequestHeader("TEST-COMMUNICATION-TYPE") String testCommunicationType);
+		@RequestHeader("PROCESS-ID") String processId,
+		@RequestHeader("TEST-COMMUNICATION-TYPE") String testCommunicationType);
 }

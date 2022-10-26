@@ -3,9 +3,10 @@ package io.spring.cloud.samples.brewery.reporting;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import brave.Span;
-import brave.Tracer;
-import brave.baggage.BaggageField;
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.tracing.BaggageManager;
+import io.spring.cloud.samples.brewery.common.TestCommunication;
 import io.spring.cloud.samples.brewery.common.events.Event;
 import org.slf4j.Logger;
 
@@ -18,26 +19,38 @@ class EventListener implements Consumer<Message<Event>> {
 
 	private static final Logger log = org.slf4j.LoggerFactory.getLogger(EventListener.class);
 	private final ReportingRepository reportingRepository;
-	private final Tracer tracer;
+	private final ObservationRegistry observationRegistry;
+
+	private final BaggageManager baggageManager;
 
 	@Autowired
-	public EventListener(ReportingRepository reportingRepository, Tracer tracer) {
+	public EventListener(ReportingRepository reportingRepository, ObservationRegistry observationRegistry, BaggageManager baggageManager) {
 		this.reportingRepository = reportingRepository;
-		this.tracer = tracer;
+		this.observationRegistry = observationRegistry;
+		this.baggageManager = baggageManager;
 	}
 
 	private void handleEvents(Event event, Map<String, Object> headers) {
 		log.info("Received the following message with headers [{}] and body [{}]", headers, event);
-		String testCommunicationType = BaggageField.getByName("TEST-COMMUNICATION-TYPE").getValue();
+		String testCommunicationType = TestCommunication.fromBaggage(baggageManager);
 		log.info("Found the following communication type [{}]", testCommunicationType);
-		Span newSpan = tracer.nextSpan().name("inside_reporting").start();
-		try (Tracer.SpanInScope ws = tracer.withSpanInScope(newSpan)) {
+		Observation observation = Observation.createNotStarted("metric.inside.reporting", this.observationRegistry)
+			.contextualName("inside_reporting").start();
+		observation.observe(() -> {
 			reportingRepository.createOrUpdate(event);
-			newSpan.annotate("savedEvent");
+			observation.event(new Observation.Event() {
+				@Override
+				public String getName() {
+					return "metric.inside.reporting.savedEvent";
+				}
+
+				@Override
+				public String getContextualName() {
+					return "savedEvent";
+				}
+			});
 			log.info("Saved event to the db [{}] [{}]", headers, event);
-		} finally {
-			newSpan.finish();
-		}
+		});
 	}
 
 	@Override

@@ -1,14 +1,16 @@
 package io.spring.cloud.samples.brewery.reporting;
 
-import io.spring.cloud.samples.brewery.common.events.Event;
-import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.spring.cloud.samples.brewery.common.events.Event;
+
+import org.springframework.stereotype.Component;
+
+//TODO: Rewrite to use in memory h2 or sth
 @Component
 class ReportingRepository {
 

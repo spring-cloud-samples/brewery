@@ -1,10 +1,10 @@
 package io.spring.cloud.samples.brewery.maturing;
 
-import brave.Span;
-import brave.Tracer;
-import brave.baggage.BaggageField;
-import brave.propagation.ExtraFieldPropagation;
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.tracing.BaggageManager;
 import io.spring.cloud.samples.brewery.common.BottlingService;
+import io.spring.cloud.samples.brewery.common.TestCommunication;
 import io.spring.cloud.samples.brewery.common.events.Event;
 import io.spring.cloud.samples.brewery.common.events.EventGateway;
 import io.spring.cloud.samples.brewery.common.events.EventType;
@@ -23,103 +23,98 @@ import static io.spring.cloud.samples.brewery.common.TestRequestEntityBuilder.re
 
 class BottlingServiceUpdater {
 
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(BottlingServiceUpdater.class);
-    private final BrewProperties brewProperties;
-    private final Tracer tracer;
-    private final PresentingServiceClient presentingServiceClient;
-    private final BottlingService bottlingService;
-    private final RestTemplate restTemplate;
-    private final EventGateway eventGateway;
-    private final CircuitBreakerFactory circuitBreakerFactory;
+	private static final Logger log = org.slf4j.LoggerFactory.getLogger(BottlingServiceUpdater.class);
+	private final BrewProperties brewProperties;
+	private final ObservationRegistry observationRegistry;
+	private final PresentingServiceClient presentingServiceClient;
+	private final BottlingService bottlingService;
+	private final RestTemplate restTemplate;
+	private final EventGateway eventGateway;
+	private final CircuitBreakerFactory circuitBreakerFactory;
 
-    public BottlingServiceUpdater(BrewProperties brewProperties,
-            Tracer tracer,
-            PresentingServiceClient presentingServiceClient,
-            BottlingService bottlingService,
-            RestTemplate restTemplate, EventGateway eventGateway, CircuitBreakerFactory circuitBreakerFactory) {
-        this.brewProperties = brewProperties;
-        this.tracer = tracer;
-        this.presentingServiceClient = presentingServiceClient;
-        this.bottlingService = bottlingService;
-        this.restTemplate = restTemplate;
-        this.eventGateway = eventGateway;
-        this.circuitBreakerFactory = circuitBreakerFactory;
-    }
+	private final BaggageManager baggageManager;
 
-    @Async
-    public void updateBottlingServiceAboutBrewedBeer(final Ingredients ingredients, String processId) {
-        Span trace = tracer.nextSpan().name("inside_maturing").start();
-        try (Tracer.SpanInScope ws = tracer.withSpanInScope(trace)) {
-            log.info("Updating bottling service. Current process id is equal [{}]", processId);
-            notifyPresentingService(processId);
-            brewBeer();
-            eventGateway.emitEvent(Event.builder().eventType(EventType.BEER_MATURED).processId(processId).build());
-            notifyBottlingService(ingredients, processId);
-        } finally {
-            trace.finish();
-        }
-    }
+	BottlingServiceUpdater(BrewProperties brewProperties,
+		ObservationRegistry observationRegistry,
+		PresentingServiceClient presentingServiceClient,
+		BottlingService bottlingService,
+		RestTemplate restTemplate, EventGateway eventGateway, CircuitBreakerFactory circuitBreakerFactory, BaggageManager baggageManager) {
+		this.brewProperties = brewProperties;
+		this.observationRegistry = observationRegistry;
+		this.presentingServiceClient = presentingServiceClient;
+		this.bottlingService = bottlingService;
+		this.restTemplate = restTemplate;
+		this.eventGateway = eventGateway;
+		this.circuitBreakerFactory = circuitBreakerFactory;
+		this.baggageManager = baggageManager;
+	}
 
-    private void brewBeer() {
-        try {
+	@Async
+	public void updateBottlingServiceAboutBrewedBeer(final Ingredients ingredients, String processId) {
+		Observation.createNotStarted("inside_maturing", observationRegistry).observe(() -> {
+			log.info("Updating bottling service. Current process id is equal [{}]", processId);
+			notifyPresentingService(processId);
+			brewBeer();
+			eventGateway.emitEvent(Event.builder().eventType(EventType.BEER_MATURED).processId(processId).build());
+			notifyBottlingService(ingredients, processId);
+		});
+	}
+
+	private void brewBeer() {
+		try {
 			Long timeout = brewProperties.getTimeout();
 			log.info("Brewing beer... it will take [{}] ms", timeout);
 			Thread.sleep(timeout);
-		} catch (InterruptedException e) {
+		}
+		catch (InterruptedException e) {
 			log.error("Exception occurred while brewing beer", e);
 		}
-    }
+	}
 
-    private void notifyPresentingService(String correlationId) {
-        log.info("Calling presenting from maturing");
-        Span scope = this.tracer.nextSpan().name("calling_presenting_from_maturing").start();
-        try (Tracer.SpanInScope ws = tracer.withSpanInScope(scope)) {
-            String testCommunicationType = BaggageField.getByName("TEST-COMMUNICATION-TYPE").getValue();
-            log.info("Found the following communication type [{}]", testCommunicationType);
-            switch (testCommunicationType) {
-            case "FEIGN":
-                callPresentingViaFeign(correlationId);
-                break;
-            default:
-                useRestTemplateToCallPresenting(correlationId);
-            }
-        } finally {
-            scope.finish();
-        }
-    }
+	private void notifyPresentingService(String correlationId) {
+		Observation.createNotStarted("inside_maturing", observationRegistry).observe(() -> {
+			log.info("Calling presenting from maturing");
+			String testCommunicationType = TestCommunication.fromBaggage(baggageManager);
+			log.info("Found the following communication type [{}]", testCommunicationType);
+			switch (testCommunicationType) {
+			case "FEIGN":
+				callPresentingViaFeign(correlationId);
+				break;
+			default:
+				useRestTemplateToCallPresenting(correlationId);
+			}
+		});
+	}
 
-    private void callPresentingViaFeign(String correlationId) {
-        presentingServiceClient.maturingFeed(correlationId, "FEIGN");
-    }
+	private void callPresentingViaFeign(String correlationId) {
+		presentingServiceClient.maturingFeed(correlationId, "FEIGN");
+	}
 
-    public void notifyBottlingService(Ingredients ingredients, String correlationId) {
-        circuitBreakerFactory.create("notifyBottlingService").run(() -> {
-            log.info("Calling bottling from maturing");
-            Span scope = this.tracer.nextSpan().name("calling_bottling_from_maturing").start();
-            try (Tracer.SpanInScope ws = tracer.withSpanInScope(scope)) {
-                bottlingService.bottle(new Wort(getQuantity(ingredients)), correlationId, "FEIGN");
-            } finally {
-                scope.finish();
-            }
-            return null;
-        });
-    }
+	public void notifyBottlingService(Ingredients ingredients, String correlationId) {
+		circuitBreakerFactory.create("notifyBottlingService").run(() -> {
+			Observation.createNotStarted("calling_bottling_from_maturing", observationRegistry).observe(() -> {
+				log.info("Calling bottling from maturing");
+				bottlingService.bottle(new Wort(getQuantity(ingredients)), correlationId, "FEIGN");
+			});
+			return null;
+		});
+	}
 
-    private void useRestTemplateToCallPresenting(String processId) {
-        log.info("Calling presenting - process id [{}]", processId);
-        restTemplate.exchange(requestEntity()
-                .processId(processId)
-                .contentTypeVersion(Version.PRESENTING_V1)
-                .serviceName(Collaborators.PRESENTING)
-                .url("feed/maturing")
-                .httpMethod(HttpMethod.PUT)
-                .build(), String.class);
-    }
+	private void useRestTemplateToCallPresenting(String processId) {
+		log.info("Calling presenting - process id [{}]", processId);
+		restTemplate.exchange(requestEntity()
+			.processId(processId)
+			.contentTypeVersion(Version.PRESENTING_V1)
+			.serviceName(Collaborators.PRESENTING)
+			.url("feed/maturing")
+			.httpMethod(HttpMethod.PUT)
+			.build(), String.class);
+	}
 
-    private Integer getQuantity(Ingredients ingredients) {
-        Assert.notEmpty(ingredients.ingredients, "Ingredients can't be null");
-        return ingredients.ingredients.get(0).getQuantity();
-    }
+	private Integer getQuantity(Ingredients ingredients) {
+		Assert.notEmpty(ingredients.ingredients, "Ingredients can't be null");
+		return ingredients.ingredients.get(0).getQuantity();
+	}
 
 }
 

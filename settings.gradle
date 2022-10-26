@@ -6,4 +6,5 @@ include 'brewing',
 		'common',
 		'acceptance-tests',
 		'config-server',
-		'gateway'
+		'gateway',
+		'eureka'

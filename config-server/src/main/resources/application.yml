@@ -1,3 +1,4 @@
+spring.application.name: config-server
 logging.file: build/config-server.log
 
 server.port: ${PORT:8888}
@@ -9,9 +10,23 @@ spring:
         git:
           uri: https://github.com/spring-cloud-samples/brewery-config.git
 
-spring.zipkin.enabled: false
-
 endpoints.health.sensitive: false
 endpoints.default.web.enabled: true
 management.security.enabled: false
 management.endpoints.web.base-path: /
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  tracing:
+      sampling:
+          probability: 1.0
+      baggage:
+          remote-fields:
+              - TEST-COMMUNICATION-TYPE
+          correlation:
+              fields:
+                  - TEST-COMMUNICATION-TYPE
+
+logging.pattern.level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

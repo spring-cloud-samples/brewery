@@ -29,15 +29,6 @@ buildscript {
 	}
 }
 
-def commonProject = project(':common')
-def acceptanceTestsProject = project(':acceptance-tests')
-def configServerProject = project(':config-server')
-def gateway = project(':gateway')
-def servers = [configServerProject]
-def techProjects = [commonProject, acceptanceTestsProject,
-					configServerProject]
-def nonDockerProjects = [commonProject, techProjects, acceptanceTestsProject]
-
 allprojects {
 	apply plugin: 'java'
 
@@ -48,35 +39,10 @@ allprojects {
 
 configure(subprojects) {
 
-	apply plugin: 'eclipse'
-	apply plugin: 'idea'
 	apply plugin: 'org.springframework.boot'
 	apply plugin: 'io.spring.dependency-management'
 
 	ext {
-		dockerConfiguration = { int port ->
-			if (hasProperty("docker")) {
-				int debugPort = port - 1000
-				dependsOn 'build'
-				dryRun true
-				addFile("${libsDir}/${project.name}-${buildNrLoc}.jar", "/${project.name}/${project.name}.jar")
-				exposePort(port)
-				exposePort(debugPort)
-				// Random beacuse of https://wiki.apache.org/tomcat/HowTo/FasterStartUp
-				entryPoint(['java', '-Xmx64m', '-Xss1024k',
-							"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=$debugPort",
-							'-Djava.security.egd=file:/dev/./urandom', '-jar', "/${project.name}/${project.name}.jar"])
-			} else {
-				getLogger().debug("docker property is not set")
-			}
-		}
-		createDockerTaskWithPort = { int port ->
-			if (hasProperty("docker")) {
-				project.task([type: Docker], "docker", ext.dockerConfiguration.curry(port))
-			} else {
-				getLogger().debug("docker property is not set")
-			}
-		}
 		systemPropsFromGradle = {
 			project.gradle.startParameter.systemPropertiesArgs.entrySet().collect{"-D${it.key}=${it.value}"}
 		}
@@ -87,10 +53,6 @@ configure(subprojects) {
 			String whatToTestProp = "WHAT_TO_TEST"
 			return propName.equalsIgnoreCase(project.gradle.startParameter.systemPropertiesArgs.get(whatToTestProp)) ?:
 					propName.equalsIgnoreCase(System.getenv(whatToTestProp))
-		}
-		cloudFoundrySet = {
-			String cloudFoundryProp = "CLOUD_FOUNDRY"
-			return "true".equalsIgnoreCase(getProp(cloudFoundryProp))
 		}
 		propOrSysEnvPresent = { String propName ->
 			project.hasProperty(propName) || systemPropsFromGradleContains(propName) || System.getenv(propName.toUpperCase())
@@ -142,8 +104,8 @@ configure(subprojects) {
 									System.getenv(propName) ?: project.getProperty(propName) ?: ""
 			}
 			// will come from Boot
-			mavenBom "io.micrometer:micrometer-bom:1.10.0-SNAPSHOT"
-			mavenBom "io.micrometer:micrometer-tracing-bom:1.0.0-SNAPSHOT"
+//			mavenBom "io.micrometer:micrometer-bom:1.10.0-SNAPSHOT"
+//			mavenBom "io.micrometer:micrometer-tracing-bom:1.0.0-SNAPSHOT"
 			mavenBom "org.springframework.cloud:spring-cloud-dependencies:${getProp("BOM_VERSION") }"
 			if (getProp("BOOT_VERSION")) {
 				String bootVersion = getProp("BOOT_VERSION")
@@ -153,90 +115,52 @@ configure(subprojects) {
 		}
 	}
 
-	task allDeps(type: DependencyReportTask) {}
-}
-
-logger.lifecycle("WHAT_TO_TEST is: System prop: [${project.gradle.startParameter.systemPropertiesArgs.get("WHAT_TO_TEST")}] , Env prop: [${System.getenv("WHAT_TO_TEST")}]")
-logger.lifecycle("CLOUD_FOUDRY set: [${System.getenv("CLOUD_FOUNDRY")}]")
-logger.lifecycle("BOM_VERSION is: [${getProp("BOM_VERSION")}]")
-
-configure(subprojects - gateway - acceptanceTestsProject - servers) {
-
-	dependencies {
-		implementation "org.springframework.boot:spring-boot-starter-web"
-		if (getProp("BOM_VERSION").startsWith("202")) {
-			implementation "org.springframework.cloud:spring-cloud-starter-bootstrap"
-		}
-		if (!whatToTest('SCS')) implementation "org.springframework.cloud:spring-cloud-starter-config"
-		if (whatToTest('SCS')) implementation("io.pivotal.spring.cloud:spring-cloud-services-starter-config-client")
-		if (whatToTest('SCS')) implementation("io.pivotal.spring.cloud:spring-cloud-services-starter-service-registry")
-		implementation "org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j"
-		implementation "org.springframework.cloud:spring-cloud-starter-stream-${propOrSysEnvPresent('kafka') ? 'kafka' : 'rabbit'}"
-		implementation "org.springframework.amqp:spring-amqp"
-		implementation "io.dropwizard.metrics:metrics-core"
-		implementation "io.dropwizard.metrics:metrics-graphite"
-
-		testImplementation(group: 'org.springframework.cloud', name: 'spring-cloud-stream', classifier: 'test-binder')
-	}
-}
-
-configure(nonDockerProjects) {
-
-	tasks.named("jar") {
-		enabled = true
-	}
-}
-
-if (hasProperty("docker")) {
-	configure(subprojects - nonDockerProjects) {
-
-		apply plugin: 'docker'
-
-		docker {
-			baseImage 'frolvlad/alpine-oraclejdk8'
-		}
-	}
-}
-
-configure(subprojects - commonProject - servers - gateway) {
-	dependencies {
-		implementation(commonProject)
-	}
-}
-
-configure(subprojects - techProjects - gateway) {
-	dependencies {
-		implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
-	}
-}
-
-configure(subprojects - techProjects ) {
 	dependencies {
 		implementation "org.springframework.boot:spring-boot-starter-actuator"
-		implementation 'com.fasterxml.jackson.core:jackson-databind'
-		if (!cloudFoundrySet() && !whatToTest('CONSUL') && !whatToTest('EUREKA') && !whatToTest('SCS')) {
+		if (!whatToTest('CONSUL') && !whatToTest('EUREKA')) {
 			implementation "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery"
 		}
 		if (whatToTest('CONSUL')) { implementation "org.springframework.cloud:spring-cloud-starter-consul-discovery" }
-		if (whatToTest('WAVEFRONT')) {
-			implementation("io.micrometer:micrometer-tracing-reporter-wavefront")
-		}
+		implementation "org.springframework.cloud:spring-cloud-starter-stream-${propOrSysEnvPresent('kafka') ? 'kafka' : 'rabbit'}"
 		implementation 'org.apache.commons:commons-lang3:3.4'
+		implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+		implementation "org.springframework:spring-messaging"
+
+		// TODO: Why is this needed?
 		implementation 'com.jayway.jsonpath:json-path-assert:2.0.0'
 		implementation 'org.yaml:snakeyaml'
-//        implementation 'org.hibernate:hibernate-validator'
 		implementation "org.aspectj:aspectjrt"
-
-		// tracing
-		implementation "io.micrometer:micrometer-tracing-bridge-brave"
-
 		implementation 'cglib:cglib-nodep:3.1'
 		implementation 'org.objenesis:objenesis:2.2'
 		implementation 'org.aspectj:aspectjweaver'
+
+		// Observability
+		runtimeOnly 'com.github.loki4j:loki-logback-appender:1.3.2'
+		implementation "io.micrometer:context-propagation:1.0.0-RC1" // TODO: Will come from Micrometer-Tracing
+		implementation 'io.micrometer:micrometer-registry-prometheus'
+		if (propOrSysEnvPresent('brave')) { // TODO: Parameterize this in the script options
+			implementation "io.micrometer:micrometer-tracing-bridge-brave"
+			if (!whatToTest('WAVEFRONT')) {
+				implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+			}
+		} else {
+			implementation "io.micrometer:micrometer-tracing-bridge-otel"
+			if (!whatToTest('WAVEFRONT')) {
+				implementation 'io.opentelemetry:opentelemetry-exporter-zipkin'
+			}
+		}
+		if (whatToTest('WAVEFRONT')) { implementation("io.micrometer:micrometer-tracing-reporter-wavefront") }
+
+		testImplementation(group: 'org.springframework.cloud', name: 'spring-cloud-stream', classifier: 'test-binder')
 	}
 
-	bootRun {
-		jvmArgs = systemPropsFromGradle()
+	task allDeps(type: DependencyReportTask) {}
+
+	java {
+		registerFeature('optional') {
+			usingSourceSet(sourceSets.main)
+		}
+
 	}
 
 	test {
@@ -247,6 +171,10 @@ configure(subprojects - techProjects ) {
 		}
 	}
 }
+
+
+logger.lifecycle("WHAT_TO_TEST is: System prop: [${project.gradle.startParameter.systemPropertiesArgs.get("WHAT_TO_TEST")}] , Env prop: [${System.getenv("WHAT_TO_TEST")}]")
+logger.lifecycle("BOM_VERSION is: [${getProp("BOM_VERSION")}]")
 
 String getProp(String propName) {
 	return System.properties[propName] ?:

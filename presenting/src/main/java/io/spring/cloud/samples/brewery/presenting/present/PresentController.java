@@ -1,9 +1,9 @@
 package io.spring.cloud.samples.brewery.presenting.present;
 
-import brave.Span;
-import brave.Tracer;
-import brave.baggage.BaggageField;
-import brave.propagation.ExtraFieldPropagation;
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.tracing.BaggageManager;
+import io.spring.cloud.samples.brewery.common.TestCommunication;
 import io.spring.cloud.samples.brewery.presenting.config.Collaborators;
 import io.spring.cloud.samples.brewery.presenting.config.Versions;
 import io.spring.cloud.samples.brewery.presenting.feed.FeedRepository;
@@ -34,62 +34,61 @@ class PresentController {
 	private static final Logger log = org.slf4j.LoggerFactory.getLogger(PresentController.class);
 
 	private final FeedRepository feedRepository;
-	private final Tracer tracer;
+	private final ObservationRegistry observationRegistry;
 	private final BrewingServiceClient aggregationServiceClient;
 	private final RestTemplate restTemplate;
 
+	private final BaggageManager baggageManager;
+
 	@Autowired
-	public PresentController(FeedRepository feedRepository, Tracer tracer,
-			BrewingServiceClient aggregationServiceClient, @LoadBalanced RestTemplate restTemplate) {
+	public PresentController(FeedRepository feedRepository, ObservationRegistry observationRegistry,
+		BrewingServiceClient aggregationServiceClient, @LoadBalanced RestTemplate restTemplate, BaggageManager baggageManager) {
 		this.feedRepository = feedRepository;
-		this.tracer = tracer;
+		this.observationRegistry = observationRegistry;
 		this.aggregationServiceClient = aggregationServiceClient;
 		this.restTemplate = restTemplate;
+		this.baggageManager = baggageManager;
 	}
 
 	@RequestMapping(
-			value = "/order",
-			method = POST)
+		value = "/order",
+		method = POST)
 	String order(HttpEntity<String> body) {
 		String processIdFromHeaders = body.getHeaders().getFirst(PROCESS_ID_HEADER_NAME);
 		String processId = StringUtils.hasText(body.getHeaders().getFirst(PROCESS_ID_HEADER_NAME)) ?
-				processIdFromHeaders :
-				new JdkIdGenerator().generateId().toString();
+			processIdFromHeaders :
+			new JdkIdGenerator().generateId().toString();
 		log.info("Making new order with [{}] and processid [{}].", body.getBody(), processId);
-		Span span = this.tracer.nextSpan().name("inside_presenting").start();
-		Tracer.SpanInScope ws = tracer.withSpanInScope(span);
-		try {
-			String testCommunicationType = BaggageField.getByName("TEST-COMMUNICATION-TYPE").getValue();
-			log.info("Found the following communication type [{}]", testCommunicationType);
-			switch (testCommunicationType) {
-			case "FEIGN":
-				return useFeignToCallAggregation(body, processId);
-			default:
-				return useRestTemplateToCallAggregation(body, processId);
-			}
-		} finally {
-			span.finish();
-			ws.close();
-		}
+		return Observation.createNotStarted("inside_presenting", observationRegistry)
+			.observe(() -> {
+				String testCommunicationType = TestCommunication.fromBaggage(baggageManager);
+				log.info("Found the following communication type [{}]", testCommunicationType);
+				switch (testCommunicationType) {
+				case "FEIGN":
+					return useFeignToCallAggregation(body, processId);
+				default:
+					return useRestTemplateToCallAggregation(body, processId);
+				}
+				});
 	}
 
 	private String useRestTemplateToCallAggregation(HttpEntity<String> body, String processId) {
 		return restTemplate.exchange(requestEntity()
-				.contentTypeVersion(Versions.BREWING_CONTENT_TYPE_V1)
-				.serviceName(Collaborators.BREWING)
-				.url("ingredients")
-				.httpMethod(HttpMethod.POST)
-				.processId(processId)
-				.body(body.getBody())
-				.build(), String.class).getBody();
+			.contentTypeVersion(Versions.BREWING_CONTENT_TYPE_V1)
+			.serviceName(Collaborators.BREWING)
+			.url("ingredients")
+			.httpMethod(HttpMethod.POST)
+			.processId(processId)
+			.body(body.getBody())
+			.build(), String.class).getBody();
 	}
 
 	private String useFeignToCallAggregation(HttpEntity<String> body, String processId) {
-		String testCommunicationType = BaggageField.getByName("TEST-COMMUNICATION-TYPE").getValue();
+		String testCommunicationType = TestCommunication.fromBaggage(baggageManager);
 		log.info("Found the following communication type [{}]", testCommunicationType);
 		return aggregationServiceClient.getIngredients(body.getBody(),
-				processId,
-				testCommunicationType);
+			processId,
+			testCommunicationType);
 	}
 
 	@RequestMapping(value = "/maturing", method = GET)
