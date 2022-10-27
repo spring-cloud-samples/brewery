@@ -103,15 +103,15 @@ configure(subprojects) {
 							hasProperty(propName) ? property(propName) :
 									System.getenv(propName) ?: project.getProperty(propName) ?: ""
 			}
-			// will come from Boot
-//			mavenBom "io.micrometer:micrometer-bom:1.10.0-SNAPSHOT"
-//			mavenBom "io.micrometer:micrometer-tracing-bom:1.0.0-SNAPSHOT"
 			mavenBom "org.springframework.cloud:spring-cloud-dependencies:${getProp("BOM_VERSION") }"
 			if (getProp("BOOT_VERSION")) {
 				String bootVersion = getProp("BOOT_VERSION")
 				logger.lifecycle("Using boot in version [${bootVersion}]")
 				mavenBom "org.springframework.boot:spring-boot-dependencies:${bootVersion}"
 			}
+			// will come from Boot
+			mavenBom "io.micrometer:micrometer-bom:1.10.0-SNAPSHOT" // TODO: Should come from Boot
+			mavenBom "io.micrometer:micrometer-tracing-bom:1.0.0-SNAPSHOT" // TODO: Should come from Boot
 		}
 	}
 

@@ -1,4 +1,5 @@
 dependencies {
+	optionalApi "org.springframework.boot:spring-boot-autoconfigure"
 	optionalApi "org.springframework.boot:spring-boot-starter-web"
 }
 
