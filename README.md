@@ -100,7 +100,7 @@ Brewing service contains the following functionalities:
 ## How to build it?
 
 ```
-./gradlew clean build
+./mvnw clean install
 ```
 
 ## How to build one module?
@@ -108,7 +108,7 @@ Brewing service contains the following functionalities:
 E.g. `brewing` module
 
 ```
-./gradlew brewing:clean brewing:build
+./mvnw clean install -pl brewing
 ```
 
 ## How to run it?
@@ -121,39 +121,8 @@ YOU NEED DOCKER-COMPOSE INSTALLED TO RUN THE BREWERY ON YOUR LOCAL MACHINE!
 
 The easiest way is to:
 
-* GO to the cloned `brewery` where you have the `runAcceptanceTests.sh` script (which in fact is already a symbolic link to `acceptance-tests/scripts/runDockerAcceptanceTests.sh`
- for your convenience)
-* You can execute that script with such options
-
-```
-GLOBAL:
--t  |--whattotest  - define what you want to test (i.e. SLEUTH, ZOOKEEPER, SLEUTH, EUREKA, CONSUL, SCS)
--v  |--version - which version of BOM do you want to use? Defaults to Brixton snapshot
--sv |--scsversion - which version of BOM for Spring Cloud Services do you want to use? Defaults to 1.1.2.BUILD-SNAPSHOT
--h  |--healthhost - what is your health host? where is docker? defaults to localhost
--l  |--numberoflines - how many lines of logs of your app do you want to print? Defaults to 1000
--r  |--reset - do you want to reset the git repo of brewery? Defaults to "no"
--ke |--killattheend - should kill all the running apps at the end of execution? Defaults to "no"
--n  |--killnow - should not run all the logic but only kill the running apps? Defaults to "no"
--x  |--skiptests - should skip running of e2e tests? Defaults to "no"
--s  |--skipbuilding - should skip building of the projects? Defaults to "no"
--k  |--kafka - uses Kafka instead of RabbitMQ
--d  |--skipdeployment - should skip deployment of apps? Defaults to "no"
--a  |--deployonlyapps - should deploy only the brewery business apps instead of the infra too? Defaults to "no"
--b  |--bootversion - Which version of Boot should be used? Defaults to 1.4.4.RELEASE for the plugin and to boot version used by libs
--ve |--verbose - Will print all library versions
-
-CLOUD FOUNDRY RELATED PROPERTIES:
--c  |--usecloudfoundry - should run tests for cloud foundry? (works only for SLEUTH) Defaults to "no"
--cd |--cloudfoundrydomain - what's the domain of your cloud foundry? Defaults to "run.pivotal.io"
--cu |--username - username to log in with to CF
--cp |--password - password to log in with to CF
--cpr|--cloudfoundryprefix - provides the prefix to the brewery app name. Defaults to 'brewery'
--cs |--space - provides the space for Cloud Foundry. Defaults to 'brewery'
--co |--org - provides the prefix to the brewery app name. Defaults to 'brewery'
-```
-
-* For more options just run `runAcceptanceTests.sh` without any options or with `--help` switch
+* GO to the cloned `brewery` where you have the `runAcceptanceTests.sh` script
+* For all options just run `runAcceptanceTests.sh` without any options or with `--help` switch
 
 Once you run the script, the brewery app will be cloned, built with proper lib versions and proper tests
 will be executed.
@@ -222,7 +191,7 @@ bash runAcceptanceTests.sh -n
 To run a single module just execute (e.g. `presenting` module):
 
 ```
-./gradlew presenting:bootRun -Dspring.profiles.active=dev
+./gradlew spring-boot:run -Dspring.profiles.active=dev -pl presenting
 ```
 
 ## Authors

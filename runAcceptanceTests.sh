@@ -222,8 +222,8 @@ LOCALHOST="127.0.0.1"
 MEM_ARGS="-Xmx128m -Xss1024k"
 SLEEP_TIME_FOR_DISCOVERY="${SLEEP_TIME_FOR_DISCOVERY:-30}"
 
-BOOT_VERSION_PROP_NAME="BOOT_VERSION"
-BOM_VERSION_PROP_NAME="BOM_VERSION"
+BOOT_VERSION_PROP_NAME="spring-boot.version"
+BOM_VERSION_PROP_NAME="spring-cloud.version"
 
 # ======================================= VARIABLES END =======================================
 
@@ -419,9 +419,9 @@ APP_WAIT_TIME=1
 APP_FAILED="yes"
 WORK_OFFLINE="${WORK_OFFLINE:-false}"
 
-PARAMS="--daemon"
+PARAMS=""
 if [[ "${WORK_OFFLINE}" == "false" ]]; then
-	PARAMS="${PARAMS} --refresh-dependencies"
+	PARAMS="${PARAMS} -U"
 else
 	PARAMS="${PARAMS} --offline"
 fi
@@ -433,21 +433,35 @@ if [[ "${VERSION}" != "" ]]; then
 	echo "Will use BOM in version [${VERSION}]"
 	PARAMS="${PARAMS} -D${BOM_VERSION_PROP_NAME}=${VERSION}"
 fi
-PARAMS="${PARAMS} -P${TRACER}"
-echo -e "\n\nPassing following Gradle parameters [${PARAMS}]\n\n"
+PROFILES="${TRACER}"
+echo -e "\n\nPassing following Maven parameters [${PARAMS}]\n\n"
 
 if [[ -z "${SKIP_BUILDING}" ]]; then
 	if [[ "${KAFKA}" == "yes" ]]; then
 		echo "Will use Kafka as a message broker"
-		PARAMS="${PARAMS} -Pkafka"
+		PROFILES="${PROFILES},kafka"
+	else
+	  PROFILES="${PROFILES},rabbit"
+	fi
+	if [[ "${WHAT_TO_TEST}" == "WAVEFRONT" ]]; then
+		echo "Will use Wavefront"
+		PROFILES="${PROFILES},wavefront,zookeeper"
+	else
+	  if [[ "${WHAT_TO_TEST}" == "CONSUL" ]]; then
+	    PROFILES="${PROFILES},consul"
+	  fi
+	  if [[ "${WHAT_TO_TEST}" == "EUREKA" ]]; then
+	    PROFILES="${PROFILES},eureka"
+	  fi
+	  PROFILES="${PROFILES},${TRACER}-zipkin"
 	fi
 	for i in $(seq 1 "${APP_BUILDING_RETRIES}"); do
-		./gradlew clean ${PARAMS} --parallel
+		# ./gradlew clean ${PARAMS} --parallel # TODO: Fix me
 		if [[ "${VERBOSE}" == "yes" ]]; then
 			echo -e "\n\nPrinting the dependency tree for all projects\n\n"
-			./gradlew allDeps
+			./mvnw dependency:tree
 		fi
-		./gradlew build ${PARAMS} && APP_FAILED="no" && break
+		./mvnw clean install ${PARAMS} -P"${PROFILES}" -DskipTests && APP_FAILED="no" && break
 		echo "Fail #$i/${APP_BUILDING_RETRIES}... will try again in [${APP_WAIT_TIME}] seconds"
 	done
 else
