@@ -6,7 +6,6 @@ dockerComposeFile="docker-compose-${WHAT_TO_TEST}.yml"
 kill_docker
 docker-compose -f $dockerComposeFile kill
 docker-compose -f $dockerComposeFile pull
-docker-compose -f $dockerComposeFile build
 
 if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
     echo -e "\n\nBooting up RabbitMQ"
@@ -33,6 +32,18 @@ if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
     echo "Zookeeper failed to start..."
     exit 1
 fi
+
+READY_FOR_TESTS="no"
+PORT_TO_CHECK=3100
+echo "Run the rest of infra"
+docker-compose -f $dockerComposeFile  up -d zipkin loki prometheus grafana
+netcat_local_port $PORT_TO_CHECK && READY_FOR_TESTS="yes"
+
+if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
+    echo "Loki failed to start..."
+    exit 1
+fi
+
 
 # Boot config-server
 READY_FOR_TESTS="no"

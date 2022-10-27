@@ -1,6 +1,6 @@
 buildscript {
 	repositories {
-		mavenLocal()
+//		mavenLocal()
 		mavenCentral()
 		maven {
 			url "https://repo.spring.io/snapshot"
@@ -83,7 +83,7 @@ configure(subprojects) {
 	}
 
 	repositories {
-		mavenLocal()
+//		mavenLocal()
 		mavenCentral()
 		maven {
 			url "https://repo.spring.io/snapshot"

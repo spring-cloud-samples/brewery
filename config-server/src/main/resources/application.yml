@@ -13,7 +13,6 @@ spring:
 endpoints.health.sensitive: false
 endpoints.default.web.enabled: true
 management.security.enabled: false
-management.endpoints.web.base-path: /
 management:
   endpoints:
     web:

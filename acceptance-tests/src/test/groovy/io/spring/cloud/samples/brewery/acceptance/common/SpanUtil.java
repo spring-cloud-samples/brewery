@@ -1,10 +1,16 @@
 package io.spring.cloud.samples.brewery.acceptance.common;
 
+import java.util.Random;
+
 /**
  * @author Marcin Grzejszczak
  * @since
  */
 public class SpanUtil {
+
+	public static String generateReferenceProcessId() {
+		return "00-0000000000000000" + SpanUtil.idToHex(new Random().nextLong()) + "-" + SpanUtil.idToHex(new Random().nextLong()) + "-01";
+	}
 
 	/**
 	 * Represents given long id as 16-character lower-hex string

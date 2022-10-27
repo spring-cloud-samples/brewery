@@ -1,5 +1,6 @@
 package io.spring.cloud.samples.brewery.acceptance;
 
+import io.spring.cloud.samples.brewery.acceptance.common.WhatToTest;
 import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConditions;
 import org.junit.jupiter.api.Test;
 
@@ -15,8 +16,8 @@ public class SystemPropertyValidityTests {
 
 	static class WhatToTestSystemPropertyNotPassedOrIsWrongException extends RuntimeException {
 		WhatToTestSystemPropertyNotPassedOrIsWrongException() {
-			super("System property 'WHAT_TO_TEST' is equal [${System.getProperty('WHAT_TO_TEST')}]. Valid entries" +
-					" are ${WhatToTest.values()}");
+			super("System property 'WHAT_TO_TEST' is equal [" + System.getProperty("WHAT_TO_TEST") + "]  Valid entries" +
+					" are " + WhatToTest.values());
 		}
 	}
 }

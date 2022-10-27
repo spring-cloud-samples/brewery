@@ -177,7 +177,8 @@ USAGE:
 You can use the following options:
 
 GLOBAL:
--t  |--whattotest  - define what you want to test (i.e. ZOOKEEPER, SLEUTH, EUREKA, CONSUL, SCS)
+-t  |--whattotest  - define what you want to test (i.e. ZOOKEEPER, EUREKA, CONSUL, SCS)
+-tr |--tracer  - which tracer to use (i.e. "brave", "otel") - defaults to "otel"
 -v  |--version - which version of BOM do you want to use? Defaults to current release train snapshot
 -h  |--healthhost - what is your health host? where is docker? defaults to localhost
 -l  |--numberoflines - how many lines of logs of your app do you want to print? Defaults to 1000
@@ -219,7 +220,7 @@ if [[ -z "${JAVA_HOME}" ]]; then
 fi
 LOCALHOST="127.0.0.1"
 MEM_ARGS="-Xmx128m -Xss1024k"
-SLEEP_TIME_FOR_DISCOVERY="${SLEEP_TIME_FOR_DISCOVERY:-90}"
+SLEEP_TIME_FOR_DISCOVERY="${SLEEP_TIME_FOR_DISCOVERY:-30}"
 
 BOOT_VERSION_PROP_NAME="BOOT_VERSION"
 BOM_VERSION_PROP_NAME="BOM_VERSION"
@@ -237,6 +238,10 @@ while [[ $# > 0 ]]; do
 	case ${key} in
 	-t | --whattotest)
 		WHAT_TO_TEST="$2"
+		shift # past argument
+		;;
+	-tr| --tracer)
+		TRACER="$2"
 		shift # past argument
 		;;
 	-v | --version)
@@ -302,13 +307,14 @@ while [[ $# > 0 ]]; do
 done
 
 [[ -z "${WHAT_TO_TEST}" ]] && WHAT_TO_TEST=ZOOKEEPER
+[[ -z "${TRACER}" ]] && TRACER=otel
 [[ -z "${VERSION}" ]] && VERSION="${DEFAULT_VERSION}"
 [[ -z "${HEALTH_HOST}" ]] && HEALTH_HOST="${DEFAULT_HEALTH_HOST}"
 [[ -z "${NUMBER_OF_LINES_TO_LOG}" ]] && NUMBER_OF_LINES_TO_LOG="${DEFAULT_NUMBER_OF_LINES_TO_LOG}"
 [[ -z "${REPO_BRANCH}" ]] && REPO_BRANCH="main"
 
 HEALTH_PORTS=('9991' '9992' '9993' '9994' '9995')
-HEALTH_ENDPOINTS="$(printf "http://${LOCALHOST}:%s/health " "${HEALTH_PORTS[@]}")"
+HEALTH_ENDPOINTS="$(printf "http://${LOCALHOST}:%s/actuator/health " "${HEALTH_PORTS[@]}")"
 ACCEPTANCE_TEST_OPTS="${ACCEPTANCE_TEST_OPTS:--DLOCAL_URL=http://${HEALTH_HOST}}"
 
 cat <<EOF
@@ -318,6 +324,7 @@ Running tests with the following parameters
 REPO_BRANCH=${REPO_BRANCH}
 HEALTH_HOST=${HEALTH_HOST}
 WHAT_TO_TEST=${WHAT_TO_TEST}
+TRACER=${TRACER}
 VERSION=${VERSION}
 NUMBER_OF_LINES_TO_LOG=${NUMBER_OF_LINES_TO_LOG}
 KILL_AT_THE_END=${KILL_AT_THE_END}
@@ -339,6 +346,7 @@ EOF
 
 # ======================================= EXPORTING VARS START =======================================
 export WHAT_TO_TEST=${WHAT_TO_TEST}
+export TRACER=${TRACER}
 export VERSION=${VERSION}
 export HEALTH_HOST=${HEALTH_HOST}
 export WAIT_TIME=${WAIT_TIME}
@@ -425,6 +433,7 @@ if [[ "${VERSION}" != "" ]]; then
 	echo "Will use BOM in version [${VERSION}]"
 	PARAMS="${PARAMS} -D${BOM_VERSION_PROP_NAME}=${VERSION}"
 fi
+PARAMS="${PARAMS} -P${TRACER}"
 echo -e "\n\nPassing following Gradle parameters [${PARAMS}]\n\n"
 
 if [[ -z "${SKIP_BUILDING}" ]]; then
@@ -499,11 +508,6 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]]; then
 		kill_all_apps_if_switch_on
 		exit 1
 	fi
-	# legacy
-	export SLEEP_TIME_FOR_EUREKA="${SLEEP_TIME_FOR_EUREKA:-}"
-	if [[ "${SLEEP_TIME_FOR_EUREKA}" != "" ]]; then
-		SLEEP_TIME_FOR_DISCOVERY="${SLEEP_TIME_FOR_EUREKA}"
-	fi
 	echo -e "\n\nWaiting for [${SLEEP_TIME_FOR_DISCOVERY}] secs for the apps to register in service discovery!"
 	sleep ${SLEEP_TIME_FOR_DISCOVERY}
 else
@@ -524,7 +528,7 @@ fi
 if [[ "${READY_FOR_TESTS}" == "yes" ]]; then
 	echo -e "\n\nSuccessfully booted up all the apps. Proceeding with the acceptance tests"
 	echo -e "\n\nRunning acceptance tests with the following parameters [-DWHAT_TO_TEST=${WHAT_TO_TEST} ${ACCEPTANCE_TEST_OPTS}]"
-	./gradlew ${PARAMS} :acceptance-tests:acceptanceTests "-DWHAT_TO_TEST=${WHAT_TO_TEST}" ${ACCEPTANCE_TEST_OPTS} --stacktrace --daemon --configure-on-demand && TESTS_PASSED="yes"
+	./gradlew ${PARAMS} :acceptance-tests:acceptanceTests "-DWHAT_TO_TEST=${WHAT_TO_TEST}" ${ACCEPTANCE_TEST_OPTS} --stacktrace --configure-on-demand && TESTS_PASSED="yes"
 fi
 
 # Check the result of tests execution

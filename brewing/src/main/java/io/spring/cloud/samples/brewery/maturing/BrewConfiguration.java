@@ -7,7 +7,6 @@ import io.spring.cloud.samples.brewery.common.TestConfiguration;
 import io.spring.cloud.samples.brewery.common.events.EventGateway;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
@@ -21,17 +20,11 @@ import org.springframework.web.client.RestTemplate;
 class BrewConfiguration {
 
 	@Bean
-	@LoadBalanced
-	RestTemplate brewLoadBalancedRestTemplate(RestTemplateBuilder restTemplateBuilder) {
-		return restTemplateBuilder.build();
-	}
-
-	@Bean
 	BottlingServiceUpdater bottlingServiceUpdater(ObservationRegistry observationRegistry, PresentingServiceClient presentingServiceClient,
-		BottlingService bottlingService, RestTemplateBuilder restTemplateBuilder,
+		BottlingService bottlingService, @LoadBalanced RestTemplate restTemplate,
 		EventGateway eventGateway, CircuitBreakerFactory circuitBreakerFactory, BaggageManager baggageManager, BrewProperties properties) {
 		return new BottlingServiceUpdater(properties, observationRegistry, presentingServiceClient,
-			bottlingService, brewLoadBalancedRestTemplate(restTemplateBuilder), eventGateway, circuitBreakerFactory, baggageManager);
+			bottlingService, restTemplate, eventGateway, circuitBreakerFactory, baggageManager);
 	}
 
 }

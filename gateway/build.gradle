@@ -1,4 +1,5 @@
 dependencies {
+	implementation project(":common")
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
 	// Why do we need this?
 	implementation "org.springframework.cloud:spring-cloud-starter-bootstrap"

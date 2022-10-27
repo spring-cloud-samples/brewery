@@ -96,7 +96,7 @@ abstract class AbstractBreweryAcceptance {
 		base16(parent-id) = 00f067aa0ba902b7
 		base16(trace-flags) = 01  // sampled
 		 */
-		String referenceProcessId = "00-0000000000000000" + SpanUtil.idToHex(new Random().nextLong()) + "-" + SpanUtil.idToHex(new Random().nextLong()) + "-01"
+		String referenceProcessId = SpanUtil.generateReferenceProcessId();
 		RequestEntity requestEntity = an_order_for_all_ingredients_with_process_id(referenceProcessId, communicationType);
 		// when:
 		presenting_service_has_been_called(requestEntity);
@@ -105,6 +105,8 @@ abstract class AbstractBreweryAcceptance {
 		presenting_service_has_been_called(requestEntity);
 		// then:
 		beer_has_been_brewed_for_process_id(referenceProcessId);
+		// and:
+		entry_for_trace_id_is_present_in_Zipkin(referenceProcessId.split("-")[1])
 	}
 
 	void entry_for_trace_id_is_present_in_Zipkin(String traceId) {

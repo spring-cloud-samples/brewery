@@ -10,18 +10,34 @@ datasources:
         httpMethod: POST
         exemplarTraceIdDestinations:
           - name: trace_id
-            datasourceUid: tempo
-    - name: Tempo
-      type: tempo
+            datasourceUid: zipkin
+#            datasourceUid: tempo
+#    - name: Tempo
+#      type: tempo
+#      access: proxy
+#      orgId: 1
+#      url: http://tempo:3200
+#      basicAuth: false
+#      isDefault: true
+#      version: 1
+#      editable: false
+#      apiVersion: 1
+#      uid: tempo
+#      jsonData:
+#          httpMethod: GET
+#          tracesToLogs:
+#              datasourceUid: 'loki'
+    - name: Zipkin
+      type: zipkin
       access: proxy
       orgId: 1
-      url: http://tempo:3200
+      url: http://zipkin:9411
       basicAuth: false
       isDefault: true
       version: 1
       editable: false
       apiVersion: 1
-      uid: tempo
+      uid: zipkin
       jsonData:
           httpMethod: GET
           tracesToLogs:
@@ -39,7 +55,8 @@ datasources:
       apiVersion: 1
       jsonData:
           derivedFields:
-              -   datasourceUid: tempo
+#              -   datasourceUid: tempo
+              -   datasourceUid: zipkin
                   matcherRegex: \[.+,(.+?),
                   name: TraceID
                   url: $${__value.raw}

@@ -12,7 +12,6 @@ import io.micrometer.tracing.BaggageManager;
 import io.spring.cloud.samples.brewery.common.TestConfiguration;
 import io.spring.cloud.samples.brewery.common.events.EventGateway;
 
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JCircuitBreakerFactory;
 import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JConfigurationProperties;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
@@ -31,21 +30,15 @@ class BottlingConfiguration {
 	@Bean
 	BottlerService bottlingService(BottlingWorker bottlingWorker,
 		PresentingClient presentingClient,
-		ObservationRegistry observationRegistry, CircuitBreakerFactory circuitBreakerFactory, RestTemplateBuilder restTemplateBuilder, BaggageManager baggageManager) {
-		return new BottlerService(bottlingWorker, presentingClient, bottlingLoadBalancedRestTemplate(restTemplateBuilder), observationRegistry, circuitBreakerFactory, baggageManager);
-	}
-
-	@Bean
-	@LoadBalanced
-	RestTemplate bottlingLoadBalancedRestTemplate(RestTemplateBuilder restTemplateBuilder) {
-		return restTemplateBuilder.build();
+		ObservationRegistry observationRegistry, CircuitBreakerFactory circuitBreakerFactory, @LoadBalanced RestTemplate restTemplate, BaggageManager baggageManager) {
+		return new BottlerService(bottlingWorker, presentingClient, restTemplate, observationRegistry, circuitBreakerFactory, baggageManager);
 	}
 
 	@Bean
 	BottlingWorker bottlingWorker(ObservationRegistry observationRegistry,
 		PresentingClient presentingClient,
-		RestTemplateBuilder restTemplateBuilder, EventGateway eventGateway, BaggageManager baggageManager) {
-		return new BottlingWorker(observationRegistry, presentingClient, bottlingLoadBalancedRestTemplate(restTemplateBuilder), eventGateway, baggageManager);
+		@LoadBalanced RestTemplate restTemplate, EventGateway eventGateway, BaggageManager baggageManager) {
+		return new BottlingWorker(observationRegistry, presentingClient, restTemplate, eventGateway, baggageManager);
 	}
 
 	@Bean
