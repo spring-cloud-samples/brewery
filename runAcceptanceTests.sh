@@ -181,7 +181,6 @@ GLOBAL:
 -v  |--version - which version of BOM do you want to use? Defaults to current release train snapshot
 -h  |--healthhost - what is your health host? where is docker? defaults to localhost
 -l  |--numberoflines - how many lines of logs of your app do you want to print? Defaults to 1000
--r  |--reset - do you want to reset the git repo of brewery? Defaults to "no"
 -ke |--killattheend - should kill all the running apps at the end of execution? Defaults to "no"
 -n  |--killnow - should not run all the logic but only kill the running apps? Defaults to "no"
 -x  |--skiptests - should skip running of e2e tests? Defaults to "no"
@@ -250,9 +249,6 @@ while [[ $# > 0 ]]; do
 	-l | --numberoflines)
 		NUMBER_OF_LINES_TO_LOG="$2"
 		shift # past argument
-		;;
-	-r | --reset)
-		RESET="yes"
 		;;
 	-ke | --killattheend)
 		KILL_AT_THE_END="yes"
@@ -360,7 +356,6 @@ export DEFAULT_HEALTH_HOST=${DEFAULT_HEALTH_HOST}
 export BOOT_VERSION=${BOOT_VERSION}
 export VERBOSE=${VERBOSE}
 
-export -f reset
 export -f tail_log
 export -f print_logs
 export -f netcat_port
@@ -393,10 +388,6 @@ if [[ ! -e "${REPO_LOCAL}/.git" ]]; then
 	git checkout "${REPO_BRANCH}"
 else
 	cd "${REPO_LOCAL}"
-	if [[ ${RESET} ]]; then
-		git reset --hard
-		git pull "${REPO_URL}" "${REPO_BRANCH}"
-	fi
 fi
 CURRENT_DIR=$(pwd)
 
