@@ -6,23 +6,23 @@ services:
 language: groovy
 
 jdk:
-- oraclejdk8
+  - oraclejdk8
 
 install:
-- true
+  - true
 
 before_script:
- - "echo $JAVA_OPTS"
- - "export JAVA_OPTS=-Xmx256m"
+  - "echo $JAVA_OPTS"
+  - "export JAVA_OPTS=-Xmx256m"
 
 script:
-- ./gradlew clean build --parallel $SWITCH
+  - ./gradlew clean build --parallel $SWITCH
 
 env:
   global:
-  - TERM=dumb
-  - SHOULD_START_RABBIT=no
-  - RETRIES=200
+    - TERM=dumb
+    - SHOULD_START_RABBIT=no
+    - RETRIES=200
   matrix:
     - SWITCH='-DWHAT_TO_TEST=SLEUTH'
     - SWITCH='-DWHAT_TO_TEST=ZOOKEEPER'

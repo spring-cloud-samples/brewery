@@ -12,24 +12,24 @@ import java.util.Set;
 @RestController
 class ReportingController {
 
-	private final ReportingRepository reportingRepository;
+    private final ReportingRepository reportingRepository;
 
-	@Autowired
-	public ReportingController(ReportingRepository reportingRepository) {
-		this.reportingRepository = reportingRepository;
-	}
+    @Autowired
+    public ReportingController(ReportingRepository reportingRepository) {
+        this.reportingRepository = reportingRepository;
+    }
 
-	@RequestMapping("/events/{processId}")
-	public ResponseEntity<?> beerEvents(@PathVariable String processId) {
-		BeerEvents beerEvents = this.reportingRepository.read(processId);
-		if (beerEvents == null) {
-			return ResponseEntity.notFound().build();
-		}
-		return ResponseEntity.ok(beerEvents);
-	}
+    @RequestMapping("/events/{processId}")
+    public ResponseEntity<?> beerEvents(@PathVariable String processId) {
+        BeerEvents beerEvents = this.reportingRepository.read(processId);
+        if (beerEvents == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(beerEvents);
+    }
 
-	@RequestMapping("/events")
-	public Set<Map.Entry<String, BeerEvents>> beerEvents() {
-		return this.reportingRepository.read();
-	}
+    @RequestMapping("/events")
+    public Set<Map.Entry<String, BeerEvents>> beerEvents() {
+        return this.reportingRepository.read();
+    }
 }

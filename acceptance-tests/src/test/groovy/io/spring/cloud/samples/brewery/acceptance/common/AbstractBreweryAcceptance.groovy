@@ -48,33 +48,32 @@ abstract class AbstractBreweryAcceptance {
 
 	protected static final List<String> APP_NAMES = ['presenting', 'brewing', 'proxy']
 	protected static final List<String> SPAN_NAMES = [
-													'inside_presenting_maturing_feed',
-													'inside_presenting_bottling_feed',
-													'send',
-													'inside_aggregating',
-													'inside_maturing',
-													'inside_bottling',
-													'inside_ingredients',
-													'inside_reporting']
+			'inside_presenting_maturing_feed',
+			'inside_presenting_bottling_feed',
+			'send',
+			'inside_aggregating',
+			'inside_maturing',
+			'inside_bottling',
+			'inside_ingredients',
+			'inside_reporting']
 
 	// interval to check status of different brewery elements
-	@Value('${brewery.poll.interval:1}') Integer pollInterval
-	@Value('${brewery.timeout:60}') Integer timeout
+	@Value('${brewery.poll.interval:1}')
+	Integer pollInterval
+	@Value('${brewery.timeout:60}')
+	Integer timeout
 	// interval for the first request to presenting
-	@Value('${presenting.poll.interval:5}') Integer presentingPollInterval
-	@Value('${presenting.url:http://localhost:9991}') String presentingUrl
-	@Value('${zipkin.query.port:9411}') Integer zipkinQueryPort
-	@Value('${LOCAL_URL:http://localhost}') String zipkinQueryUrl
-	@Value('${test.zipkin.dependencies:true}') boolean checkZipkinDependencies
+	@Value('${presenting.poll.interval:5}')
+	Integer presentingPollInterval
+	@Value('${presenting.url:http://localhost:9991}')
+	String presentingUrl
+	@Value('${zipkin.query.port:9411}')
+	Integer zipkinQueryPort
+	@Value('${LOCAL_URL:http://localhost}')
+	String zipkinQueryUrl
+	@Value('${test.zipkin.dependencies:true}')
+	boolean checkZipkinDependencies
 
-	def setup() {
-		log.info("Starting test")
-		log.info("Zipkin URL [${this.zipkinQueryUrl}], Zipkin port [${this.zipkinQueryPort}], Presenting URL [${this.presentingUrl}]")
-	}
-
-	def cleanup() {
-		log.info("Finished test")
-	}
 
 	void beer_has_been_brewed_for_process_id(String processId) {
 		await().pollInterval(pollInterval, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
@@ -143,7 +142,7 @@ abstract class AbstractBreweryAcceptance {
 			}
 
 			private zipkin2.Span findSpanByTag(String tagKey, List<zipkin2.Span> spans) {
-				return spans.find { it.tags().find { it.key == tagKey} }
+				return spans.find { it.tags().find { it.key == tagKey } }
 			}
 
 			private List<String> spanNamesNotFoundInZipkin(List<zipkin2.Span> spans) {

@@ -1,6 +1,7 @@
 package io.spring.cloud.samples.brewery.acceptance.common.tech
 
 import groovy.util.logging.Slf4j
+
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.web.client.DefaultResponseErrorHandler
 

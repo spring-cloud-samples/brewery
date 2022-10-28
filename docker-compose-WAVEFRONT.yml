@@ -2,20 +2,20 @@ version: '3'
 services:
   zookeeper:
     image: zookeeper:3.6
-    extra_hosts: ['host.docker.internal:host-gateway']
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
     ports:
       - "2181:2181"
 
   rabbitmq:
     image: rabbitmq:management
-    extra_hosts: ['host.docker.internal:host-gateway']
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
     ports:
       - "5672:5672"
       - "15672:15672"
 
   tempo:
     image: grafana/tempo
-    extra_hosts: ['host.docker.internal:host-gateway']
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
       - ./docker/tempo/tempo-local.yaml:/etc/tempo.yaml
@@ -26,7 +26,7 @@ services:
 
   loki:
     image: grafana/loki
-    extra_hosts: ['host.docker.internal:host-gateway']
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
     command: [ "-config.file=/etc/loki/local-config.yaml" ]
     ports:
       - "3100:3100"                                   # loki needs to be exposed so it receives logs
@@ -38,7 +38,7 @@ services:
 
   prometheus:
     image: prom/prometheus
-    extra_hosts: ['host.docker.internal:host-gateway']
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
     command:
       - --enable-feature=exemplar-storage
       - --config.file=/etc/prometheus/prometheus.yml
@@ -49,7 +49,7 @@ services:
 
   grafana:
     image: grafana/grafana
-    extra_hosts: ['host.docker.internal:host-gateway']
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
     volumes:
       - ./docker/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
       - ./docker/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro

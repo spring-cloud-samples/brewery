@@ -2,8 +2,8 @@
 <configuration>
 	<include resource="org/springframework/boot/logging/logback/base.xml"/>
 	<springProperty scope="context" name="appName" source="spring.application.name"/>
-<!--	<logger name="org.springframework.web" level="DEBUG"/>-->
-<!--	<logger name="org.springframework.cloud" level="DEBUG"/>-->
+	<!--	<logger name="org.springframework.web" level="DEBUG"/>-->
+	<!--	<logger name="org.springframework.cloud" level="DEBUG"/>-->
 
 	<appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
 		<http>

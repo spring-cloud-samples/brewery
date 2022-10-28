@@ -11,10 +11,10 @@ import org.springframework.web.client.RestTemplate;
 @EnableConfigurationProperties(StubbedIngredientsProperties.class)
 class IngredientsConfiguration {
 
-	@Bean
-	@LoadBalanced
-	RestTemplate loadBalancedRestTemplate(RestTemplateBuilder builder) {
-		return builder.build();
-	}
+    @Bean
+    @LoadBalanced
+    RestTemplate loadBalancedRestTemplate(RestTemplateBuilder builder) {
+        return builder.build();
+    }
 
 }

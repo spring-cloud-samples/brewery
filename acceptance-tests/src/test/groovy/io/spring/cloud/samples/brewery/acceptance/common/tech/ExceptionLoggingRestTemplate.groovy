@@ -1,6 +1,7 @@
 package io.spring.cloud.samples.brewery.acceptance.common.tech
 
 import groovy.util.logging.Slf4j
+
 import org.springframework.http.HttpMethod
 import org.springframework.web.client.RequestCallback
 import org.springframework.web.client.ResponseExtractor

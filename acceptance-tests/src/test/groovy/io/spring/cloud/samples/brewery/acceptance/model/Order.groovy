@@ -4,5 +4,5 @@ import groovy.transform.Canonical
 
 @Canonical
 class Order {
-    List<IngredientType> items = []
+	List<IngredientType> items = []
 }

@@ -1,6 +1,7 @@
 #!/bin/bash
 
-SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.rabbitmq.port=5672 -Dspring.profiles.active=deps"
+#  -Dspring.profiles.active=deps <-- remove this profile
+SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.rabbitmq.port=5672"
 
 dockerComposeFile="docker-compose-${WHAT_TO_TEST}.yml"
 kill_docker

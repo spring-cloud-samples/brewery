@@ -19,13 +19,13 @@ management:
       exposure:
         include: '*'
   tracing:
-      sampling:
-          probability: 1.0
-      baggage:
-          remote-fields:
-              - TEST-COMMUNICATION-TYPE
-          correlation:
-              fields:
-                  - TEST-COMMUNICATION-TYPE
+    sampling:
+      probability: 1.0
+    baggage:
+      remote-fields:
+        - TEST-COMMUNICATION-TYPE
+      correlation:
+        fields:
+          - TEST-COMMUNICATION-TYPE
 
 logging.pattern.level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

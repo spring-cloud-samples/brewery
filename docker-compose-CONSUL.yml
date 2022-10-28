@@ -2,7 +2,7 @@ version: '3'
 services:
   discovery:
     image: progrium/consul
-    extra_hosts: ['host.docker.internal:host-gateway']
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
     command: -server -bootstrap
     ports:
       - "8400:8400"
@@ -11,31 +11,31 @@ services:
 
   rabbitmq:
     image: rabbitmq:management
-    extra_hosts: ['host.docker.internal:host-gateway']
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
     ports:
       - "5672:5672"
       - "15672:15672"
 
-#  tempo:
-#    image: grafana/tempo
-#    extra_hosts: ['host.docker.internal:host-gateway']
-#    command: [ "-config.file=/etc/tempo.yaml" ]
-#    volumes:
-#      - ./docker/tempo/tempo-local.yaml:/etc/tempo.yaml
-#      - ./tempo-data:/tmp/tempo
-#    ports:
-#      - "14268"  # jaeger ingest
-#      - "9411:9411" # zipkin
+  #  tempo:
+  #    image: grafana/tempo
+  #    extra_hosts: ['host.docker.internal:host-gateway']
+  #    command: [ "-config.file=/etc/tempo.yaml" ]
+  #    volumes:
+  #      - ./docker/tempo/tempo-local.yaml:/etc/tempo.yaml
+  #      - ./tempo-data:/tmp/tempo
+  #    ports:
+  #      - "14268"  # jaeger ingest
+  #      - "9411:9411" # zipkin
 
   zipkin:
     image: openzipkin/zipkin
-    extra_hosts: ['host.docker.internal:host-gateway']
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
     ports:
       - "9411:9411" # zipkin
 
   loki:
     image: grafana/loki
-    extra_hosts: ['host.docker.internal:host-gateway']
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
     command: [ "-config.file=/etc/loki/local-config.yaml" ]
     ports:
       - "3100:3100"                                   # loki needs to be exposed so it receives logs
@@ -47,7 +47,7 @@ services:
 
   prometheus:
     image: prom/prometheus
-    extra_hosts: ['host.docker.internal:host-gateway']
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
     command:
       - --enable-feature=exemplar-storage
       - --config.file=/etc/prometheus/prometheus.yml
@@ -58,7 +58,7 @@ services:
 
   grafana:
     image: grafana/grafana
-    extra_hosts: ['host.docker.internal:host-gateway']
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
     volumes:
       - ./docker/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
       - ./docker/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro

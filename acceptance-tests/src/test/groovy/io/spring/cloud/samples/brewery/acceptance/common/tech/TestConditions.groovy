@@ -1,7 +1,7 @@
 package io.spring.cloud.samples.brewery.acceptance.common.tech
 
 import io.spring.cloud.samples.brewery.acceptance.common.WhatToTest
-import org.junit.Assume
+import org.junit.jupiter.api.Assumptions
 
 class TestConditions {
 
@@ -28,15 +28,15 @@ class TestConditions {
 
 	static void assumeServiceDiscovery() {
 		assumeSystemPropIsValid()
-		Assume.assumeTrue(SERVICE_DISCOVERY())
+		Assumptions.assumeTrue(SERVICE_DISCOVERY())
 	}
 
 	static void assumeSystemPropIsValid() {
-		Assume.assumeTrue(whatToTestSystemPropMatchesAny(WhatToTest.values ().toList()))
+		Assumptions.assumeTrue(whatToTestSystemPropMatchesAny(WhatToTest.values().toList()))
 	}
 
 	static void assumeSystemPropIsInValid() {
-		Assume.assumeFalse(whatToTestSystemPropMatchesAny(WhatToTest.values ().toList()))
+		Assumptions.assumeFalse(whatToTestSystemPropMatchesAny(WhatToTest.values().toList()))
 	}
 
 	private static boolean whatToTestSystemPropMatchesAny(List<WhatToTest> whatToTest) {

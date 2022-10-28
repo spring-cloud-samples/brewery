@@ -20,18 +20,18 @@ management.security.enabled: false
 
 spring.cloud.function.definition: events
 spring.cloud.stream.bindings.events-in-0.destination: events
-
+spring.config.import: "optional:configserver:"
 spring.cloud.config.label: main
 
 management:
-    tracing:
-        sampling:
-            probability: 1.0
-        baggage:
-            remote-fields:
-                - TEST-COMMUNICATION-TYPE
-            correlation:
-                fields:
-                    - TEST-COMMUNICATION-TYPE
+  tracing:
+    sampling:
+      probability: 1.0
+    baggage:
+      remote-fields:
+        - TEST-COMMUNICATION-TYPE
+      correlation:
+        fields:
+          - TEST-COMMUNICATION-TYPE
 
 logging.pattern.level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

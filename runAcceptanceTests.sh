@@ -7,7 +7,7 @@ set -o errexit
 # Tails the log
 function tail_log() {
 	echo -e "\n\nLogs of [$1] jar app"
-	tail -n ${NUMBER_OF_LINES_TO_LOG} "${CURRENT_DIR}/${1}"/build/libs/nohup.log || echo "Failed to open log"
+	tail -n ${NUMBER_OF_LINES_TO_LOG} "${CURRENT_DIR}/${1}"/target/nohup.log || echo "Failed to open log"
 }
 
 # Iterates over active containers and prints their logs to stdout
@@ -29,9 +29,7 @@ function print_logs() {
 	tail_log "ingredients"
 	tail_log "config-server"
 	tail_log "eureka"
-	tail_log "discovery"
 	tail_log "zookeeper"
-	tail_log "zipkin-server"
 	tail_log "kafka"
 	echo -e "\n\nPrinting Kafka logs" && cat /tmp/spring-cloud-dataflow-*/launcher-*/launcher.kafka/* || echo "No kafka was running"
 }
@@ -72,7 +70,7 @@ function curl_local_health_endpoint() {
 
 # Runs the `java -jar` for given application $1 and system properties $2
 function java_jar() {
-	local APP_JAVA_PATH=$1/build/libs
+	local APP_JAVA_PATH=$1/target
 	local EXPRESSION="nohup ${JAVA_PATH_TO_BIN}java $2 $MEM_ARGS -jar $APP_JAVA_PATH/*.jar >$APP_JAVA_PATH/nohup.log &"
 	echo -e "\nTrying to run [$EXPRESSION]"
 	eval ${EXPRESSION}
@@ -80,7 +78,7 @@ function java_jar() {
 	echo ${pid} >${APP_JAVA_PATH}/app.pid
 	echo -e "[$1] process pid is [$pid]"
 	echo -e "System props are [$2]"
-	echo -e "Logs are under [build/$1.log] or from nohup [$APP_JAVA_PATH/nohup.log]\n"
+	echo -e "Logs are under [target/$1.log] or from nohup [$APP_JAVA_PATH/nohup.log]\n"
 	return 0
 }
 
@@ -96,7 +94,7 @@ function start_brewery_apps() {
 }
 
 function kill_and_log() {
-	kill -9 $(cat "$1"/build/libs/app.pid) && echo "Killed $1" || echo "Can't find $1 in running processes"
+	kill -9 $(cat "$1"/target/app.pid) && echo "Killed $1" || echo "Can't find $1 in running processes"
 	pkill_app "$1"
 }
 
@@ -130,26 +128,27 @@ function kill_app_with_port() {
 function kill_all_apps() {
 	echo $(pwd)
 	kill_and_log "brewing"
-	kill_and_log "proxy"
+	kill_and_log "gateway"
 	kill_and_log "presenting"
 	kill_and_log "ingredients"
 	kill_and_log "reporting"
 	kill_and_log "config-server"
 	kill_and_log "eureka"
 	kill_and_log "zookeeper"
-	kill_and_log "zipkin-server"
-	kill_all_apps_with_port
-	pkill_app "rabbit"
+	# kill_all_apps_with_port
+	# pkill_app "rabbit"
 	if [[ -z "${KILL_NOW_APPS}" ]]; then
 		kill_docker
 	fi
-	pkill -15 -f JarLauncher || echo "No kafka was running"
 	return 0
 }
 
 # Kills all docker related elements
 function kill_docker() {
-	docker ps -a -q | xargs -n 1 -P 8 -I {} docker stop {} || echo "No running docker containers are left"
+	docker-compose -f docker-compose-CONSUL.yml kill || echo "Nothing to kill"
+	docker-compose -f docker-compose-ZOOKEEPER.yml kill || echo "Nothing to kill"
+	docker-compose -f docker-compose-EUREKA.yml kill || echo "Nothing to kill"
+	docker-compose -f docker-compose-WAVEFRONT.yml kill || echo "Nothing to kill"
 }
 
 # Kills all started aps if the switch is on
@@ -191,7 +190,6 @@ GLOBAL:
 -d  |--skipdeployment - should skip deployment of apps? Defaults to "no"
 -a  |--deployonlyapps - should deploy only the brewery business apps instead of the infra too? Defaults to "no"
 -b  |--bootversion - Which version of Boot should be used?
--cli|--cliversion - which version of Spring Cloud CLI should be used (it's used to start Kafka)?
 -ve |--verbose - Will print all library versions
 -br |--branch - Which repo branch of the brewery repo should be checked out. Defaults to "main"
 
@@ -222,8 +220,8 @@ LOCALHOST="127.0.0.1"
 MEM_ARGS="-Xmx128m -Xss1024k"
 SLEEP_TIME_FOR_DISCOVERY="${SLEEP_TIME_FOR_DISCOVERY:-30}"
 
-BOOT_VERSION_PROP_NAME="BOOT_VERSION"
-BOM_VERSION_PROP_NAME="BOM_VERSION"
+BOOT_VERSION_PROP_NAME="spring-boot.version"
+BOM_VERSION_PROP_NAME="spring-cloud.version"
 
 # ======================================= VARIABLES END =======================================
 
@@ -280,10 +278,6 @@ while [[ $# > 0 ]]; do
 		;;
 	-b | --bootversion)
 		BOOT_VERSION="$2"
-		shift
-		;;
-	-cli | --cliversion)
-		CLI_VERSION="$2"
 		shift
 		;;
 	-br | --branch)
@@ -408,10 +402,6 @@ fi
 CURRENT_DIR=$(pwd)
 
 # ======================================= Building the apps =======================================
-echo -e "\n\nUsing the following gradle.properties"
-cat gradle.properties
-
-echo -e "\n\n"
 
 # Build the apps
 APP_BUILDING_RETRIES=3
@@ -419,9 +409,9 @@ APP_WAIT_TIME=1
 APP_FAILED="yes"
 WORK_OFFLINE="${WORK_OFFLINE:-false}"
 
-PARAMS="--daemon"
+PARAMS=""
 if [[ "${WORK_OFFLINE}" == "false" ]]; then
-	PARAMS="${PARAMS} --refresh-dependencies"
+	PARAMS="${PARAMS} -U"
 else
 	PARAMS="${PARAMS} --offline"
 fi
@@ -433,21 +423,36 @@ if [[ "${VERSION}" != "" ]]; then
 	echo "Will use BOM in version [${VERSION}]"
 	PARAMS="${PARAMS} -D${BOM_VERSION_PROP_NAME}=${VERSION}"
 fi
-PARAMS="${PARAMS} -P${TRACER}"
-echo -e "\n\nPassing following Gradle parameters [${PARAMS}]\n\n"
+PROFILES="${TRACER}"
 
 if [[ -z "${SKIP_BUILDING}" ]]; then
 	if [[ "${KAFKA}" == "yes" ]]; then
 		echo "Will use Kafka as a message broker"
-		PARAMS="${PARAMS} -Pkafka"
+		PROFILES="${PROFILES},kafka"
+	else
+	  PROFILES="${PROFILES},rabbit"
 	fi
+	if [[ "${WHAT_TO_TEST}" == "WAVEFRONT" ]]; then
+		echo "Will use Wavefront"
+		PROFILES="${PROFILES},wavefront,zookeeper"
+	else
+	  if [[ "${WHAT_TO_TEST}" == "CONSUL" ]]; then
+	    PROFILES="${PROFILES},consul"
+	  elif [[ "${WHAT_TO_TEST}" == "EUREKA" ]]; then
+	    PROFILES="${PROFILES},eureka"
+	  else
+	    PROFILES="${PROFILES},zookeeper"
+	  fi
+	  PROFILES="${PROFILES},${TRACER}-zipkin"
+	fi
+	echo -e "\n\nPassing following Maven parameters [${PARAMS}]"
+	echo -e "\nPassing following Maven profiles [${PROFILES}]\n\n"
 	for i in $(seq 1 "${APP_BUILDING_RETRIES}"); do
-		./gradlew clean ${PARAMS} --parallel
 		if [[ "${VERBOSE}" == "yes" ]]; then
 			echo -e "\n\nPrinting the dependency tree for all projects\n\n"
-			./gradlew allDeps
+			./mvnw dependency:tree
 		fi
-		./gradlew build ${PARAMS} && APP_FAILED="no" && break
+		./mvnw clean install ${PARAMS} -P"${PROFILES}" -DskipTests && APP_FAILED="no" && break
 		echo "Fail #$i/${APP_BUILDING_RETRIES}... will try again in [${APP_WAIT_TIME}] seconds"
 	done
 else
@@ -509,13 +514,13 @@ if [[ -z "${SKIP_DEPLOYMENT}" ]]; then
 		exit 1
 	fi
 	echo -e "\n\nWaiting for [${SLEEP_TIME_FOR_DISCOVERY}] secs for the apps to register in service discovery!"
-	sleep ${SLEEP_TIME_FOR_DISCOVERY}
+	sleep "${SLEEP_TIME_FOR_DISCOVERY}"
 else
 	echo "Skipping deployment"
 	READY_FOR_TESTS="yes"
 fi
 
-
+echo "foo"
 # ======================================= Running acceptance tests =======================================
 TESTS_PASSED="no"
 
@@ -528,7 +533,7 @@ fi
 if [[ "${READY_FOR_TESTS}" == "yes" ]]; then
 	echo -e "\n\nSuccessfully booted up all the apps. Proceeding with the acceptance tests"
 	echo -e "\n\nRunning acceptance tests with the following parameters [-DWHAT_TO_TEST=${WHAT_TO_TEST} ${ACCEPTANCE_TEST_OPTS}]"
-	./gradlew ${PARAMS} :acceptance-tests:acceptanceTests "-DWHAT_TO_TEST=${WHAT_TO_TEST}" ${ACCEPTANCE_TEST_OPTS} --stacktrace --configure-on-demand && TESTS_PASSED="yes"
+	./mvnw verify -pl acceptance-tests "-DWHAT_TO_TEST=${WHAT_TO_TEST}" ${ACCEPTANCE_TEST_OPTS} && TESTS_PASSED="yes"
 fi
 
 # Check the result of tests execution

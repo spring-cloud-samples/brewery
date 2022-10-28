@@ -18,23 +18,24 @@ endpoints.default.web.enabled: true
 management.security.enabled: false
 
 spring:
-    main:
-        allow-bean-definition-overriding: true # TODO Why? The bean 'presenting.FeignClientSpecification' could not be registered. A bean with that name has already been defined and overriding is disabled.
+  main:
+    allow-bean-definition-overriding: true # TODO Why? The bean 'presenting.FeignClientSpecification' could not be registered. A bean with that name has already been defined and overriding is disabled.
 
 management:
-    tracing:
-        sampling:
-            probability: 1.0
-        baggage:
-            remote-fields:
-                - TEST-COMMUNICATION-TYPE
-            correlation:
-                fields:
-                    - TEST-COMMUNICATION-TYPE
+  tracing:
+    sampling:
+      probability: 1.0
+    baggage:
+      remote-fields:
+        - TEST-COMMUNICATION-TYPE
+      correlation:
+        fields:
+          - TEST-COMMUNICATION-TYPE
 
 logging.pattern.level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 
 spring.cloud.stream.source: events
 spring.cloud.stream.bindings.events-out-0.destination: events
 
+spring.config.import: "optional:configserver:"
 spring.cloud.config.label: main
