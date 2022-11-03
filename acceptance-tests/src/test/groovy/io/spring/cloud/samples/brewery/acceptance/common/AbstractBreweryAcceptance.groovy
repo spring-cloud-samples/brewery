@@ -123,7 +123,7 @@ abstract class AbstractBreweryAcceptance {
 				log.info("The following spans were not found in Zipkin $spanNamesNotFoundInZipkin")
 				assert serviceNamesNotFoundInZipkin.empty
 				assert spanNamesNotFoundInZipkin.empty
-				def messagingSpans = spans.findAll { it.tags().find { it.value == "events" } }
+				def messagingSpans = spans.findAll { it.tags().find { it.value.contains("events") } }
 				log.info("Found the following messaging spans [{}]", messagingSpans)
 				assert !messagingSpans.empty
 				zipkin2.Span spanByTag = findSpanByTag('beer', spans)

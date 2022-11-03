@@ -33,7 +33,7 @@ class CommonConfiguration {
     static class AsyncConfig implements AsyncConfigurer, WebMvcConfigurer {
         @Override
         public Executor getAsyncExecutor() {
-            return ContextSnapshot.wrapExecutorService(Executors.newCachedThreadPool());
+            return ContextSnapshot.wrapExecutorService(Executors.newCachedThreadPool(), () -> ContextSnapshot.captureAll());
         }
 
         @Override
@@ -57,7 +57,7 @@ class CommonConfiguration {
             @Override
             protected ExecutorService initializeExecutor(ThreadFactory threadFactory, RejectedExecutionHandler rejectedExecutionHandler) {
                 ExecutorService executorService = super.initializeExecutor(threadFactory, rejectedExecutionHandler);
-                return ContextSnapshot.wrapExecutorService(executorService);
+                return ContextSnapshot.wrapExecutorService(executorService, () -> ContextSnapshot.captureAll());
             }
         };
         threadPoolTaskScheduler.initialize();
