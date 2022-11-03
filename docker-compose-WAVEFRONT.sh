@@ -45,21 +45,21 @@ if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
     exit 1
 fi
 
+export WAVEFRONT_API_TOKEN="${WAVEFRONT_API_TOKEN:-}"
+export WAVEFRONT_URI="${WAVEFRONT_URI:-https://vmware.wavefront.com}"
+SYSTEM_PROPS="${SYSTEM_PROPS} -Dwavefront.application.name=brewery -Dmanagement.wavefront.api-token=${WAVEFRONT_API_TOKEN} -Dmanagement.wavefront.uri=${WAVEFRONT_URI}"
+
 # Boot config-server
 READY_FOR_TESTS="no"
 PORT_TO_CHECK=8888
 echo "Waiting for the Config Server app to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
-java_jar "config-server"
+java_jar "config-server" "${SYSTEM_PROPS}"
 curl_local_health_endpoint $PORT_TO_CHECK  && READY_FOR_TESTS="yes"
 
 if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
     echo "Config server failed to start..."
     exit 1
 fi
-
-export WAVEFRONT_API_TOKEN="${WAVEFRONT_API_TOKEN}"
-export WAVEFRONT_URI="${WAVEFRONT_URI:-https://vmware.wavefront.com}"
-SYSTEM_PROPS="${SYSTEM_PROPS} -Dwavefront.application.name=brewery -Dmanagement.wavefront.api-token=${WAVEFRONT_API_TOKEN} -Dmanagement.wavefront.uri=${WAVEFRONT_URI}"
 
 echo -e "\n\nStarting brewery apps..."
 start_brewery_apps "$SYSTEM_PROPS"

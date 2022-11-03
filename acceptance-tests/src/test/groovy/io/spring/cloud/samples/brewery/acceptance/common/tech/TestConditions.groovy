@@ -31,6 +31,12 @@ class TestConditions {
 		Assumptions.assumeTrue(SERVICE_DISCOVERY())
 	}
 
+	static void assumeNotWavefront() {
+		assumeSystemPropIsValid()
+		String whatToTest = getAndLogWhatToTestSystemProp()
+		Assumptions.assumeFalse(whatToTest.equalsIgnoreCase(WhatToTest.WAVEFRONT.name()))
+	}
+
 	static void assumeSystemPropIsValid() {
 		Assumptions.assumeTrue(whatToTestSystemPropMatchesAny(WhatToTest.values().toList()))
 	}

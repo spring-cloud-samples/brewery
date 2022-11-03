@@ -20,8 +20,6 @@ public class ServiceDiscoveryAcceptanceTests extends AbstractBreweryAcceptance {
 
     @Test
     public void should_successfully_pass_Trace_Id_via_rest_template() {
-        // setup:
-//		warm_up_the_environment(() -> check_brewery(CommunicationType.REST_TEMPLATE));
         // given:
         check_brewery(CommunicationType.REST_TEMPLATE);
     }
