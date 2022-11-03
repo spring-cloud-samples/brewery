@@ -33,6 +33,7 @@ class IngredientsFetchController {
         Ingredient ingredient = new Ingredient(ingredientType, stubbedIngredientsProperties.getReturnedIngredientsQuantity());
         log.info("Returning [{}] as fetched ingredient from an external service", ingredient);
         return Mono.just(ingredient)
-                .contextWrite(context -> context.put(ObservationThreadLocalAccessor.KEY, insideIngredientsObservation));
+                .contextWrite(context -> context.put(ObservationThreadLocalAccessor.KEY, insideIngredientsObservation))
+                .doFinally(signalType -> insideIngredientsObservation.stop());
     }
 }

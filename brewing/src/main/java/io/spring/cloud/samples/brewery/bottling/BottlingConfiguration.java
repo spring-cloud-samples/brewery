@@ -46,18 +46,4 @@ class BottlingConfiguration {
         return new Resilience4JCircuitBreakerFactory(circuitBreakerRegistry, timeLimiterRegistry, null, resilience4JConfigurationProperties);
     }
 
-    // [Observability] instrumenting executors
-    @Bean(destroyMethod = "shutdown")
-    @Primary
-    ThreadPoolTaskScheduler bottlingThreadPoolTaskScheduler() {
-        ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler() {
-            @Override
-            protected ExecutorService initializeExecutor(ThreadFactory threadFactory, RejectedExecutionHandler rejectedExecutionHandler) {
-                ExecutorService executorService = super.initializeExecutor(threadFactory, rejectedExecutionHandler);
-                return ContextSnapshot.captureAll().wrapExecutorService(executorService);
-            }
-        };
-        threadPoolTaskScheduler.initialize();
-        return threadPoolTaskScheduler;
-    }
 }

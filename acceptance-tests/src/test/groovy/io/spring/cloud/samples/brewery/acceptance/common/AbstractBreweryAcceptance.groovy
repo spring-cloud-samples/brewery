@@ -50,7 +50,7 @@ abstract class AbstractBreweryAcceptance {
 	protected static final List<String> SPAN_NAMES = [
 			'inside_presenting_maturing_feed',
 			'inside_presenting_bottling_feed',
-			'send',
+			'events/events send',
 			'inside_aggregating',
 			'inside_maturing',
 			'inside_bottling',
@@ -100,9 +100,9 @@ abstract class AbstractBreweryAcceptance {
 		// when:
 		presenting_service_has_been_called(requestEntity);
 		// and:
-		requestEntity = an_order_for_all_ingredients_with_process_id(referenceProcessId, communicationType);
-		presenting_service_has_been_called(requestEntity);
-		// then:
+//		requestEntity = an_order_for_all_ingredients_with_process_id(referenceProcessId, communicationType);
+//		presenting_service_has_been_called(requestEntity);
+//		// then:
 		beer_has_been_brewed_for_process_id(referenceProcessId);
 		// and:
 		entry_for_trace_id_is_present_in_Zipkin(referenceProcessId.split("-")[1])

@@ -7,6 +7,7 @@ import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.http.RequestEntity;
 
 public class ServiceDiscoveryAcceptanceTests extends AbstractBreweryAcceptance {

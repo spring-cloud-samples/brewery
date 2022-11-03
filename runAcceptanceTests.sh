@@ -273,6 +273,9 @@ while [[ $# > 0 ]]; do
 	-s | --skipbuilding)
 		SKIP_BUILDING="yes"
 		;;
+	-d | --skipdeployment)
+		SKIP_DEPLOYMENT="yes"
+		;;
 	-k | --kafka)
 		KAFKA="yes"
 		;;

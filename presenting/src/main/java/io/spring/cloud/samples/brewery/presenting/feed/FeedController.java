@@ -51,7 +51,7 @@ class FeedController {
             method = PUT)
     public void bottling(@RequestHeader("PROCESS-ID") String processId) {
         log.info("new bottling process [{}]", processId);
-        Observation.createNotStarted("inside_presenting_maturing_feed", observationRegistry)
+        Observation.createNotStarted("inside_presenting_bottling_feed", observationRegistry)
                 .observe(() -> feedRepository.addModifyProcess(processId, ProcessState.BOTTLING));
     }
 
