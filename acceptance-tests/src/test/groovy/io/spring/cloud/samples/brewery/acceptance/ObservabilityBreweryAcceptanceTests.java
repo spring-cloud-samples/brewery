@@ -9,10 +9,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class ObservabilityBreweryAcceptanceTests extends AbstractBreweryAcceptance {
-    @BeforeEach
-    public void before() {
-        TestConditions.assumeNotWavefront();
-    }
 
     @Test
     public void should_successfully_pass_Trace_Id_via_rest_template() {
