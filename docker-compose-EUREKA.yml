@@ -1,23 +1,30 @@
 version: '3'
 services:
+
   rabbitmq:
     image: rabbitmq:management
     extra_hosts: [ 'host.docker.internal:host-gateway' ]
     ports:
       - "5672:5672"
       - "15672:15672"
-  
-  tempo:
-    image: grafana/tempo
+
+  #  tempo:
+  #    image: grafana/tempo
+  #    extra_hosts: ['host.docker.internal:host-gateway']
+  #    command: [ "-config.file=/etc/tempo.yaml" ]
+  #    volumes:
+  #      - ./docker/tempo/tempo-local.yaml:/etc/tempo.yaml
+  #      - ./tempo-data:/tmp/tempo
+  #    ports:
+  #      - "14268"  # jaeger ingest
+  #      - "9411:9411" # zipkin
+
+  zipkin:
+    image: openzipkin/zipkin
     extra_hosts: [ 'host.docker.internal:host-gateway' ]
-    command: [ "-config.file=/etc/tempo.yaml" ]
-    volumes:
-      - ./docker/tempo/tempo-local.yaml:/etc/tempo.yaml
-      - ./tempo-data:/tmp/tempo
     ports:
-      - "14268"  # jaeger ingest
       - "9411:9411" # zipkin
-  
+
   loki:
     image: grafana/loki
     extra_hosts: [ 'host.docker.internal:host-gateway' ]
@@ -26,10 +33,10 @@ services:
       - "3100:3100"                                   # loki needs to be exposed so it receives logs
     environment:
       - JAEGER_AGENT_HOST=tempo
-      - JAEGER_ENDPOINT=http://tempo:14268/api/traces # send traces to Tempo
+      #      - JAEGER_ENDPOINT=http://tempo:14268/api/traces # send traces to Tempo
       - JAEGER_SAMPLER_TYPE=const
       - JAEGER_SAMPLER_PARAM=1
-  
+
   prometheus:
     image: prom/prometheus
     extra_hosts: [ 'host.docker.internal:host-gateway' ]
@@ -40,7 +47,7 @@ services:
       - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     ports:
       - "9090:9090"
-  
+
   grafana:
     image: grafana/grafana
     extra_hosts: [ 'host.docker.internal:host-gateway' ]
