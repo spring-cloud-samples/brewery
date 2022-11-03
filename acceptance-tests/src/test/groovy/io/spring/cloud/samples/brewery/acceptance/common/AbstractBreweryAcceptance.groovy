@@ -18,6 +18,7 @@ package io.spring.cloud.samples.brewery.acceptance.common
 import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import io.spring.cloud.samples.brewery.acceptance.common.tech.ExceptionLoggingRestTemplate
+import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConditions
 import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConfiguration
 import io.spring.cloud.samples.brewery.acceptance.model.CommunicationType
 import io.spring.cloud.samples.brewery.acceptance.model.IngredientType
@@ -109,6 +110,10 @@ abstract class AbstractBreweryAcceptance {
 	}
 
 	void entry_for_trace_id_is_present_in_Zipkin(String traceId) {
+		if (TestConditions.isWhatToTestWavefront()) {
+			log.info("Will not check Zipkin entries since we're checking Wavefront")
+			return
+		}
 		await().pollInterval(pollInterval, SECONDS).atMost(timeout, SECONDS).until(new Runnable() {
 			@Override
 			void run() {
