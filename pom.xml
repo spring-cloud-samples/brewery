@@ -210,6 +210,12 @@
 					<artifactId>micrometer-tracing-reporter-wavefront</artifactId>
 					<scope>runtime</scope>
 				</dependency>
+				<dependency>
+					<groupId>com.wavefront</groupId>
+					<artifactId>wavefront-internal-reporter-java</artifactId>
+					<version>1.7.12</version>
+					<scope>runtime</scope>
+				</dependency>
 			</dependencies>
 		</profile>
 		<profile>
