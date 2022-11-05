@@ -1,17 +1,14 @@
 package io.spring.cloud.samples.brewery.common;
 
+import io.micrometer.context.ContextExecutorService;
 import io.micrometer.context.ContextSnapshot;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
@@ -33,7 +30,7 @@ class CommonConfiguration {
     static class AsyncConfig implements AsyncConfigurer, WebMvcConfigurer {
         @Override
         public Executor getAsyncExecutor() {
-            return ContextSnapshot.wrapExecutorService(Executors.newCachedThreadPool(), () -> ContextSnapshot.captureAll());
+            return ContextExecutorService.wrap(Executors.newCachedThreadPool(), ContextSnapshot::captureAll);
         }
 
         @Override
@@ -57,7 +54,7 @@ class CommonConfiguration {
             @Override
             protected ExecutorService initializeExecutor(ThreadFactory threadFactory, RejectedExecutionHandler rejectedExecutionHandler) {
                 ExecutorService executorService = super.initializeExecutor(threadFactory, rejectedExecutionHandler);
-                return ContextSnapshot.wrapExecutorService(executorService, () -> ContextSnapshot.captureAll());
+                return ContextExecutorService.wrap(executorService, ContextSnapshot::captureAll);
             }
         };
         threadPoolTaskScheduler.initialize();
