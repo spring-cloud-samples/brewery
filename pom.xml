@@ -17,9 +17,9 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven-deploy-plugin.version>3.0.0</maven-deploy-plugin.version>
 
-		<spring-boot.version>3.2.4</spring-boot.version>
-		<spring-cloud.version>2023.0.1</spring-cloud.version>
-		<loki-logback-appender.version>1.5.1</loki-logback-appender.version>
+		<spring-boot.version>3.4.1</spring-boot.version>
+		<spring-cloud.version>2024.0.0</spring-cloud.version>
+		<loki-logback-appender.version>1.5.2</loki-logback-appender.version>
 	</properties>
 
 	<name>Brewery Parent</name>
@@ -202,7 +202,7 @@
 				<dependency>
 					<groupId>com.wavefront</groupId>
 					<artifactId>wavefront-internal-reporter-java</artifactId>
-					<version>1.7.12</version>
+					<version>1.7.16</version>
 					<scope>runtime</scope>
 				</dependency>
 			</dependencies>
